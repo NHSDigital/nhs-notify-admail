@@ -1,5 +1,5 @@
 resource "aws_iam_role" "apprunner_ecr_role" {
-  name = "apprunner-ecr-role-${local.resource-suffix}"
+  name = "${local.csi}-apprunner-ecr-role"
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
@@ -24,7 +24,7 @@ resource "aws_iam_role" "apprunner_ecr_role" {
 }
 
 resource "aws_iam_policy" "apprunner_ecr_policy" {
-  name        = "apprunner-ecr-policy-${local.resource-suffix}"
+  name        = "${local.csi}-apprunner-ecr-policy"
   description = "Policy for App Runner to access ECR"
   policy = jsonencode({
     Version = "2012-10-17"
@@ -57,12 +57,12 @@ resource "random_password" "app-runner-basic-auth-random-password" {
 }
 
 resource "aws_secretsmanager_secret" "basic_auth_password" {
-  name = "app-runner-basic-auth-password-${local.resource-suffix}"
+  name = "${local.csi}-app-runner-basic-auth-password"
 }
 
 
 resource "aws_apprunner_service" "notifai_frontend_service" {
-  service_name = "frontend-${local.resource-suffix}"
+  service_name = "${local.csi}-frontend"
   count        = var.first-run ? 0 : 1
 
   source_configuration {
@@ -110,7 +110,7 @@ resource "aws_apprunner_service" "notifai_frontend_service" {
 }
 
 resource "aws_apprunner_service" "notifai_backend_service" {
-  service_name = "backend-${local.resource-suffix}"
+  service_name = "${local.csi}-backend"
   count        = var.first-run ? 0 : 1
 
   source_configuration {
