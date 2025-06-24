@@ -20,11 +20,11 @@ export default function AIFeedback({ feedback }) {
         return "rating-advertising";
       default:
         return "rating-default"; // Fallback style if rating is unexpected
-    } 
+    }
     } catch (error) {
       console.log('setting the rating colour: ', error);
     }
-    
+
   };
 
   // Effect to handle the Promise resolution
@@ -56,7 +56,7 @@ export default function AIFeedback({ feedback }) {
 
 
   return (
-    
+
     <div className="ai-feedback">
       <div className="feedback-box">
         {hasValidFeedback ? (
@@ -69,7 +69,7 @@ export default function AIFeedback({ feedback }) {
               <br />
               <p>
                 <strong>Rating:</strong>{" "}
-                <span className={getRatingClass(feedbackObj.Rating) || "rating-default"}> 
+                <span className={getRatingClass(feedbackObj.Rating) || "rating-default"}>
                   {feedbackObj.Rating}
                 </span>
               </p>

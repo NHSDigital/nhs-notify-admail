@@ -29,7 +29,7 @@ function App() {
     let cleanedData = response.data;
     try {
       cleanedData = cleanedData.replace('```', '').replace(/`/g, '').replace('<', '').replace('>', '').replace('|', '');
-      
+
     } catch (error) {
       console.log('error removing punctuation from string either does not exist or cannot remove');
     }

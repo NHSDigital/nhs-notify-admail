@@ -7,6 +7,13 @@ resource "aws_s3_bucket" "lambda_prompt_logging_s3_bucket" {
   bucket = "${local.csi_global}-logfiles"
 }
 
+resource "aws_s3_bucket_versioning" "lambda_prompt_logging_s3_bucket" {
+  bucket = aws_s3_bucket.lambda_prompt_logging_s3_bucket.id
+  versioning_configuration {
+    status = "Enabled"
+  }
+}
+
 resource "aws_s3_object" "lambda_prompt_logging_s3_bucket_object" {
   bucket       = aws_s3_bucket.lambda_prompt_logging_s3_bucket.bucket
   key          = local.s3_lambda_logging_key
