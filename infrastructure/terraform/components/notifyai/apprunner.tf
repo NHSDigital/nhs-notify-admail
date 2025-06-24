@@ -55,6 +55,10 @@ resource "random_password" "app-runner-basic-auth-random-password" {
   special          = true
   override_special = "!@#$%^&*()-_=+"
 }
+resource "random_password" "app-runner-basic-auth-random-username" {
+  length = 10
+  special = false
+}
 
 resource "aws_secretsmanager_secret" "basic_auth_password" {
   name = "${local.csi}-app-runner-basic-auth-password"
@@ -122,7 +126,7 @@ resource "aws_apprunner_service" "notifai_backend_service" {
         port          = "8080"
         start_command = "fastapi run main.py --port 8080"
         runtime_environment_variables = {
-          ENV_BASIC_AUTH_USERNAME = "<git-filtered>"                   #TODO: move away from basic auth, so we won't need to do this!
+          ENV_BASIC_AUTH_USERNAME = random_password.app-runner-basic-auth-random-username.result #TODO: move away from basic auth, so we won't need to do this!
           ENV_BASIC_AUTH_PASSWORD = random_password.app-runner-basic-auth-random-password.result #TODO: get this from secret storage
         }
       }

@@ -62,8 +62,8 @@ with os.scandir(LETTERS_PATH) as letters_in_folder:
         if letter_pdf in letters_keys:
             continue
         if letter_docx in letters_keys:
-            continue      
-        
+            continue
+
 
         if letter.is_file():
             letters.update({letter.name:""})
@@ -112,7 +112,7 @@ with os.scandir(LETTERS_PATH) as letters_in_folder:
 with open(RESPONSE_PATH, 'r') as responses_file:
     json_text = responses_file.read()
     json_responses = json.loads(json_text)
-    
+
     for k, v in letters.items():
         bedrock_new_obj = copy.deepcopy(bedrock_training_object)
         bedrock_new_obj["prompt"] = prompt_hard + " Input letter: " + v
@@ -126,7 +126,7 @@ with jsonlines.open(DATA_PATH + 'output.jsonl', mode='w') as writer:
     for obj in bedrock_list:
         writer.write(obj)
 
-        
+
 
 
 

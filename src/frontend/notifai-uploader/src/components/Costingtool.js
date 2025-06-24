@@ -29,11 +29,11 @@ export default function RoyalMailCalculator() {
     };
 
     let mailClass = firstClass === true? "1st Class": "Business";
-    
+
     const advertisingCost = items * advertisingRates[pages];
     const businessCost = items * businessRates[pages][mailClass];
     let savingsCost = businessCost - advertisingCost;
-    
+
     return {
       advertising: advertisingCost,
       business: businessCost,
@@ -62,7 +62,7 @@ export default function RoyalMailCalculator() {
         <h1 className="title">Costing tool</h1>
         <p>See how much you could save the NHS if your letter is suitable for Admail.</p>
         <h2 className="title">Input Parameters</h2>
-        
+
         {/* Pages per letter */}
         <div className="parameterGroup">
           <div className="parameterHeader">
@@ -137,7 +137,7 @@ export default function RoyalMailCalculator() {
       {/* Cost Comparison Section */}
       <div className="section">
         <h2 className="title">Cost Comparison</h2>
-        
+
         <div className="costGrid">
           {/* Advertising Mail Cost */}
           <div className="costCard">

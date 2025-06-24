@@ -11,7 +11,7 @@ body {
   background-color: #f0f2f5;
   margin: 0;
   padding: 0;
-  min-height: 100%; 
+  min-height: 100%;
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
@@ -52,7 +52,7 @@ body {
 }
 
 .rating-red {
-  color: #ff0000; 
+  color: #ff0000;
   font-weight: bold;
 }
 

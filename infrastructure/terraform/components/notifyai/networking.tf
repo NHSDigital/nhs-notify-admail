@@ -3,6 +3,7 @@ locals {
   vpc-name               = "${local.csi}-app-vpc"
 }
 
+#trivy:ignore:AVD-AWS-0178 TODO: VPC Flowlogs for a PoC is excessive
 resource "aws_vpc" "app_vpc" {
   cidr_block = local.notifai-vpc-cidr-range
   tags = {

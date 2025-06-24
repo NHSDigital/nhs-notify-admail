@@ -1,6 +1,13 @@
-#Create the S3 buckets that store the Custom Evaluation Prompts & Evaluation Results
+# Create the S3 buckets that store the Custom Evaluation Prompts & Evaluation Results
 resource "aws_s3_bucket" "evaluation_programatic_input_prompts" {
   bucket = "${local.csi}-input-prompts"
+}
+
+resource "aws_s3_bucket_versioning" "evaluation_programatic_input_prompts" {
+  bucket = aws_s3_bucket.evaluation_programatic_input_prompts.id
+  versioning_configuration {
+    status = "Enabled"
+  }
 }
 
 resource "aws_s3_object" "prompts_object" {
@@ -12,6 +19,13 @@ resource "aws_s3_object" "prompts_object" {
 
 resource "aws_s3_bucket" "evaluation_programatic_results" {
   bucket = "${local.csi}-results"
+}
+
+resource "aws_s3_bucket_versioning" "evaluation_programatic_results" {
+  bucket = aws_s3_bucket.evaluation_programatic_results.id
+  versioning_configuration {
+    status = "Enabled"
+  }
 }
 
 resource "aws_s3_object" "results_object" {
