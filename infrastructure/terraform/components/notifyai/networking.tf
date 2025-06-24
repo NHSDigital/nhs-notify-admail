@@ -1,6 +1,6 @@
 locals {
   notifai-vpc-cidr-range = "10.0.2.0/23"
-  vpc-name               = "app-vpc-${local.resource-suffix}"
+  vpc-name               = "${local.csi}-app-vpc"
 }
 
 resource "aws_vpc" "app_vpc" {
@@ -29,7 +29,7 @@ resource "aws_subnet" "app_runner_subnet_2" {
 }
 
 resource "aws_apprunner_vpc_connector" "app_vpc_connector" {
-  vpc_connector_name = "app-vpc-connector-${local.resource-suffix}"
+  vpc_connector_name = "${local.csi}-app-vpc-connector"
   subnets = [
     aws_subnet.app_runner_subnet_1.id,
     aws_subnet.app_runner_subnet_2.id,
@@ -38,7 +38,7 @@ resource "aws_apprunner_vpc_connector" "app_vpc_connector" {
 }
 
 resource "aws_security_group" "app_runner_sg" {
-  name   = "app-runner-sg-${local.resource-suffix}"
+  name   = "${local.csi}-app-runner-sg"
   vpc_id = aws_vpc.app_vpc.id
 
   ingress {

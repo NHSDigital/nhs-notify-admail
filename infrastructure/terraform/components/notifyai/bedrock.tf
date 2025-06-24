@@ -1,6 +1,6 @@
 #Create the S3 buckets that store the Custom Evaluation Prompts & Evaluation Results
 resource "aws_s3_bucket" "evaluation_programatic_input_prompts" {
-  bucket = "input-prompts-${local.resource-suffix}"
+  bucket = "${local.csi}-input-prompts"
 }
 
 resource "aws_s3_object" "prompts_object" {
@@ -11,7 +11,7 @@ resource "aws_s3_object" "prompts_object" {
 }
 
 resource "aws_s3_bucket" "evaluation_programatic_results" {
-  bucket = "results-${local.resource-suffix}"
+  bucket = "${local.csi}-results"
 }
 
 resource "aws_s3_object" "results_object" {
@@ -69,7 +69,7 @@ data "aws_iam_policy_document" "assume_role_bedrock" {
 }
 
 resource "aws_iam_role" "iam_for_bedrock_evaluation" {
-  name               = "bedrock-automatic-evaluation-role-${local.resource-suffix}"
+  name               = "${local.csi}-bedrock-automatic-evaluation-role"
   assume_role_policy = data.aws_iam_policy_document.assume_role_bedrock.json
 }
 
@@ -117,7 +117,7 @@ data "aws_iam_policy_document" "bedrock_access_s3" {
 }
 
 resource "aws_iam_policy" "bedrock_access_s3_policy" {
-  name   = "bedrock-automatic-evaluation-policy-${local.resource-suffix}"
+  name   = "${local.csi}-bedrock-automatic-evaluation-policy"
   policy = data.aws_iam_policy_document.bedrock_access_s3.json
 }
 
@@ -127,14 +127,14 @@ resource "aws_iam_role_policy_attachment" "bedrock_access_s3_attachment" {
 }
 
 resource "awscc_bedrock_prompt" "notifai-bedrock_prompt" {
-  name        = "${var.prompt-name}-${local.resource-suffix}-${replace(replace(replace(var.prompt-model-arn, ".", "-"), ":", "-"), ":", "-")}"
+  name        = "${local.csi}-${var.prompt-name}-${replace(replace(replace(var.prompt-model-arn, ".", "-"), ":", "-"), ":", "-")}"
   description = var.prompt-description
 
-  default_variant = "${var.prompt-name}-${local.resource-suffix}"
+  default_variant = "${local.csi}-${var.prompt-name}"
 
   variants = [
     {
-      name          = "${var.prompt-name}-${local.resource-suffix}"
+      name          = "${local.csi}-${var.prompt-name}"
       template_type = "TEXT"
       model_id      = "${var.prompt-model-arn}"
       inference_configuration = {

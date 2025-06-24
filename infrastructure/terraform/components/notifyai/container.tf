@@ -1,9 +1,9 @@
 resource "aws_ecr_repository" "notifai-frontend" {
-  name                 = "frontend-${local.resource-suffix}"
+  name                 = "${local.csi}-frontend"
   image_tag_mutability = "MUTABLE"
 }
 
 resource "aws_ecr_repository" "notifai-backend" {
-  name                 = "backend-${local.resource-suffix}"
+  name                 = "{local.csi}-backend"
   image_tag_mutability = "MUTABLE"
 }
