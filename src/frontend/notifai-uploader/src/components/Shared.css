@@ -1,0 +1,17 @@
+.nhsuk-button {
+  margin-top: 0.5rem;
+  width: 100%;
+  background: #005eb8;
+  color: #fff;
+  border: none;
+  padding: 0.75rem 1rem;
+  border-radius: 4px;
+  font-size: 1.1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.nhsuk-button:hover, .nhsuk-button:focus {
+  background: #003d6a;
+}
