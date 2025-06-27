@@ -51,7 +51,7 @@ export default function FileUpload({ onFileUpload }) {
   return (
     <div className="file-upload">
       <h2 style={{ fontWeight: 'bold', fontSize: '24px', color: '#000' }}>Upload File</h2>
-      <p>Upload your template to have the letter content assessed. This service will provide feedback and suggest the most appropriate Royal Mail service to send the letters. 
+      <p>Upload your template to have the letter content assessed. This service will provide feedback and suggest the most appropriate Royal Mail service to send the letters.
         NotifAI will provide you a reason for choosing the returned rating and provide some advice on improving your template to tailor it to better suit Admail or Business Mail mailtype.
         <br /><br />
         <span style={{ fontWeight: 'bold', fontSize: '24px', color: '#000' }}>Rating Description:</span>
@@ -62,7 +62,7 @@ export default function FileUpload({ onFileUpload }) {
         <br /><br />
         <span style={{ fontWeight: 'bold', color: '#008000' }}>ADVERTISING</span>: This letter is suitable for Admail.
       </p>
-      
+
       <input type="file" onChange={handleFileChange} className='file-upload'/>
       {uploadStatus && <p className={uploadStatus.includes('Failed') ? 'error-message' : 'success-message'}>{uploadStatus}</p>}
     </div>
