@@ -52,7 +52,7 @@ function main() {
   esac
 
   if [ -n "$files" ]; then
-    if command -v markdownlint > /dev/null 2>&1 && ! is-arg-true "${FORCE_USE_DOCKER:-false}"; then
+    if command -v markdownlint-cli2 > /dev/null 2>&1 && ! is-arg-true "${FORCE_USE_DOCKER:-false}"; then
       files="$files" run-markdownlint-natively
     else
       files="$files" run-markdownlint-in-docker
