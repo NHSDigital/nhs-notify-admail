@@ -125,8 +125,3 @@ with open(RESPONSE_PATH, 'r') as responses_file:
 with jsonlines.open(DATA_PATH + 'output.jsonl', mode='w') as writer:
     for obj in bedrock_list:
         writer.write(obj)
-
-
-
-
-

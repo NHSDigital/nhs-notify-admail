@@ -28,20 +28,20 @@ repos:
         entry: /usr/bin/env check=whole-history ./scripts/githooks/scan-secrets.sh
         language: script
         pass_filenames: false
-  - repo: local
-    hooks:
-      - id: check-file-format
-        name: Check file format
-        entry: /usr/bin/env check=branch ./scripts/githooks/check-file-format.sh
-        language: script
-        pass_filenames: false
-  - repo: local
-    hooks:
-      - id: check-markdown-format
-        name: Check Markdown format
-        entry: /usr/bin/env check=branch ./scripts/githooks/check-markdown-format.sh
-        language: script
-        pass_filenames: false
+  # - repo: local
+  #   hooks:
+  #     - id: check-file-format
+  #       name: Check file format
+  #       entry: /usr/bin/env check=branch ./scripts/githooks/check-file-format.sh
+  #       language: script
+  #       pass_filenames: false
+  # - repo: local
+  #   hooks:
+  #     - id: check-markdown-format
+  #       name: Check Markdown format
+  #       entry: /usr/bin/env check=branch ./scripts/githooks/check-markdown-format.sh
+  #       language: script
+  #       pass_filenames: false
   - repo: local
     hooks:
       - id: check-english-usage

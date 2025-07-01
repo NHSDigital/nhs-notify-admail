@@ -68,4 +68,4 @@ Temporary Items
 node_modules
 
 #Allow certain var files used by GitHub
-!**/env-var-files/*.tfvars
+!**/etc/*.tfvars
