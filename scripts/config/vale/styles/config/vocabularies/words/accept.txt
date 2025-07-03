@@ -25,3 +25,4 @@ Syft
 Terraform
 toolchain
 Trufflehog
+Webpack

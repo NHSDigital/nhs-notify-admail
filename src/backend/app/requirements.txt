@@ -1,0 +1,6 @@
+fastapi[standard]==0.115.2
+uvicorn==0.32.0
+python-multipart==0.0.12
+boto3
+pypdf
+pandoc

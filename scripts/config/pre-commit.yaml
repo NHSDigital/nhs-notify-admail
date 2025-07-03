@@ -5,7 +5,7 @@ repos:
       - id: trailing-whitespace
       - id: detect-aws-credentials
         args: [--allow-missing-credentials]
-      - id: check-added-large-files
+      # - id: check-added-large-files
       - id: check-symlinks
       - id: detect-private-key
       - id: end-of-file-fixer

@@ -1,0 +1,25 @@
+header {
+  background-color: #005eb8;
+  height: 120px;
+  color: white;
+  padding: 0px;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+header h1 {
+  font-size: 24px;
+  font-weight: bold;
+  margin: 0;
+}
+
+.nhsuk-header-logo {
+  width: 220px;
+  max-width: 90vw;
+  max-height: 115px;
+  padding:5px;
+  height: auto;
+  display: block;
+}
