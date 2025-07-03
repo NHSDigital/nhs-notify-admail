@@ -2,6 +2,7 @@
 
 # Transient backends
 components/**/backend_tfscaffold.tf
+components/**/*.zip
 
 # Exclude all .tfvars files, which are likely to contain sensitive data, such as
 # password, private keys, and other secrets. These should not be part of version
@@ -65,3 +66,6 @@ Temporary Items
 
 # js
 node_modules
+
+#Allow certain var files used by GitHub
+!**/etc/*.tfvars

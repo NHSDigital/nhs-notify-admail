@@ -1,0 +1,7 @@
+# ignore the basics
+*/node_modules/
+*/build/
+*/.git/
+.gitignore
+Dockerfile
+.editorconfig
