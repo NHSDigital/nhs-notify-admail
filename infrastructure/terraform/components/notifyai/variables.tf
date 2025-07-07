@@ -69,21 +69,6 @@ variable "first-run" {
 
 
 # Prompt Config
-variable "prompt-name" {
-  type        = string
-  description = "Name for the prompt"
-}
-
-variable "prompt-description" {
-  type        = string
-  description = "Description for the prompt"
-}
-
-variable "prompt-input-text" {
-  type        = string
-  description = "Prompt Input Text"
-}
-
 variable "prompt-model-arn" {
   type        = string
   description = "Model arn to use for the prompt"
@@ -102,11 +87,6 @@ variable "prompt-temperature" {
 variable "prompt-top-p" {
   type        = number
   description = "Top-p setting for the prompt"
-}
-
-variable "prompt-top-k" {
-  type        = number
-  description = "Top-k setting for the prompt"
 }
 
 # Evaluation Config

@@ -71,13 +71,13 @@ data "aws_iam_policy_document" "assume_role_bedrock" {
     # condition {
     #   test     = "StringEquals"
     #   variable = "aws:SourceAccount"
-    #   values   = ["[[REPLACE-AWSACCOUNTNUMBER]]"]
+    #   values   = ["${var.aws_account_id}"]
     # }
 
     # condition {
     #   test     = "ArnEquals"
     #   variable = "aws:SourceArn"
-    #   values   = ["arn:aws:bedrock:${var.region}:[[REPLACE-AWSACCOUNTNUMBER]]:evaluation-job/*"]
+    #   values   = ["arn:aws:bedrock:${var.region}:${var.aws_account_id}:evaluation-job/*"]
     # }
   }
 }
@@ -108,24 +108,23 @@ data "aws_iam_policy_document" "bedrock_access_s3" {
       "bedrock:GetPromptRouter",
       "sagemaker:InvokeEndpoint"
     ]
-    #TODO: Get the [[REPLACE-AWSACCOUNTNUMBER]] string in a better way, maybe from TF itself?
     resources = [
       aws_s3_bucket.evaluation_programatic_input_prompts.arn,
       "${aws_s3_bucket.evaluation_programatic_input_prompts.arn}/*",
       aws_s3_bucket.evaluation_programatic_results.arn,
       "${aws_s3_bucket.evaluation_programatic_results.arn}/*",
       "arn:aws:bedrock:*::foundation-model/*",
-      "arn:aws:bedrock:eu-west-1:[[REPLACE-AWSACCOUNTNUMBER]]:inference-profile/eu.anthropic.claude-3-7-sonnet-20250219-v1:0",
-      "arn:aws:bedrock:${var.region}:[[REPLACE-AWSACCOUNTNUMBER]]:evaluation-job/*",
+      "arn:aws:bedrock:eu-west-1:${var.aws_account_id}:inference-profile/eu.amazon.nova-pro-v1:0",
+      "arn:aws:bedrock:${var.region}:${var.aws_account_id}:evaluation-job/*",
       "arn:aws:bedrock:${var.region}::prompt/*",
-      "arn:aws:bedrock:*:[[REPLACE-AWSACCOUNTNUMBER]]:inference-profile/*",
-      "arn:aws:bedrock:*:[[REPLACE-AWSACCOUNTNUMBER]]:provisioned-model/*",
-      "arn:aws:bedrock:*:[[REPLACE-AWSACCOUNTNUMBER]]:imported-model/*",
-      "arn:aws:bedrock:*:[[REPLACE-AWSACCOUNTNUMBER]]:application-inference-profile/*",
-      "arn:aws:bedrock:*:[[REPLACE-AWSACCOUNTNUMBER]]:default-prompt-router/*",
-      "arn:aws:bedrock:*:[[REPLACE-AWSACCOUNTNUMBER]]:prompt-router/*",
-      "arn:aws:sagemaker:*:[[REPLACE-AWSACCOUNTNUMBER]]:endpoint/*",
-      "arn:aws:bedrock:*:[[REPLACE-AWSACCOUNTNUMBER]]:marketplace/model-endpoint/all-access"
+      "arn:aws:bedrock:*:${var.aws_account_id}:inference-profile/*",
+      "arn:aws:bedrock:*:${var.aws_account_id}:provisioned-model/*",
+      "arn:aws:bedrock:*:${var.aws_account_id}:imported-model/*",
+      "arn:aws:bedrock:*:${var.aws_account_id}:application-inference-profile/*",
+      "arn:aws:bedrock:*:${var.aws_account_id}:default-prompt-router/*",
+      "arn:aws:bedrock:*:${var.aws_account_id}:prompt-router/*",
+      "arn:aws:sagemaker:*:${var.aws_account_id}:endpoint/*",
+      "arn:aws:bedrock:*:${var.aws_account_id}:marketplace/model-endpoint/all-access"
     ]
   }
 }
@@ -138,38 +137,4 @@ resource "aws_iam_policy" "bedrock_access_s3_policy" {
 resource "aws_iam_role_policy_attachment" "bedrock_access_s3_attachment" {
   role       = aws_iam_role.iam_for_bedrock_evaluation.name
   policy_arn = aws_iam_policy.bedrock_access_s3_policy.arn
-}
-
-resource "awscc_bedrock_prompt" "notifai-bedrock_prompt" {
-  name        = "${local.csi}-${var.prompt-name}-${replace(replace(replace(var.prompt-model-arn, ".", "-"), ":", "-"), ":", "-")}"
-  description = var.prompt-description
-
-  default_variant = "${local.csi}-${var.prompt-name}"
-
-  variants = [
-    {
-      name          = "${local.csi}-${var.prompt-name}"
-      template_type = "TEXT"
-      model_id      = "${var.prompt-model-arn}"
-      inference_configuration = {
-        text = {
-          temperature    = var.prompt-temperature
-          max_tokens     = var.prompt-max-tokens-to-sample
-          top_p          = var.prompt-top-p
-          top_k          = "${var.prompt-top-k}"
-          stop_sequences = ["\\n\\nHuman:"]
-        }
-      }
-      template_configuration = {
-        text = {
-          input_variables = [
-            {
-              name = "input"
-            }
-          ]
-          text = "${var.prompt-input-text}{{input}}"
-        }
-      }
-    }
-  ]
 }

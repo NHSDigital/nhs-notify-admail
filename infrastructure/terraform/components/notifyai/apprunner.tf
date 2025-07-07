@@ -38,8 +38,8 @@ resource "aws_iam_policy" "apprunner_ecr_policy" {
           "ecr:DescribeImages",
         ],
         Effect   = "Allow",
-        Resource = "*" #TODO: Lock this down a bit once the ECR is in TF, an almost-there example is below
-        # Resource = "arn:aws:ecr:${var.region}:${local.aws-account-id}:repository/notifai" #TODO: update the repo name at the end, once we have ECR in TF
+        Resource = "*" #TODO: Lock this down a bit, an almost-there example is below
+        # Resource = "arn:aws:ecr:${var.region}:${var.aws_account_id}:repository/notifai" #TODO: update the repo name at the end, once we have ECR in TF
       },
     ]
   })
