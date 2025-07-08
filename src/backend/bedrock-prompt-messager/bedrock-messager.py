@@ -55,20 +55,20 @@ def call_admail_bedrock_prompt(event, context):
             toolConfig=_get_admail_tool_config(),
         )
 
-        rtnVal = format_converse_response(response)
+        return_value = format_converse_response(response)
 
         log_prompt_details_to_s3(
             config=config,
-            promptinput=user_prompt,
-            promptoutput=rtnVal,
+            prompt_input=user_prompt,
+            prompt_output=return_value,
         )
 
-        return rtnVal
+        return return_value
 
     except Exception as e:
-        errormsg = f"Error invoking model: {e}"
-        print(errormsg)
-        return {"statusCode": 500, "body": errormsg}
+        error_message = f"Error invoking model: {e}"
+        print(error_message)
+        return {"statusCode": 500, "body": error_message}
 
 
 def format_converse_response(response):
@@ -85,13 +85,13 @@ def format_converse_response(response):
     if tool_use_block:
         # The tool ran, here we return the extracted JSON
         tool_input = tool_use_block["toolUse"]["input"]
-        rtnVal = json.dumps(tool_input, indent=4)
+        return_value = json.dumps(tool_input, indent=4)
     else:
         # Fallback for when the tool did not run, and we fallback to returning the raw prompt response.
         # Potential to simply fail the call here if we're not happy with this solution
-        rtnVal = response_message["content"][0]["text"]
+        return_value = response_message["content"][0]["text"]
 
-    return rtnVal
+    return return_value
 
 
 def _get_admail_tool_config():
@@ -138,7 +138,7 @@ def _get_admail_tool_config():
     }
 
 
-def log_prompt_details_to_s3(config, promptinput, promptoutput):
+def log_prompt_details_to_s3(config, prompt_input, prompt_output):
     """Logs prompt details to an S3 bucket."""
     if not config.logging_s3_bucket or not config.logging_s3_key_prefix:
         print("S3 logging environment variables not set. Skipping log.")
@@ -149,8 +149,8 @@ def log_prompt_details_to_s3(config, promptinput, promptoutput):
     s3_key = f"{config.logging_s3_key_prefix}{date_time_now}.json"
 
     log_data = {
-        "prompt_input": promptinput,
-        "prompt_output": promptoutput,
+        "prompt_input": prompt_input,
+        "prompt_output": prompt_output,
         "model": config.model_id,
         "inference_parameters": {
             "temperature": config.temperature,
