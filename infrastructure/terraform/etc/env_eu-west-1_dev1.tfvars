@@ -1,6 +1,5 @@
 first-run   = false
 environment = "dev1"
-region      = "eu-west-1"
 aws_account_id                = "[[AccountIDHere]]"
 
 prompt-model-arn            = "arn:aws:bedrock:eu-west-1:[[AccountIDHere]]:inference-profile/eu.amazon.nova-pro-v1:0"
