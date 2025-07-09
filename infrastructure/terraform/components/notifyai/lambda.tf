@@ -81,7 +81,7 @@ resource "aws_lambda_function" "bedrock-messager" {
   function_name    = "${local.csi}-bedrock-messager"
   filename         = data.archive_file.docx_to_string_file.output_path
   role             = aws_iam_role.iam_for_lambda.arn
-  handler          = "bedrock-messager.call_admail_bedrock_prompt"
+  handler          = "bedrock_messager.call_admail_bedrock_prompt"
   source_code_hash = data.archive_file.docx_to_string_file.output_base64sha256
   runtime          = "python3.12"
 
