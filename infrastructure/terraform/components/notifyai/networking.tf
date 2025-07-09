@@ -14,18 +14,18 @@
 # resource "aws_subnet" "app_runner_subnet_1" {
 #   vpc_id            = aws_vpc.app_vpc.id
 #   cidr_block        = "10.0.2.0/24"
-#   availability_zone = "eu-west-1a"
+#   availability_zone = "${var.region}a"
 #   tags = {
-#     Name = "${local.vpc-name}-eu-west-1a"
+#     Name = "${local.vpc-name}-${var.region}a"
 #   }
 # }
 
 # resource "aws_subnet" "app_runner_subnet_2" {
 #   vpc_id            = aws_vpc.app_vpc.id
 #   cidr_block        = "10.0.3.0/24"
-#   availability_zone = "eu-west-1b"
+#   availability_zone = "${var.region}b"
 #   tags = {
-#     Name = "${local.vpc-name}-eu-west-1b"
+#     Name = "${local.vpc-name}-${var.region}b"
 #   }
 # }
 
