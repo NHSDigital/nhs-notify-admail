@@ -49,14 +49,12 @@ data "aws_iam_policy_document" "bedrock_access" {
       "s3:PutObject",
     ]
     resources = [
-      #TODO: update this code block to not be hard coded. Anthropic Claude 7 and some other models require cross-region inferance to work, including adding permission to access all of the possible regions, and the speicifc inferance profile
-      # therefore you need to add permissions to the other regions where Claude may possibly be run from, the possible regions are found here: https://eu-west-1.console.aws.amazon.com/bedrock/home?region=eu-west-1#/inference-profiles
       "arn:aws:bedrock:${var.region}::foundation-model/*",
       "arn:aws:bedrock:eu-central-1::foundation-model/*",
       "arn:aws:bedrock:eu-north-1::foundation-model/*",
       "arn:aws:bedrock:eu-west-3::foundation-model/*",
-      "arn:aws:bedrock:eu-west-1:[[REPLACE-AWSACCOUNTNUMBER]]:inference-profile/eu.anthropic.claude-3-7-sonnet-20250219-v1:0",
-      "arn:aws:bedrock:*:[[REPLACE-AWSACCOUNTNUMBER]]:prompt/*",
+      "arn:aws:bedrock:eu-west-1:${var.aws_account_id}:inference-profile/eu.amazon.nova-pro-v1:0",
+      "arn:aws:bedrock:*:${var.aws_account_id}:prompt/*",
       aws_s3_bucket.lambda_prompt_logging_s3_bucket.arn,
       "${aws_s3_bucket.lambda_prompt_logging_s3_bucket.arn}/${local.s3_lambda_logging_key}*",
     ]
@@ -83,7 +81,7 @@ resource "aws_lambda_function" "bedrock-messager" {
   function_name    = "${local.csi}-bedrock-messager"
   filename         = data.archive_file.docx_to_string_file.output_path
   role             = aws_iam_role.iam_for_lambda.arn
-  handler          = "bedrock-messager.call_admail_bedrock_prompt"
+  handler          = "bedrock_messager.call_admail_bedrock_prompt"
   source_code_hash = data.archive_file.docx_to_string_file.output_base64sha256
   runtime          = "python3.12"
 
@@ -93,15 +91,11 @@ resource "aws_lambda_function" "bedrock-messager" {
     variables = {
       env_region                = "${var.region}",
       env_model_id              = "${var.prompt-model-arn}",
-      env_prompt_content        = "${var.prompt-input-text}"
       env_temperature           = "${var.prompt-temperature}"
       env_max_tokens            = "${var.prompt-max-tokens-to-sample}"
       env_top_p                 = "${var.prompt-top-p}"
-      env_top_k                 = "${var.prompt-top-k}"
-      env_anthropic_version     = "bedrock-2023-05-31"
       env_logging_s3_bucket     = "${aws_s3_bucket.lambda_prompt_logging_s3_bucket.bucket}"
       env_logging_s3_key_prefix = "${local.s3_lambda_logging_key}"
-      env_prompt_management_id  = awscc_bedrock_prompt.notifai-bedrock_prompt.prompt_id
     }
   }
 }
