@@ -114,7 +114,7 @@ data "aws_iam_policy_document" "bedrock_access_s3" {
       aws_s3_bucket.evaluation_programatic_results.arn,
       "${aws_s3_bucket.evaluation_programatic_results.arn}/*",
       "arn:aws:bedrock:*::foundation-model/*",
-      "arn:aws:bedrock:eu-west-1:${var.aws_account_id}:inference-profile/eu.amazon.nova-pro-v1:0",
+      "arn:aws:bedrock:${var.region}:${var.aws_account_id}:inference-profile/eu.amazon.nova-pro-v1:0",
       "arn:aws:bedrock:${var.region}:${var.aws_account_id}:evaluation-job/*",
       "arn:aws:bedrock:${var.region}::prompt/*",
       "arn:aws:bedrock:*:${var.aws_account_id}:inference-profile/*",

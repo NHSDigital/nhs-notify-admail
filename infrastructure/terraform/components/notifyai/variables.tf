@@ -69,9 +69,9 @@ variable "first-run" {
 
 
 # Prompt Config
-variable "prompt-model-arn" {
+variable "prompt-model" {
   type        = string
-  description = "Model arn to use for the prompt"
+  description = "Model name to use for the prompt"
 }
 
 variable "prompt-max-tokens-to-sample" {

@@ -23,7 +23,7 @@
 | <a name="input_log_retention_in_days"></a> [log\_retention\_in\_days](#input\_log\_retention\_in\_days) | The retention period in days for the Cloudwatch Logs events to be retained, default of 0 is indefinite | `number` | `0` | no |
 | <a name="input_project"></a> [project](#input\_project) | The name of the tfscaffold project | `string` | n/a | yes |
 | <a name="input_prompt-max-tokens-to-sample"></a> [prompt-max-tokens-to-sample](#input\_prompt-max-tokens-to-sample) | Maximum number of tokens to sample for the prompt | `number` | n/a | yes |
-| <a name="input_prompt-model-arn"></a> [prompt-model-arn](#input\_prompt-model-arn) | Model arn to use for the prompt | `string` | n/a | yes |
+| <a name="input_prompt-model"></a> [prompt-model](#input\_prompt-model) | Model name to use for the prompt | `string` | n/a | yes |
 | <a name="input_prompt-temperature"></a> [prompt-temperature](#input\_prompt-temperature) | Temperature setting for the prompt | `number` | n/a | yes |
 | <a name="input_prompt-top-p"></a> [prompt-top-p](#input\_prompt-top-p) | Top-p setting for the prompt | `number` | n/a | yes |
 | <a name="input_region"></a> [region](#input\_region) | The AWS Region | `string` | n/a | yes |

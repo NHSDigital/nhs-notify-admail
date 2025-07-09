@@ -62,3 +62,21 @@ variable "root_domain_name" {
   description = "The service's root DNS root nameespace, like nonprod.nhsnotify.national.nhs.uk"
   default     = "nonprod.nhsnotify.national.nhs.uk"
 }
+
+variable "cost_alarm_recipients" {
+  type        = list(string)
+  description = "A list of email addresses to receive alarm notifications"
+  default     = []
+}
+
+variable "budget_amount" {
+  type        = number
+  description = "The budget amount in USD for the account"
+  default     = 500
+}
+
+variable "cost_anomaly_threshold" {
+  type        = number
+  description = "The threshold percentage for cost anomaly detection"
+  default     = 10
+}

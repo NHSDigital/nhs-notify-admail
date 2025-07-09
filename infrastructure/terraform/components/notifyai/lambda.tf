@@ -53,7 +53,7 @@ data "aws_iam_policy_document" "bedrock_access" {
       "arn:aws:bedrock:eu-central-1::foundation-model/*",
       "arn:aws:bedrock:eu-north-1::foundation-model/*",
       "arn:aws:bedrock:eu-west-3::foundation-model/*",
-      "arn:aws:bedrock:eu-west-1:${var.aws_account_id}:inference-profile/eu.amazon.nova-pro-v1:0",
+      "arn:aws:bedrock:${var.region}:${var.aws_account_id}:inference-profile/eu.amazon.nova-pro-v1:0",
       "arn:aws:bedrock:*:${var.aws_account_id}:prompt/*",
       aws_s3_bucket.lambda_prompt_logging_s3_bucket.arn,
       "${aws_s3_bucket.lambda_prompt_logging_s3_bucket.arn}/${local.s3_lambda_logging_key}*",
@@ -90,7 +90,7 @@ resource "aws_lambda_function" "bedrock-messager" {
   environment {
     variables = {
       env_region                = "${var.region}",
-      env_model_id              = "${var.prompt-model-arn}",
+      env_model_id              = "${local.prompt-model-arn}",
       env_temperature           = "${var.prompt-temperature}"
       env_max_tokens            = "${var.prompt-max-tokens-to-sample}"
       env_top_p                 = "${var.prompt-top-p}"
