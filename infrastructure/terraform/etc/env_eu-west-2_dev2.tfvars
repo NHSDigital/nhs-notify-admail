@@ -1,6 +1,5 @@
 first-run   = false
 environment = "dev2"
-region      = "eu-west-2"
 
 prompt-model-arn            = "arn:aws:bedrock:eu-west-1:[[AccountIDHere]]:inference-profile/eu.amazon.nova-pro-v1:0"
 prompt-max-tokens-to-sample = 200

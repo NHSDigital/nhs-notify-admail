@@ -90,7 +90,7 @@ resource "aws_lambda_function" "bedrock-messager" {
   environment {
     variables = {
       env_region                = "${var.region}",
-      env_model_id              = "${var.prompt-model-arn}",
+      env_model_id              = "${local.prompt-model-arn}",
       env_temperature           = "${var.prompt-temperature}"
       env_max_tokens            = "${var.prompt-max-tokens-to-sample}"
       env_top_p                 = "${var.prompt-top-p}"
