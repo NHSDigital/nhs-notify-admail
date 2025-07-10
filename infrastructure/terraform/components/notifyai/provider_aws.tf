@@ -1,6 +1,9 @@
 # The default AWS provider in the default region
 provider "aws" {
   region = var.region
+  default_tags {
+    tags = local.default_tags
+  }
 
   # For no reason other than redundant safety
   # we only allow the use of the AWS Account
