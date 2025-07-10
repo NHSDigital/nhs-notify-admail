@@ -100,50 +100,53 @@ resource "aws_lambda_function" "bedrock-messager" {
   }
 }
 
-#There is a circular dependancy on this block. the frontend apprunner need to know the lambda URL, and vice versa
-#As a workaround the CORS is not set here, to enforce no allowance, then the null_resource.update_lambda_url_cors block updates the cors afterwards to specifically only allow in the frontend
-resource "aws_lambda_function_url" "bedrock_messager_url" {
-  count              = var.first-run ? 0 : 1
-  function_name      = aws_lambda_function.bedrock-messager.function_name
-  authorization_type = "NONE"
+#Disabled the below block, as the CORS approach isn't sufficient, as the Lambda is still invokable with this enabled, as CORS only affects returns
+#We need to remove the ability for our Lambda to be invoked from the outside world, and only allow it to be invoked from the frontend App Runner service
 
-  cors {
-    allow_credentials = true
-    allow_headers     = ["content-type", "authorization"]
-    allow_methods     = ["*"]
-    allow_origins     = ["https://cors.tobeconfigured.innullresource"]
-    expose_headers    = []
-    max_age           = 300
-  }
-}
+# #There is a circular dependancy on this block. the frontend apprunner need to know the lambda URL, and vice versa
+# #As a workaround the CORS is not set here, to enforce no allowance, then the null_resource.update_lambda_url_cors block updates the cors afterwards to specifically only allow in the frontend
+# resource "aws_lambda_function_url" "bedrock_messager_url" {
+#   count              = var.first-run ? 0 : 1
+#   function_name      = aws_lambda_function.bedrock-messager.function_name
+#   authorization_type = "NONE"
 
-# This resource will run a local command after the dependencies are met.
-resource "null_resource" "update_lambda_url_cors" {
-  depends_on = [
-    aws_lambda_function_url.bedrock_messager_url[0],
-    aws_apprunner_service.notifai_frontend_service[0],
-  ]
+#   cors {
+#     allow_credentials = true
+#     allow_headers     = ["content-type", "authorization"]
+#     allow_methods     = ["*"]
+#     allow_origins     = ["https://cors.tobeconfigured.innullresource"]
+#     expose_headers    = []
+#     max_age           = 300
+#   }
+# }
 
-  count = var.first-run ? 0 : 1
+# # This resource will run a local command after the dependencies are met.
+# resource "null_resource" "update_lambda_url_cors" {
+#   depends_on = [
+#     aws_lambda_function_url.bedrock_messager_url[0],
+#     aws_apprunner_service.notifai_frontend_service[0],
+#   ]
 
-  # Trigger a re-run if the App Runner URL changes
-  triggers = {
-    apprunner_url = aws_apprunner_service.notifai_frontend_service[0].service_url
-  }
+#   count = var.first-run ? 0 : 1
 
-  provisioner "local-exec" {
-    command = <<-EOT
-      aws lambda update-function-url-config \
-        --function-name "${aws_lambda_function.bedrock-messager.function_name}" \
-        --cors '{"AllowOrigins": ["https://${aws_apprunner_service.notifai_frontend_service[0].service_url}"], "AllowMethods": ["*"], "AllowHeaders": ["content-type", "authorization"], "AllowCredentials": true, "MaxAge": 300}' \
-        --region "${var.region}"
-    EOT
-  }
+#   # Trigger a re-run if the App Runner URL changes
+#   triggers = {
+#     apprunner_url = aws_apprunner_service.notifai_frontend_service[0].service_url
+#   }
 
-  lifecycle {
-    replace_triggered_by = [
-      aws_apprunner_service.notifai_frontend_service[0],
-      aws_lambda_function_url.bedrock_messager_url[0]
-    ]
-  }
-}
+#   provisioner "local-exec" {
+#     command = <<-EOT
+#       aws lambda update-function-url-config \
+#         --function-name "${aws_lambda_function.bedrock-messager.function_name}" \
+#         --cors '{"AllowOrigins": ["https://${aws_apprunner_service.notifai_frontend_service[0].service_url}"], "AllowMethods": ["*"], "AllowHeaders": ["content-type", "authorization"], "AllowCredentials": true, "MaxAge": 300}' \
+#         --region "${var.region}"
+#     EOT
+#   }
+
+#   lifecycle {
+#     replace_triggered_by = [
+#       aws_apprunner_service.notifai_frontend_service[0],
+#       aws_lambda_function_url.bedrock_messager_url[0]
+#     ]
+#   }
+# }
