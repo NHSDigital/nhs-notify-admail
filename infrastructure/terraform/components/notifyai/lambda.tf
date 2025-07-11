@@ -90,60 +90,12 @@ resource "aws_lambda_function" "bedrock-messager" {
   environment {
     variables = {
       env_region                = "${var.region}",
-      env_model_id              = "${local.prompt-model-arn}",
+      env_model_id              = "${var.prompt-model}",
       env_temperature           = "${var.prompt-temperature}"
       env_max_tokens            = "${var.prompt-max-tokens-to-sample}"
       env_top_p                 = "${var.prompt-top-p}"
       env_logging_s3_bucket     = "${aws_s3_bucket.lambda_prompt_logging_s3_bucket.bucket}"
       env_logging_s3_key_prefix = "${local.s3_lambda_logging_key}"
     }
-  }
-}
-
-#There is a circular dependancy on this block. the frontend apprunner need to know the lambda URL, and vice versa
-#As a workaround the CORS is not set here, to enforce no allowance, then the null_resource.update_lambda_url_cors block updates the cors afterwards to specifically only allow in the frontend
-resource "aws_lambda_function_url" "bedrock_messager_url" {
-  count              = var.first-run ? 0 : 1
-  function_name      = aws_lambda_function.bedrock-messager.function_name
-  authorization_type = "NONE"
-
-  cors {
-    allow_credentials = true
-    allow_headers     = ["content-type", "authorization"]
-    allow_methods     = ["*"]
-    allow_origins     = ["https://cors.tobeconfigured.innullresource"]
-    expose_headers    = []
-    max_age           = 300
-  }
-}
-
-# This resource will run a local command after the dependencies are met.
-resource "null_resource" "update_lambda_url_cors" {
-  depends_on = [
-    aws_lambda_function_url.bedrock_messager_url[0],
-    aws_apprunner_service.notifai_frontend_service[0],
-  ]
-
-  count = var.first-run ? 0 : 1
-
-  # Trigger a re-run if the App Runner URL changes
-  triggers = {
-    apprunner_url = aws_apprunner_service.notifai_frontend_service[0].service_url
-  }
-
-  provisioner "local-exec" {
-    command = <<-EOT
-      aws lambda update-function-url-config \
-        --function-name "${aws_lambda_function.bedrock-messager.function_name}" \
-        --cors '{"AllowOrigins": ["https://${aws_apprunner_service.notifai_frontend_service[0].service_url}"], "AllowMethods": ["*"], "AllowHeaders": ["content-type", "authorization"], "AllowCredentials": true, "MaxAge": 300}' \
-        --region "${var.region}"
-    EOT
-  }
-
-  lifecycle {
-    replace_triggered_by = [
-      aws_apprunner_service.notifai_frontend_service[0],
-      aws_lambda_function_url.bedrock_messager_url[0]
-    ]
   }
 }

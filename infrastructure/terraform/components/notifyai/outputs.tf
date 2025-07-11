@@ -25,10 +25,10 @@ output "bedrock_evaluation_results_s3_uri" {
 
 output "evaluation-evaluator-model-identifier" {
   description = "Identifier for the Bedrock evaluator model"
-  value       = local.evaluation-evaluator-model-identifier-arn
+  value       = var.evaluation-evaluator-model-identifier
 }
 
 output "evaluation-inference-model-identifier" {
   description = "Identifier for the Bedrock inference model"
-  value       = local.evaluation-inference-model-identifier-arn
+  value       = var.evaluation-inference-model-identifier
 }
