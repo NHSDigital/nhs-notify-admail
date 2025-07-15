@@ -58,7 +58,7 @@ System instructions Task: You are an expert specializing exclusively in the Roya
     "Description": "Brief description of the letter or mailing content",
     "Rating": "BUSINESS|UNSURE|ADVERTISING",
     "Reason": "Brief explanation followed by bullet points:\\n\\n- First reason point\\n- Second reason point\\n- Third reason point",
-    "Advice": "To convert this letter to Admail:, actionable bullet points to convert to Admail:\\n\\n- First actionable recommendation, if you can, make up to ten actionable bullet points, make these specific points related to the input letter and provide tailored advice, referencing the letter content."
+    "Advice": "To convert this letter to Admail:\\n\\n- First actionable recommendation, if you can, make up to ten actionable bullet points, make each bullet point tailored specific advice to help convert a business mail to an advertising mail and can include reference to the Royal Mail guidance points for Admail."
 
     }
 
