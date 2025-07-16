@@ -178,7 +178,7 @@ data "aws_iam_policy_document" "bedrock_guardrail_policy" {
 }
 
 resource "aws_bedrock_guardrail" "notifai-bedrock-guardrail" {
-  name                      = "aws-bedrock-guardrail-${local.resource-suffix}"
+  name                      = "${local.csi}-bedrock-guardrail"
   blocked_input_messaging   = "This is not an acceptable input prompt and has been rejected."
   blocked_outputs_messaging = "The AI has returned an unacceptable output, the output has been rejected."
   description               = "Guardrail to protect and prevent misuse"
