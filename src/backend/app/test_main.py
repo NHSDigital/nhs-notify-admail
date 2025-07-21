@@ -61,6 +61,12 @@ def test_convert_pdf_success(mock_pdfreader, tmp_path):
     assert response.status_code == 200
     assert "Hello PDF" in response.text
 
+    if os.path.exists("test.pdf"):
+        os.remove("test.pdf")
+
+    if os.path.exists(file_name):
+        os.remove(file_name)
+
 @patch("app.main.subprocess.run")
 def test_convert_non_pdf_success(mock_run, tmp_path):
     # Simulate Pandoc conversion
@@ -96,3 +102,6 @@ def test_convert_pdf_exception(mock_pdfreader):
     )
     assert response.status_code == 500
     assert "PDF error" in response.json()["detail"]
+
+    if os.path.exists("bad.pdf"):
+        os.remove("bad.pdf")
