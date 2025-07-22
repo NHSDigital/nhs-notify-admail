@@ -10,9 +10,11 @@ class BedrockConfig:
         self.model_id = os.environ.get("env_model_id")
         self.temperature = float(os.environ.get("env_temperature", 0.1))
         self.max_tokens = int(os.environ.get("env_max_tokens", 2000))
-        self.top_p = float(os.environ.get("env_top_p", 0.8))
+        self.top_p = float(os.environ.get("env_top_p", 0.5))
         self.logging_s3_bucket = os.environ.get("env_logging_s3_bucket")
         self.logging_s3_key_prefix = os.environ.get("env_logging_s3_key_prefix")
+        self.guardrail = os.environ.get("env_guardrail_arn")
+        self.guardrail_version = os.environ.get("env_guardrail_version")
 
 
 def call_admail_bedrock_prompt(event, context):
@@ -47,28 +49,37 @@ def call_admail_bedrock_prompt(event, context):
             "maxTokens": config.max_tokens,
         }
 
+        guardrailConfig={
+            'guardrailIdentifier': config.guardrail,
+            'guardrailVersion': config.guardrail_version,
+            'trace': 'enabled'
+        }
+
+
         response = bedrock_runtime.converse(
             modelId=config.model_id,
             system=[{"text": system_prompt}],
             messages=messages,
             inferenceConfig=inference_config,
             toolConfig=_get_admail_tool_config(),
+            guardrailConfig=guardrailConfig
+
         )
 
-        return_value = format_converse_response(response)
+        rtnVal = format_converse_response(response)
 
         log_prompt_details_to_s3(
             config=config,
-            prompt_input=user_prompt,
-            prompt_output=return_value,
+            promptinput=user_prompt,
+            promptoutput=rtnVal,
         )
 
-        return return_value
+        return rtnVal
 
     except Exception as e:
-        error_message = f"Error invoking model: {e}"
-        print(error_message)
-        return {"statusCode": 500, "body": error_message}
+        errormsg = f"Error invoking model: {e}"
+        print(errormsg)
+        return {"statusCode": 500, "body": errormsg}
 
 
 def format_converse_response(response):
@@ -85,13 +96,13 @@ def format_converse_response(response):
     if tool_use_block:
         # The tool ran, here we return the extracted JSON
         tool_input = tool_use_block["toolUse"]["input"]
-        return_value = json.dumps(tool_input, indent=4)
+        rtnVal = json.dumps(tool_input, indent=4)
     else:
         # Fallback for when the tool did not run, and we fallback to returning the raw prompt response.
         # Potential to simply fail the call here if we're not happy with this solution
-        return_value = response_message["content"][0]["text"]
+        rtnVal = response_message["content"][0]["text"]
 
-    return return_value
+    return rtnVal
 
 
 def _get_admail_tool_config():
@@ -138,19 +149,27 @@ def _get_admail_tool_config():
     }
 
 
-def log_prompt_details_to_s3(config, prompt_input, prompt_output):
+def log_prompt_details_to_s3(config, promptinput, promptoutput):
     """Logs prompt details to an S3 bucket."""
     if not config.logging_s3_bucket or not config.logging_s3_key_prefix:
         print("S3 logging environment variables not set. Skipping log.")
         return
+
+
+def log_prompt_details_to_s3(config, promptinput, promptoutput):
+    """Logs prompt details to an S3 bucket."""
+    if not config.logging_s3_bucket or not config.logging_s3_key_prefix:
+        print("S3 logging environment variables not set. Skipping log.")
+        return
+
 
     s3_client = boto3.client("s3")
     date_time_now = datetime.now().strftime("%d-%m-%Y_%H:%M:%S")
     s3_key = f"{config.logging_s3_key_prefix}{date_time_now}.json"
 
     log_data = {
-        "prompt_input": prompt_input,
-        "prompt_output": prompt_output,
+        "prompt_input": promptinput,
+        "prompt_output": promptoutput,
         "model": config.model_id,
         "inference_parameters": {
             "temperature": config.temperature,

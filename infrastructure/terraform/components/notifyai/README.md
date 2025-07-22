@@ -39,6 +39,7 @@ No modules.
 | <a name="output_bedrock_role_arn"></a> [bedrock\_role\_arn](#output\_bedrock\_role\_arn) | ARN of the IAM role for Bedrock automatic evaluation |
 | <a name="output_evaluation-evaluator-model-identifier"></a> [evaluation-evaluator-model-identifier](#output\_evaluation-evaluator-model-identifier) | Identifier for the Bedrock evaluator model |
 | <a name="output_evaluation-inference-model-identifier"></a> [evaluation-inference-model-identifier](#output\_evaluation-inference-model-identifier) | Identifier for the Bedrock inference model |
+| <a name="output_notifai-bedrock-guardrail-arn"></a> [notifai-bedrock-guardrail-arn](#output\_notifai-bedrock-guardrail-arn) | n/a |
 | <a name="output_notifai_backend_ecr_repository_url"></a> [notifai\_backend\_ecr\_repository\_url](#output\_notifai\_backend\_ecr\_repository\_url) | The URL of the Notifai backend ECR repository |
 | <a name="output_notifai_frontend_ecr_repository_url"></a> [notifai\_frontend\_ecr\_repository\_url](#output\_notifai\_frontend\_ecr\_repository\_url) | The URL of the Notifai frontend ECR repository |
 <!-- vale on -->
