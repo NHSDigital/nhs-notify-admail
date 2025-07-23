@@ -34,6 +34,7 @@ No modules.
 
 | Name | Description |
 |------|-------------|
+| <a name="output_api_gateway_url"></a> [api\_gateway\_url](#output\_api\_gateway\_url) | API Gateway Invoke URL |
 | <a name="output_bedrock_evaluation_prompt_dataset_s3_uri"></a> [bedrock\_evaluation\_prompt\_dataset\_s3\_uri](#output\_bedrock\_evaluation\_prompt\_dataset\_s3\_uri) | S3 URI for the Bedrock evaluation prompt dataset |
 | <a name="output_bedrock_evaluation_results_s3_uri"></a> [bedrock\_evaluation\_results\_s3\_uri](#output\_bedrock\_evaluation\_results\_s3\_uri) | S3 URI for the Bedrock evaluation results |
 | <a name="output_bedrock_role_arn"></a> [bedrock\_role\_arn](#output\_bedrock\_role\_arn) | ARN of the IAM role for Bedrock automatic evaluation |

@@ -1,5 +1,5 @@
 resource "aws_iam_role" "apprunner_ecr_role" {
-  name = "${local.csi}-apprunner-ecr-role"
+  name = "apprunner-ecr-role-${local.resource-suffix}"
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
@@ -24,7 +24,7 @@ resource "aws_iam_role" "apprunner_ecr_role" {
 }
 
 resource "aws_iam_policy" "apprunner_ecr_policy" {
-  name        = "${local.csi}-apprunner-ecr-policy"
+  name        = "apprunner-ecr-policy-${local.resource-suffix}"
   description = "Policy for App Runner to access ECR"
   policy = jsonencode({
     Version = "2012-10-17"
@@ -38,7 +38,7 @@ resource "aws_iam_policy" "apprunner_ecr_policy" {
           "ecr:DescribeImages",
         ],
         Effect   = "Allow",
-        Resource = "*" #TODO: Lock this down a bit, an almost-there example is below
+        Resource = "*" #TODO: Lock this down a bit once the ECR is in TF, an almost-there example is below
         # Resource = "arn:aws:ecr:${var.region}:${var.aws_account_id}:repository/notifai" #TODO: update the repo name at the end, once we have ECR in TF
       },
     ]
@@ -55,36 +55,29 @@ resource "random_password" "app-runner-basic-auth-random-password" {
   special          = true
   override_special = "!@#$%^&*()-_=+"
 }
-resource "random_password" "app-runner-basic-auth-random-username" {
-  length = 10
-  special = false
-}
-
-resource "aws_secretsmanager_secret" "basic_auth_password" {
-  name = "${local.csi}-app-runner-basic-auth-password"
-}
-
 
 resource "aws_apprunner_service" "notifai_frontend_service" {
-  service_name = "${local.csi}-frontend"
+  service_name = "frontend-${local.resource-suffix}"
   count        = var.first-run ? 0 : 1
 
   source_configuration {
     authentication_configuration {
       access_role_arn = aws_iam_role.apprunner_ecr_role.arn
     }
+    auto_deployments_enabled = true
     image_repository {
       image_configuration {
         port = "80"
         runtime_environment_variables = {
           REACT_APP_BACKEND_API_BASE_URL = "${aws_apprunner_service.notifai_backend_service[0].service_url}"
-          REACT_APP_LAMBDA_API_BASE_URL  = "${aws_lambda_function_url.bedrock_messager_url[0].function_url}"
+          REACT_APP_COGNITO_ID           = aws_cognito_user_pool_client.main.id
+          REACT_APP_COGNITO_USER_POOL_ID = aws_cognito_user_pool_client.main.user_pool_id
+          REACT_APP_API_GATEWAY          = "${aws_api_gateway_stage.main.invoke_url}/call-llm"
         }
       }
       image_identifier      = "${aws_ecr_repository.notifai-frontend.repository_url}:latest"
       image_repository_type = "ECR"
     }
-    auto_deployments_enabled = true
   }
 
   network_configuration {
@@ -93,8 +86,6 @@ resource "aws_apprunner_service" "notifai_frontend_service" {
     }
     egress_configuration {
       egress_type = "DEFAULT"
-      # egress_type       = "VPC"
-      # vpc_connector_arn = aws_apprunner_vpc_connector.app_vpc_connector.arn
     }
   }
 
@@ -111,10 +102,11 @@ resource "aws_apprunner_service" "notifai_frontend_service" {
     cpu    = "1024"
     memory = "2048"
   }
+
 }
 
 resource "aws_apprunner_service" "notifai_backend_service" {
-  service_name = "${local.csi}-backend"
+  service_name = "backend-${local.resource-suffix}"
   count        = var.first-run ? 0 : 1
 
   source_configuration {
@@ -126,7 +118,7 @@ resource "aws_apprunner_service" "notifai_backend_service" {
         port          = "8080"
         start_command = "fastapi run main.py --port 8080"
         runtime_environment_variables = {
-          ENV_BASIC_AUTH_USERNAME = random_password.app-runner-basic-auth-random-username.result #TODO: move away from basic auth, so we won't need to do this!
+          ENV_BASIC_AUTH_USERNAME = var.apprunner-basic-auth-username
           ENV_BASIC_AUTH_PASSWORD = random_password.app-runner-basic-auth-random-password.result #TODO: get this from secret storage
         }
       }
