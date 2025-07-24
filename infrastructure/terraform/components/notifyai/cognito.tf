@@ -1,5 +1,5 @@
 resource "aws_cognito_user_pool" "main" {
-  name = "notifai-cognito-user-pool-${local.resource-suffix}"
+  name = "${local.csi}"
 
   password_policy {
     minimum_length    = 8
@@ -8,19 +8,12 @@ resource "aws_cognito_user_pool" "main" {
     require_symbols   = true
     require_uppercase = true
   }
-
   username_attributes      = ["email"]
   auto_verified_attributes = ["email"]
-
-  tags = {
-    Environment = var.environment
-    Service     = "notfiai-user-pool-cognito-${local.resource-suffix}"
-    Source      = "Terraform"
-  }
 }
 
 resource "aws_cognito_user_pool_client" "main" {
-  name                   = "notifai-${var.environment}-cognito-client"
+  name                   = "${local.csi}"
   user_pool_id           = aws_cognito_user_pool.main.id
   access_token_validity  = 60 # minutes
   id_token_validity      = 60 # minutes

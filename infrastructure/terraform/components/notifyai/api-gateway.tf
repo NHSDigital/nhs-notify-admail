@@ -1,20 +1,14 @@
 resource "aws_api_gateway_rest_api" "main" {
-  name        = "${var.service_name}-${var.environment}-api"
+  name        = "${local.csi}"
   description = "API Gateway for Bedrock Messager with Cognito authentication"
 
   endpoint_configuration {
     types = ["REGIONAL"]
   }
-
-  tags = {
-    Environment = var.environment
-    Service     = var.service_name
-    Source      = "Terraform"
-  }
 }
 
 resource "aws_api_gateway_authorizer" "cognito" {
-  name            = "CognitoAuthorizer"
+  name            = "${local.csi}"
   rest_api_id     = aws_api_gateway_rest_api.main.id
   type            = "COGNITO_USER_POOLS"
   provider_arns   = [aws_cognito_user_pool.main.arn]
@@ -78,7 +72,7 @@ resource "aws_api_gateway_integration_response" "call_llm_post" {
   status_code = aws_api_gateway_method_response.call_llm_post.status_code
 
   response_parameters = {
-    "method.response.header.Access-Control-Allow-Origin" = "'${local.frontend_origin}'"
+    "method.response.header.Access-Control-Allow-Origin" = "${local.frontend_origin}"
   }
   depends_on = [aws_api_gateway_integration.call_llm_post]
 }
@@ -102,15 +96,13 @@ resource "aws_api_gateway_integration_response" "call_llm_options" {
   status_code = aws_api_gateway_method_response.call_llm_options.status_code
 
   response_parameters = {
-    "method.response.header.Access-Control-Allow-Origin"  = "'${local.frontend_origin}'",
-    "method.response.header.Access-Control-Allow-Methods" = "'OPTIONS,POST'",
-    "method.response.header.Access-Control-Allow-Headers" = "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
+    "method.response.header.Access-Control-Allow-Origin"  = "${local.frontend_origin}",
+    "method.response.header.Access-Control-Allow-Methods" = "OPTIONS,POST",
+    "method.response.header.Access-Control-Allow-Headers" = "Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token"
   }
   response_templates = {
     "application/json" = "{\"statusCode\": 200}"
   }
-
-
   depends_on = [aws_api_gateway_integration.call_llm_options]
 }
 
@@ -123,18 +115,12 @@ resource "aws_lambda_permission" "api_gateway" {
 }
 
 resource "aws_cloudwatch_log_group" "api_gateway" {
-  name              = "API-Gateway-Execution-Logs_${aws_api_gateway_rest_api.main.id}/${var.environment}"
+  name              = "${local.csi}"
   retention_in_days = 14
-
-  tags = {
-    Environment = var.environment
-    Service     = var.service_name
-    Source      = "Terraform"
-  }
 }
 
 resource "aws_iam_role" "api_gateway_cloudwatch" {
-  name = "${var.service_name}-${var.environment}-api-gateway-cloudwatch-role"
+  name = "${local.csi}"
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
@@ -200,12 +186,6 @@ resource "aws_api_gateway_stage" "main" {
       error_message           = "$context.error.message"
     })
   }
-
-  tags = {
-    Environment = var.environment
-    Service     = var.service_name
-    Source      = "Terraform"
-  }
 }
 
 resource "aws_api_gateway_method_settings" "all" {
@@ -218,9 +198,4 @@ resource "aws_api_gateway_method_settings" "all" {
     data_trace_enabled = true
     metrics_enabled    = true
   }
-}
-
-output "api_gateway_url" {
-  description = "API Gateway Invoke URL"
-  value       = aws_api_gateway_stage.main.invoke_url
 }

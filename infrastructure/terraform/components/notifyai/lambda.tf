@@ -54,7 +54,6 @@ data "aws_iam_policy_document" "bedrock_access" {
       "arn:aws:bedrock:eu-central-1::foundation-model/*",
       "arn:aws:bedrock:eu-north-1::foundation-model/*",
       "arn:aws:bedrock:eu-west-3::foundation-model/*",
-      "arn:aws:bedrock:eu-west-1:${var.aws_account_id}:inference-profile/eu.anthropic.claude-3-7-sonnet-20250219-v1*",
       "arn:aws:bedrock:*:${var.aws_account_id}:prompt/*",
       aws_s3_bucket.lambda_prompt_logging_s3_bucket.arn,
       "${aws_s3_bucket.lambda_prompt_logging_s3_bucket.arn}/${local.s3_lambda_logging_key}*",

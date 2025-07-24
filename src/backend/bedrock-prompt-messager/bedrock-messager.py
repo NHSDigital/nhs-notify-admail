@@ -25,24 +25,17 @@ def call_admail_bedrock_prompt(event, context):
     try:
         config = BedrockConfig()
         try:
-            # 1. Get the 'body' string from the event
             body_string = event.get("body", "{}")
-            # 2. Parse the string into a Python dictionary
             body_data = json.loads(body_string)
-            # 3. Safely get the 'input_text' from that dictionary
             input_letter = body_data.get("input_text")
         except (json.JSONDecodeError, AttributeError):
-            # This handles cases where the body might be missing or not valid JSON
             input_letter = None
 
         if not input_letter:
             return {
                 "statusCode": 400,
-                # It's best practice to json.dumps your error messages too
                 "body": json.dumps({"error": "Request body must be a valid JSON object with an 'input_text' key."})
-            }
-        if not input_letter:
-            return {"statusCode": 400, "body": "Error: No input letter provided."}
+                }
 
         try:
             with open("system_prompt.txt", mode="r", encoding="utf-8") as prompt_file:
