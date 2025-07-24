@@ -122,6 +122,42 @@ resource "aws_lambda_permission" "api_gateway" {
   source_arn    = "${aws_api_gateway_rest_api.main.execution_arn}/*/${aws_api_gateway_method.call_llm_post.http_method}${aws_api_gateway_resource.call_llm.path}"
 }
 
+resource "aws_cloudwatch_log_group" "api_gateway" {
+  name              = "API-Gateway-Execution-Logs_${aws_api_gateway_rest_api.main.id}/${var.environment}"
+  retention_in_days = 14
+
+  tags = {
+    Environment = var.environment
+    Service     = var.service_name
+    Source      = "Terraform"
+  }
+}
+
+resource "aws_iam_role" "api_gateway_cloudwatch" {
+  name = "${var.service_name}-${var.environment}-api-gateway-cloudwatch-role"
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = "sts:AssumeRole"
+        Effect = "Allow"
+        Principal = {
+          Service = "apigateway.amazonaws.com"
+        }
+      },
+    ]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "api_gateway_cloudwatch" {
+  role       = aws_iam_role.api_gateway_cloudwatch.name
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs"
+}
+
+resource "aws_api_gateway_account" "main" {
+  cloudwatch_role_arn = aws_iam_role.api_gateway_cloudwatch.arn
+}
+
 resource "aws_api_gateway_deployment" "main" {
   rest_api_id = aws_api_gateway_rest_api.main.id
   triggers = {
@@ -132,11 +168,13 @@ resource "aws_api_gateway_deployment" "main" {
       aws_api_gateway_integration.call_llm_post.id,
       aws_api_gateway_integration.call_llm_options.id,
       aws_api_gateway_authorizer.cognito.id,
+      aws_api_gateway_method_settings.all
     ]))
   }
   lifecycle {
     create_before_destroy = true
   }
+  depends_on = [aws_api_gateway_account.main]
 }
 
 resource "aws_api_gateway_stage" "main" {
@@ -144,10 +182,41 @@ resource "aws_api_gateway_stage" "main" {
   rest_api_id          = aws_api_gateway_rest_api.main.id
   stage_name           = var.environment
   xray_tracing_enabled = true
+
+  access_log_settings {
+    destination_arn = aws_cloudwatch_log_group.api_gateway.arn
+    format = jsonencode({
+      requestId               = "$context.requestId"
+      sourceIp                = "$context.identity.sourceIp"
+      requestTime             = "$context.requestTime"
+      protocol                = "$context.protocol"
+      httpMethod              = "$context.httpMethod"
+      resourcePath            = "$context.resourcePath"
+      status                  = "$context.status"
+      responseLength          = "$context.responseLength"
+      authorizerPrincipalId   = "$context.authorizer.principalId"
+      user                    = "$context.identity.user"
+      integrationErrorMessage = "$context.integration.errorMessage"
+      error_message           = "$context.error.message"
+    })
+  }
+
   tags = {
     Environment = var.environment
     Service     = var.service_name
     Source      = "Terraform"
+  }
+}
+
+resource "aws_api_gateway_method_settings" "all" {
+  rest_api_id = aws_api_gateway_rest_api.main.id
+  stage_name  = aws_api_gateway_stage.main.stage_name
+  method_path = "*/*"
+
+  settings {
+    logging_level      = "INFO"
+    data_trace_enabled = true
+    metrics_enabled    = true
   }
 }
 
