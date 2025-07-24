@@ -18,7 +18,7 @@ resource "aws_api_gateway_authorizer" "cognito" {
 resource "aws_api_gateway_resource" "call_llm" {
   rest_api_id = aws_api_gateway_rest_api.main.id
   parent_id   = aws_api_gateway_rest_api.main.root_resource_id
-  path_part   = "call-llm"
+  path_part   = local.prompt-llm
 }
 
 resource "aws_api_gateway_method" "call_llm_post" {

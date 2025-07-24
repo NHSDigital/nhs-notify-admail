@@ -72,7 +72,7 @@ resource "aws_apprunner_service" "notifai_frontend_service" {
           REACT_APP_BACKEND_API_BASE_URL = "${aws_apprunner_service.notifai_backend_service[0].service_url}"
           REACT_APP_COGNITO_ID           = aws_cognito_user_pool_client.main.id
           REACT_APP_COGNITO_USER_POOL_ID = aws_cognito_user_pool_client.main.user_pool_id
-          REACT_APP_API_GATEWAY          = "${aws_api_gateway_stage.main.invoke_url}/call-llm"
+          REACT_APP_API_GATEWAY          = "${aws_api_gateway_stage.main.invoke_url}/${local.prompt-llm}"
         }
       }
       image_identifier      = "${aws_ecr_repository.notifai-frontend.repository_url}:latest"
