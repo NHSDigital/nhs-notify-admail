@@ -1,5 +1,5 @@
 resource "aws_api_gateway_rest_api" "main" {
-  name        = "${local.csi}"
+  name        = "${local.csi}-api-gateway-rest-api"
   description = "API Gateway for Bedrock Messager with Cognito authentication"
 
   endpoint_configuration {
@@ -8,7 +8,7 @@ resource "aws_api_gateway_rest_api" "main" {
 }
 
 resource "aws_api_gateway_authorizer" "cognito" {
-  name            = "${local.csi}"
+  name            = "${local.csi}-cognito-auth"
   rest_api_id     = aws_api_gateway_rest_api.main.id
   type            = "COGNITO_USER_POOLS"
   provider_arns   = [aws_cognito_user_pool.main.arn]
@@ -115,12 +115,12 @@ resource "aws_lambda_permission" "api_gateway" {
 }
 
 resource "aws_cloudwatch_log_group" "api_gateway" {
-  name              = "${local.csi}"
+  name              = "${local.csi}-api-gateway-logs"
   retention_in_days = 14
 }
 
 resource "aws_iam_role" "api_gateway_cloudwatch" {
-  name = "${local.csi}"
+  name = "${local.csi}-api-gateway-cloudwatch-role"
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
     Statement = [

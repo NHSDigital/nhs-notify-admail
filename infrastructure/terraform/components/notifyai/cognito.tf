@@ -1,5 +1,5 @@
 resource "aws_cognito_user_pool" "main" {
-  name = "${local.csi}"
+  name = "${local.csi}-cognito-user-pool"
 
   password_policy {
     minimum_length    = 8
@@ -13,7 +13,7 @@ resource "aws_cognito_user_pool" "main" {
 }
 
 resource "aws_cognito_user_pool_client" "main" {
-  name                   = "${local.csi}"
+  name                   = "${local.csi}-cognito-client"
   user_pool_id           = aws_cognito_user_pool.main.id
   access_token_validity  = 60 # minutes
   id_token_validity      = 60 # minutes
