@@ -5,6 +5,10 @@ locals {
 
 resource "aws_s3_bucket" "lambda_prompt_logging_s3_bucket" {
   bucket = "logfiles-${local.lambda_name}"
+}
+
+resource "aws_s3_bucket_versioning" "lambda_prompt_logging_s3_bucket_versioning" {
+  bucket = aws_s3_bucket.lambda_prompt_logging_s3_bucket.id
   versioning_configuration {
     status = "Enabled"
   }
