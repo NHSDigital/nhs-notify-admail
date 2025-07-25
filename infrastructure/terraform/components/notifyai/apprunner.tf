@@ -56,6 +56,15 @@ resource "random_password" "app-runner-basic-auth-random-password" {
   override_special = "!@#$%^&*()-_=+"
 }
 
+resource "random_password" "app-runner-basic-auth-random-username" {
+  length = 10
+  special = false
+}
+
+resource "aws_secretsmanager_secret" "basic_auth_password" {
+  name = "${local.csi}-app-runner-basic-auth-password"
+}
+
 resource "aws_apprunner_service" "notifai_frontend_service" {
   service_name = "${local.csi}-frontend"
   count        = var.first-run ? 0 : 1
@@ -72,7 +81,7 @@ resource "aws_apprunner_service" "notifai_frontend_service" {
           REACT_APP_BACKEND_API_BASE_URL = "${aws_apprunner_service.notifai_backend_service[0].service_url}"
           REACT_APP_COGNITO_ID           = aws_cognito_user_pool_client.main.id
           REACT_APP_COGNITO_USER_POOL_ID = aws_cognito_user_pool_client.main.user_pool_id
-          REACT_APP_API_GATEWAY          = "${aws_api_gateway_stage.main.invoke_url}/${local.prompt-llm}"
+          REACT_APP_API_GATEWAY          = "${aws_api_gateway_stage.main.invoke_url}/${local.api-gateway-llm-path-param}"
         }
       }
       image_identifier      = "${aws_ecr_repository.notifai-frontend.repository_url}:latest"
@@ -117,7 +126,7 @@ resource "aws_apprunner_service" "notifai_backend_service" {
         port          = "8080"
         start_command = "fastapi run main.py --port 8080"
         runtime_environment_variables = {
-          ENV_BASIC_AUTH_USERNAME = var.apprunner-basic-auth-username
+          ENV_BASIC_AUTH_USERNAME = random_password.app-runner-basic-auth-random-username.result
           ENV_BASIC_AUTH_PASSWORD = random_password.app-runner-basic-auth-random-password.result #TODO: get this from secret storage
         }
       }

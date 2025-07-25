@@ -1,5 +1,5 @@
 locals {
-  lambda_name           = "bedrock-messager-${local.resource-suffix}"
+  lambda_name           = "${local.csi}-bedrock-messager"
   s3_lambda_logging_key = "prompt-executions/"
 }
 
@@ -34,7 +34,7 @@ data "aws_iam_policy_document" "assume_role" {
 }
 
 resource "aws_iam_role" "iam_for_lambda" {
-  name               = "iam-for-lambda-${local.resource-suffix}"
+  name               = "${local.csi}-iam-for-lambda"
   assume_role_policy = data.aws_iam_policy_document.assume_role.json
 }
 
@@ -64,7 +64,7 @@ data "aws_iam_policy_document" "bedrock_access" {
 }
 
 resource "aws_iam_policy" "bedrock_access_policy" {
-  name   = "bedrock-access-policy-${local.resource-suffix}"
+  name   = "${local.csi}-bedrock-access-policy"
   policy = data.aws_iam_policy_document.bedrock_access.json
 }
 
@@ -75,12 +75,12 @@ resource "aws_iam_role_policy_attachment" "bedrock_access_attachment" {
 
 data "archive_file" "docx_to_string_file" {
   type        = "zip"
-  source_dir  = "../../backend/bedrock-prompt-messager"
+  source_dir  = "../../../../src/backend/bedrock-prompt-messager"
   output_path = "lambda_function.zip"
 }
 
 resource "aws_lambda_function" "bedrock-messager" {
-  function_name    = "bedrock-messager-${local.resource-suffix}"
+  function_name    = local.lambda_name
   filename         = data.archive_file.docx_to_string_file.output_path
   role             = aws_iam_role.iam_for_lambda.arn
   handler          = "bedrock-messager.call_admail_bedrock_prompt"
@@ -91,7 +91,7 @@ resource "aws_lambda_function" "bedrock-messager" {
   environment {
     variables = {
       env_region                = var.region
-      env_model_id              = var.prompt-model-arn
+      env_model_id              = var.prompt-model
       env_temperature           = var.prompt-temperature
       env_max_tokens            = var.prompt-max-tokens-to-sample
       env_top_p                 = var.prompt-top-p

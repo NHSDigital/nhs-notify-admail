@@ -18,7 +18,7 @@ resource "aws_api_gateway_authorizer" "cognito" {
 resource "aws_api_gateway_resource" "call_llm" {
   rest_api_id = aws_api_gateway_rest_api.main.id
   parent_id   = aws_api_gateway_rest_api.main.root_resource_id
-  path_part   = local.prompt-llm
+  path_part   = local.api-gateway-llm-path-param
 }
 
 resource "aws_api_gateway_method" "call_llm_post" {
@@ -72,7 +72,7 @@ resource "aws_api_gateway_integration_response" "call_llm_post" {
   status_code = aws_api_gateway_method_response.call_llm_post.status_code
 
   response_parameters = {
-    "method.response.header.Access-Control-Allow-Origin" = "${local.frontend_origin}"
+    "method.response.header.Access-Control-Allow-Origin" = "'https://${aws_apprunner_service.notifai_frontend_service[0].service_url}'"
   }
   depends_on = [aws_api_gateway_integration.call_llm_post]
 }
@@ -96,9 +96,9 @@ resource "aws_api_gateway_integration_response" "call_llm_options" {
   status_code = aws_api_gateway_method_response.call_llm_options.status_code
 
   response_parameters = {
-    "method.response.header.Access-Control-Allow-Origin"  = "${local.frontend_origin}",
-    "method.response.header.Access-Control-Allow-Methods" = "OPTIONS,POST",
-    "method.response.header.Access-Control-Allow-Headers" = "Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token"
+    "method.response.header.Access-Control-Allow-Origin"  = "'https://${aws_apprunner_service.notifai_frontend_service[0].service_url}'",
+    "method.response.header.Access-Control-Allow-Methods" = "'OPTIONS,POST'",
+    "method.response.header.Access-Control-Allow-Headers" = "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
   }
   response_templates = {
     "application/json" = "{\"statusCode\": 200}"
@@ -153,8 +153,7 @@ resource "aws_api_gateway_deployment" "main" {
       aws_api_gateway_method.call_llm_options.id,
       aws_api_gateway_integration.call_llm_post.id,
       aws_api_gateway_integration.call_llm_options.id,
-      aws_api_gateway_authorizer.cognito.id,
-      aws_api_gateway_method_settings.all
+      aws_api_gateway_authorizer.cognito.id
     ]))
   }
   lifecycle {
