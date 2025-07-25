@@ -1,4 +1,4 @@
 locals {
   prompt-file-name = "prompts.jsonl"
-  prompt-llm = "call-llm"
+  api-gateway-llm-path-param = "call-llm" //
 }
