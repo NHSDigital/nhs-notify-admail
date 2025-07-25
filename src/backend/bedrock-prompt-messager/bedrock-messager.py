@@ -15,7 +15,6 @@ class BedrockConfig:
         self.logging_s3_key_prefix = os.environ.get("env_logging_s3_key_prefix")
         self.guardrail = os.environ.get("env_guardrail_arn")
         self.guardrail_version = os.environ.get("env_guardrail_version")
-        self.front_end_url = os.environ.get("env_frontend_url")
 
 
 def call_admail_bedrock_prompt(event, context):
@@ -80,7 +79,7 @@ def call_admail_bedrock_prompt(event, context):
             "statusCode": 200,
             "body": formatted_response,
             "headers": {
-                "Access-Control-Allow-Origin": config.front_end_url,
+                "Access-Control-Allow-Origin": '*',
                 "Access-Control-Allow-Methods": "POST, OPTIONS",
                 "Access-Control-Allow-Headers": "Content-Type,Authorization,X-Api-Key,X-Amz-Security-Token",
                 "Content-Type": "application/json"

@@ -99,7 +99,6 @@ resource "aws_lambda_function" "bedrock-messager" {
       env_logging_s3_key_prefix = local.s3_lambda_logging_key
       env_guardrail_arn         = aws_bedrock_guardrail.notifai-bedrock-guardrail.guardrail_arn
       env_guardrail_version     = "DRAFT"
-      env_frontend_url          = "https://${aws_apprunner_service.notifai_frontend_service[0].service_url}"
     }
   }
 }
