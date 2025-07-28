@@ -92,11 +92,13 @@ async def authorize(username: str = Depends(authenticate_user)):
 async def convert_file(
     file: UploadFile = File(None), username: str = Depends(authenticate_user)
 ):
-    try:
-        if not file:
+    if not file or file.filename == "":
             raise HTTPException(status_code=400, detail="Provide a file")
 
-        filename: Path = Path(file.filename)
+    try:
+
+        logger.info(f"Received file: {file.filename} of type {file.content_type}")
+        filename: Path = Path(file.filename) # type: ignore
         file_type: str = filename.suffix
         content: bytes = await file.read()
         extracted_text = ""
