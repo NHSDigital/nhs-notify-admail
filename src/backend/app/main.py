@@ -17,9 +17,6 @@ import pypdf
 from pathlib import Path
 import subprocess
 
-# from app.bedrock_call import bedrock_call
-import json
-import boto3
 
 app = FastAPI()
 logging.basicConfig(level=logging.INFO)
@@ -42,7 +39,7 @@ app.add_middleware(
 
 @app.post("/convert")
 async def convert_file(
-    file: UploadFile = File(None), username: str = Depends(authenticate_user)
+    file: UploadFile = File(None)
 ):
     try:
         if not file:
