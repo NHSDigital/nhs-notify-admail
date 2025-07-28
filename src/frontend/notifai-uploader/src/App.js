@@ -5,7 +5,7 @@ import FileUpload from './components/FileUpload';
 import AIFeedback from './components/AIfeedback';
 import axios from 'axios';
 import RoyalMailCalculator from './components/Costingtool';
-import { AuthProvider, useAuth } from './components/AuthContext';
+import { useAuth } from './components/AuthContext';
 import Login from './components/Login';
 
 

@@ -40,54 +40,6 @@ app.add_middleware(
     allow_headers=["*"],  # Allow all headers
 )
 
-security = HTTPBasic()
-
-
-def get_env_credentials():
-    env_username = os.getenv("ENV_BASIC_AUTH_USERNAME")
-    env_password = os.getenv("ENV_BASIC_AUTH_PASSWORD")
-
-    if not env_username or not env_password:
-        logger.error(
-            "ENV_BASIC_AUTH_USERNAME or ENV_BASIC_AUTH_PASSWORD environment variables are not set."
-        )
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Server basic authentication credentials not configured.",
-        )
-    return env_username, env_password
-
-
-def authenticate_user(credentials: HTTPBasicCredentials = Depends(security)):
-    auth_username, auth_password = get_env_credentials()
-
-    if not (
-        credentials.username == auth_username and credentials.password == auth_password
-    ):
-        logger.warning(
-            f"Failed basic authentication attempt for user: {credentials.username}"
-        )
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Incorrect username or password",
-            headers={"WWW-Authenticate": "Basic"},
-        )
-    logger.info(f"Successfully authenticated user: {credentials.username}")
-    return credentials.username
-
-
-@app.get("/")
-async def root(
-    username: str = Depends(authenticate_user),
-):
-    return {"message": "Welcome to the File Converter API"}
-
-
-@app.post("/authorize")
-async def authorize(username: str = Depends(authenticate_user)):
-    return {"message": f"Authenticated as {username}"}
-
-
 @app.post("/convert")
 async def convert_file(
     file: UploadFile = File(None), username: str = Depends(authenticate_user)
