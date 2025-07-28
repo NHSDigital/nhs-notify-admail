@@ -56,7 +56,7 @@ resource "random_password" "app-runner-basic-auth-random-password" {
   override_special = "!@#$%^&*()-_=+"
 }
 resource "random_password" "app-runner-basic-auth-random-username" {
-  length = 10
+  length  = 10
   special = false
 }
 
@@ -78,7 +78,6 @@ resource "aws_apprunner_service" "notifai_frontend_service" {
         port = "80"
         runtime_environment_variables = {
           REACT_APP_BACKEND_API_BASE_URL = "${aws_apprunner_service.notifai_backend_service[0].service_url}"
-          REACT_APP_LAMBDA_API_BASE_URL  = "${aws_lambda_function_url.bedrock_messager_url[0].function_url}"
         }
       }
       image_identifier      = "${aws_ecr_repository.notifai-frontend.repository_url}:latest"

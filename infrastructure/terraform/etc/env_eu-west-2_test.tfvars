@@ -1,5 +1,5 @@
-first-run   = true
-environment = "test1"
+first-run   = false
+environment = "test"
 
 prompt-max-tokens-to-sample = 200
 prompt-temperature          = 0.1
