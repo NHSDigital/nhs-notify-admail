@@ -28,14 +28,10 @@ export default function FileUpload({ onFileUpload }) {
           {
             headers: {
               'Content-Type': 'multipart/form-data',
-              'Authorization': `Basic ${base64Credentials}`, // Add the Authorization header
+              'Authorization': `Basic ${base64Credentials}`,
             },
           }
         );
-        // response will be the string back from the Bedrock instance
-        console.log('THIS IS THE RESPONSE');
-        console.log(response)
-
         setUploadStatus('Successfully Uploaded');
         onFileUpload(response.data); // Call the parent callback
         setTimeout(() => setUploadStatus(''), 3000); // Clear status after 3 seconds
