@@ -12,39 +12,43 @@ import Login from './components/Login';
 function App() {
   const [feedback, setFeedback] = useState({});
   const EnvLambdaFunctionApiBaseUrl = process.env.REACT_APP_LAMBDA_API_BASE_URL || '';
+  const { user, refreshSession } = useAuth();
 
-  const { isAuthenticated, logout } = useAuth()
-  if (!isAuthenticated) {
+  if (!user) {
     return <Login />;
   }
 
-  const getPromptResp =  async (file) => {
-      // Read file content if it's a File object
-    let fileContent = typeof file === 'string' ? file : await file.text();
-    const response = await axios.post(
-      `${EnvLambdaFunctionApiBaseUrl}`, // hitting the App runner endpoint
-      {"input_text": fileContent}
-    );
-    // Parse the string to JSON
-    let cleanedData = response.data;
+  const getPromptResp = async (file) => {
+    let fileContent = typeof file === "string" ? file : await file.text();
     try {
-      cleanedData = cleanedData.replace('```', '').replace(/`/g, '').replace('<', '').replace('>', '').replace('|', '');
-
-    } catch (error) {
-      console.log('error removing punctuation from string either does not exist or cannot remove');
+      const response = await axios.post(
+        `${EnvLambdaFunctionApiBaseUrl}`,
+        { input_text: fileContent },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${user.idToken}`,
+          },
+        }
+      );
+      if (response.status !== 401) {
+        return response.data;
+      }
+      await refreshSession();
+      const refreshResponse = await axios.post(
+        `${EnvLambdaFunctionApiBaseUrl}`,
+        { input_text: fileContent },
+        {
+          headers: {
+            Authorization: `Bearer ${user.idToken}`,
+          },
+        }
+      );
+      return refreshResponse.data;
+    } catch (err) {
+      throw new Error("Error calling Lambda or session expired. Please log in again.");
     }
-    try {
-      cleanedData = cleanedData.replace('json', '');
-    } catch (error) {
-      console.log('error removing "json" from string either does not exist or cannot remove');
-    }
-    try {
-      cleanedData = JSON.parse(cleanedData);
-    } catch (error) {
-      console.error('Error parsing JSON:', error);
-    }
-    return cleanedData;
-  }
+  };
 
   const handleFileUpload = (file) => {
     setTimeout(() => {
@@ -67,10 +71,4 @@ function App() {
   );
 }
 
-export default function AppWithProvider() {
-  return (
-    <AuthProvider>
-      <App />
-    </AuthProvider>
-  );
-}
+export default App;
