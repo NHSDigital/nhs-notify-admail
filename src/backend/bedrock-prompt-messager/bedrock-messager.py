@@ -24,10 +24,18 @@ def call_admail_bedrock_prompt(event, context):
     """
     try:
         config = BedrockConfig()
+        try:
+            body_string = event.get("body", "{}")
+            body_data = json.loads(body_string)
+            input_letter = body_data.get("input_text")
+        except (json.JSONDecodeError, AttributeError):
+            input_letter = None
 
-        input_letter = event.get("body", "")
         if not input_letter:
-            return {"statusCode": 400, "body": "Error: No input letter provided."}
+            return {
+                "statusCode": 400,
+                "body": json.dumps({"error": "Request body must be a valid JSON object with an 'input_text' key."})
+                }
 
         try:
             with open("system_prompt.txt", mode="r", encoding="utf-8") as prompt_file:
@@ -66,14 +74,22 @@ def call_admail_bedrock_prompt(event, context):
 
         )
 
-        rtnVal = format_converse_response(response)
-
+        formatted_response = format_converse_response(response)
+        rtnVal = {
+            "statusCode": 200,
+            "body": formatted_response,
+            "headers": {
+                "Access-Control-Allow-Origin": '*',
+                "Access-Control-Allow-Methods": "POST, OPTIONS",
+                "Access-Control-Allow-Headers": "Content-Type,Authorization,X-Api-Key,X-Amz-Security-Token",
+                "Content-Type": "application/json"
+            }
+        }
         log_prompt_details_to_s3(
             config=config,
             promptinput=user_prompt,
             promptoutput=rtnVal,
         )
-
         return rtnVal
 
     except Exception as e:
