@@ -57,7 +57,7 @@ resource "random_password" "app-runner-basic-auth-random-password" {
 }
 
 resource "random_password" "app-runner-basic-auth-random-username" {
-  length = 10
+  length  = 10
   special = false
 }
 
@@ -138,7 +138,7 @@ resource "aws_apprunner_service" "notifai_backend_service" {
 
   network_configuration {
     ingress_configuration {
-      is_publicly_accessible = true
+      is_publicly_accessible = false
     }
     egress_configuration {
       egress_type = "DEFAULT"
