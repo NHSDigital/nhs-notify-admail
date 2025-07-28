@@ -11,7 +11,7 @@ import Login from './components/Login';
 
 function App() {
   const [feedback, setFeedback] = useState({});
-  const EnvLambdaFunctionApiBaseUrl = process.env.REACT_APP_LAMBDA_API_BASE_URL || '';
+  const EnvLambdaFunctionApiBaseUrl = process.env.REACT_APP_API_GATEWAY || '';
   const { user, refreshSession } = useAuth();
 
   if (!user) {
