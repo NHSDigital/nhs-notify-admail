@@ -12,6 +12,7 @@
     ]
   },
   "dependencies": {
+    "@aws-sdk/client-cognito-identity-provider": "^3.846.0",
     "@testing-library/dom": "^10.4.0",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.3.0",
@@ -19,8 +20,11 @@
     "axios": "^1.9.0",
     "lucide-react": "^0.511.0",
     "nhsuk-react-components": "^5.0.0",
+    "oidc-client-ts": "^3.3.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
+    "react-markdown": "^10.1.0",
+    "react-oidc-context": "^3.3.0",
     "react-scripts": "5.0.1",
     "spinners-react": "^1.0.11",
     "web-vitals": "^2.1.4"

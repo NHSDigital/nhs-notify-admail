@@ -1,17 +1,16 @@
-import './App.css';
+import "./App.css";
 import { useState } from "react";
-import Header from './components/Header';
-import FileUpload from './components/FileUpload';
-import AIFeedback from './components/AIfeedback';
-import axios from 'axios';
-import RoyalMailCalculator from './components/Costingtool';
-import { useAuth } from './components/AuthContext';
-import Login from './components/Login';
-
+import Header from "./components/Header";
+import FileUpload from "./components/FileUpload";
+import AIFeedback from "./components/AIfeedback";
+import axios from "axios";
+import RoyalMailCalculator from "./components/Costingtool";
+import Login from "./components/Login";
+import { useAuth } from "./components/AuthContext";
 
 function App() {
   const [feedback, setFeedback] = useState({});
-  const EnvLambdaFunctionApiBaseUrl = process.env.REACT_APP_API_GATEWAY || '';
+  const EnvLambdaFunctionApiBaseUrl = process.env.REACT_APP_API_GATEWAY || "";
   const { user, refreshSession } = useAuth();
 
   if (!user) {
@@ -52,8 +51,8 @@ function App() {
 
   const handleFileUpload = (file) => {
     setTimeout(() => {
-      const promptresp = getPromptResp(file);
-      setFeedback(promptresp);
+      const promptResp = getPromptResp(file);
+      setFeedback(promptResp);
     }, 1000); // Simulate processing delay
   };
 

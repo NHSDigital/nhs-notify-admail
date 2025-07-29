@@ -4,10 +4,10 @@ locals {
 }
 
 resource "aws_s3_bucket" "lambda_prompt_logging_s3_bucket" {
-  bucket = "${local.csi_global}-logfiles"
+  bucket = "logfiles-${local.lambda_name}"
 }
 
-resource "aws_s3_bucket_versioning" "lambda_prompt_logging_s3_bucket" {
+resource "aws_s3_bucket_versioning" "lambda_prompt_logging_s3_bucket_versioning" {
   bucket = aws_s3_bucket.lambda_prompt_logging_s3_bucket.id
   versioning_configuration {
     status = "Enabled"
@@ -47,16 +47,18 @@ data "aws_iam_policy_document" "bedrock_access" {
       "s3:GetObject",
       "s3:ListBucket",
       "s3:PutObject",
+      "bedrock:ApplyGuardrail",
     ]
     resources = [
       "arn:aws:bedrock:${var.region}::foundation-model/*",
       "arn:aws:bedrock:eu-central-1::foundation-model/*",
       "arn:aws:bedrock:eu-north-1::foundation-model/*",
       "arn:aws:bedrock:eu-west-3::foundation-model/*",
-      "arn:aws:bedrock:${var.region}:${var.aws_account_id}:inference-profile/eu.amazon.nova-pro-v1:0",
       "arn:aws:bedrock:*:${var.aws_account_id}:prompt/*",
       aws_s3_bucket.lambda_prompt_logging_s3_bucket.arn,
       "${aws_s3_bucket.lambda_prompt_logging_s3_bucket.arn}/${local.s3_lambda_logging_key}*",
+      "arn:aws:bedrock:${var.region}:${var.aws_account_id}:guardrail/*",
+      "arn:aws:bedrock:${var.region}:${var.aws_account_id}:inference-profile/eu.amazon.nova-pro-v1:*",
     ]
   }
 }
@@ -78,24 +80,25 @@ data "archive_file" "docx_to_string_file" {
 }
 
 resource "aws_lambda_function" "bedrock-messager" {
-  function_name    = "${local.csi}-bedrock-messager"
+  function_name    = local.lambda_name
   filename         = data.archive_file.docx_to_string_file.output_path
   role             = aws_iam_role.iam_for_lambda.arn
-  handler          = "bedrock_messager.call_admail_bedrock_prompt"
+  handler          = "bedrock-messager.call_admail_bedrock_prompt"
   source_code_hash = data.archive_file.docx_to_string_file.output_base64sha256
   runtime          = "python3.12"
-
-  timeout = 30
+  timeout          = 30
 
   environment {
     variables = {
-      env_region                = "${var.region}",
-      env_model_id              = "${var.prompt-model}",
-      env_temperature           = "${var.prompt-temperature}"
-      env_max_tokens            = "${var.prompt-max-tokens-to-sample}"
-      env_top_p                 = "${var.prompt-top-p}"
-      env_logging_s3_bucket     = "${aws_s3_bucket.lambda_prompt_logging_s3_bucket.bucket}"
-      env_logging_s3_key_prefix = "${local.s3_lambda_logging_key}"
+      env_region                = var.region
+      env_model_id              = var.prompt-model
+      env_temperature           = var.prompt-temperature
+      env_max_tokens            = var.prompt-max-tokens-to-sample
+      env_top_p                 = var.prompt-top-p
+      env_logging_s3_bucket     = aws_s3_bucket.lambda_prompt_logging_s3_bucket.bucket
+      env_logging_s3_key_prefix = local.s3_lambda_logging_key
+      env_guardrail_arn         = aws_bedrock_guardrail.notifai-bedrock-guardrail.guardrail_arn
+      env_guardrail_version     = "DRAFT"
     }
   }
 }
