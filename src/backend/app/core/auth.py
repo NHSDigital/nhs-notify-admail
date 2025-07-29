@@ -11,6 +11,7 @@ import os
 import requests
 from jose import jwk, jwt
 from jose.exceptions import JWTError
+from app.core import constants
 
 logger = logging.getLogger(__name__)
 
@@ -109,6 +110,27 @@ class CognitoAuthenticator:
             )
 
 
+def _verify_request_token(request: Request, authenticator: CognitoAuthenticator):
+    """Helper to extract and validate token from a request."""
+    authorization = request.headers.get("Authorization")
+    if not authorization:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Authorization header missing",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+
+    scheme, token = get_authorization_scheme_param(authorization)
+    if not token or scheme.lower() != "bearer":
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid authentication scheme",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+
+    return authenticator.validate_token(token)
+
+
 class AuthMiddleware(BaseHTTPMiddleware):
     def __init__(self, app, authenticator: CognitoAuthenticator):
         super().__init__(app)
@@ -118,24 +140,8 @@ class AuthMiddleware(BaseHTTPMiddleware):
         if request.method == "OPTIONS":
             return await call_next(request)
 
-        authorization = request.headers.get("Authorization")
-        if not authorization:
-            return JSONResponse(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                content={"detail": "Authorization header missing"},
-                headers={"WWW-Authenticate": "Bearer"},
-            )
-
-        scheme, token = get_authorization_scheme_param(authorization)
-        if not token or scheme.lower() != "bearer":
-            return JSONResponse(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                content={"detail": "Invalid authentication scheme"},
-                headers={"WWW-Authenticate": "Bearer"},
-            )
-
         try:
-            payload = self.authenticator.validate_token(token)
+            payload = _verify_request_token(request, self.authenticator)
             request.state.user = payload
         except HTTPException as e:
             return JSONResponse(
@@ -145,3 +151,25 @@ class AuthMiddleware(BaseHTTPMiddleware):
             )
 
         return await call_next(request)
+
+
+# This exception handler's purpose is to handle unauthorised 404's, and return them as 401's
+# This prevents outside sources from being able to map the API effectively
+class NotFoundExceptionHandler:
+    def __init__(self, authenticator: CognitoAuthenticator):
+        self.authenticator = authenticator
+
+    async def __call__(self, request: Request, exc: HTTPException):
+        try:
+            _verify_request_token(request, self.authenticator)
+            # Valid token, but resource not found
+            return JSONResponse(
+                status_code=404, content={"detail": constants.ERROR_NOT_FOUND}
+            )
+        except HTTPException as e:
+            # Invalid token
+            return JSONResponse(
+                status_code=e.status_code,
+                content={"detail": e.detail},
+                headers=e.headers,
+            )

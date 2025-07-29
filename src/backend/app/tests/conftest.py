@@ -1,5 +1,7 @@
 import pytest
 from unittest.mock import patch, MagicMock
+from fastapi import HTTPException, status
+from app.core import constants
 
 
 @pytest.fixture(autouse=True)
@@ -28,8 +30,20 @@ def mock_cognito_jwks():
 
 
 @pytest.fixture
-def mock_auth():
-    """Mock the Cognito authenticator."""
+def mock_auth_valid():
+    """Mock the Cognito authenticator for a valid token."""
     with patch("app.core.auth.CognitoAuthenticator.validate_token") as mock_validate:
-        mock_validate.return_value = {"username": "testuser"}
-        yield
+        mock_validate.return_value = {"username": "testuser", "sub": "12345-67890"}
+        yield mock_validate
+
+
+@pytest.fixture
+def mock_auth_invalid():
+    """Mock the Cognito authenticator for an invalid token."""
+    with patch("app.core.auth.CognitoAuthenticator.validate_token") as mock_validate:
+        mock_validate.side_effect = HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail=constants.ERROR_INVALID_TOKEN,
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+        yield mock_validate
