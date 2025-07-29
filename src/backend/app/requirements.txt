@@ -5,3 +5,8 @@ boto3
 pandoc
 pypdf
 pytest
+pyjwt[crypto]
+python-jose
+requests
+python-dotenv
+pytest-asyncio
