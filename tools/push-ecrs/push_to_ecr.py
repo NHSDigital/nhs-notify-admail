@@ -35,6 +35,27 @@ def docker_login(region, account_id, password):
         exit(1)
 
 
+def npm_install(service):
+    """Run npm install for the specified service."""
+    service_paths = {
+        "frontend": "src/frontend/notifai-uploader",
+    }
+    if service in service_paths:
+        install_path = service_paths[service]
+        try:
+            print(f"Running npm install for {service} in {install_path}...")
+            subprocess.run(
+                "npm install",
+                shell=True,
+                check=True,
+                cwd=install_path,
+            )
+            print(f"npm install for {service} completed successfully.")
+        except subprocess.CalledProcessError as e:
+            print(f"Error during npm install for {service}: {e}")
+            exit(1)
+
+
 def build_and_push(service, region, account_id):
     """Build and push Docker image to ECR."""
     image_name = f"nhs-test-notifyai-{service}"
@@ -96,8 +117,11 @@ def main():
     docker_login(region, account_id, password)
 
     if args.service:
+        if args.service == "frontend":
+            npm_install(args.service)
         build_and_push(args.service, region, account_id)
     else:
+        npm_install("frontend")
         build_and_push("frontend", region, account_id)
         build_and_push("backend", region, account_id)
 
