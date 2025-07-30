@@ -5,3 +5,4 @@ boto3
 pandoc
 pypdf
 pytest
+docx2pdf

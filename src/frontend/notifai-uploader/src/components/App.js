@@ -10,6 +10,7 @@ import { useAuth } from "./components/AuthContext";
 
 function App() {
   const [feedback, setFeedback] = useState({});
+  const [pages, setPages] = useState(0);
   const EnvLambdaFunctionApiBaseUrl = process.env.REACT_APP_API_GATEWAY || "";
   const { user, refreshSession } = useAuth();
 
@@ -51,7 +52,10 @@ function App() {
 
   const handleFileUpload = (file) => {
     setTimeout(() => {
-      const promptResp = getPromptResp(file);
+      // Get pages from the file feedback
+      const jsonData = JSON.parse(file);
+      setPages(jsonData.pages);
+      const promptResp = getPromptResp(jsonData.extracted_text);
       setFeedback(promptResp);
     }, 1000); // Simulate processing delay
   };
@@ -64,7 +68,7 @@ function App() {
           <FileUpload onFileUpload={handleFileUpload} />
           <AIFeedback feedback={feedback} />
         </div>
-        <RoyalMailCalculator />
+        <RoyalMailCalculator pages={pages}/>
       </main>
     </div>
   );

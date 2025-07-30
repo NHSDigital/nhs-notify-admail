@@ -2,10 +2,10 @@ import React, { useState } from 'react';
 import { Info } from 'lucide-react';
 import './Costingtool.css';
 
-export default function RoyalMailCalculator() {
-  const [pages, setPages] = useState(2);
+export default function RoyalMailCalculator({derivedPages}) {
   const [items, setItems] = useState(450000);
   const [firstClass, setFirstClass] = useState(false);
+  const [letterPages, setLetterPages] = useState(derivedPages || 2);
 
 
   // Simplified rate calculations (example rates - would need actual Royal Mail rates)
@@ -30,8 +30,8 @@ export default function RoyalMailCalculator() {
 
     let mailClass = firstClass === true? "1st Class": "Business";
 
-    const advertisingCost = items * advertisingRates[pages];
-    const businessCost = items * businessRates[pages][mailClass];
+    const advertisingCost = items * advertisingRates[letterPages];
+    const businessCost = items * businessRates[letterPages][mailClass];
     let savingsCost = businessCost - advertisingCost;
 
     return {
@@ -62,12 +62,13 @@ export default function RoyalMailCalculator() {
         <h1 className="title">Costing tool</h1>
         <p>See how much you could save the NHS if your letter is suitable for Admail.</p>
         <h2 className="title">Input Parameters</h2>
+        <h3>Your uploaded letter has {letterPages} pages</h3>
 
         {/* Pages per letter */}
         <div className="parameterGroup">
           <div className="parameterHeader">
             <label className="label">Number of pages in the letter</label>
-            <span className="value">{pages}</span>
+            <span className="value">{letterPages}</span>
           </div>
           <div className="sliderContainer">
             <input
@@ -75,14 +76,14 @@ export default function RoyalMailCalculator() {
               min="1"
               max="5"
               step="1"
-              value={pages}
-              onChange={(e) => setPages(parseInt(e.target.value, 10))}
+              value={letterPages}
+              onChange={(e) => setLetterPages(parseInt(e.target.value, 10))}
               className="slider"
               style={{
                 background: `linear-gradient(to right, #ef4444 0%, #ef4444 ${
-                  ((pages - 1) / (5 - 1)) * 100
+                  ((letterPages - 1) / (5 - 1)) * 100
                 }%, #e5e7eb ${
-                  ((pages - 1) / (5 - 1)) * 100
+                  ((letterPages - 1) / (5 - 1)) * 100
                 }%, #e5e7eb 100%)`,
               }}
             />
@@ -116,6 +117,7 @@ export default function RoyalMailCalculator() {
               <span>100</span>
               <span>2000000</span>
             </div>
+            <input defaultValue='450000' onChange={e => setItems(e.target.value)} type="number" />
           </div>
         </div>
       </div>

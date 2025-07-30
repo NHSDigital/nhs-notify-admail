@@ -16,6 +16,7 @@ import os
 import pypdf
 from pathlib import Path
 import subprocess
+from docx2pdf import convert
 
 
 app = FastAPI()
@@ -37,61 +38,69 @@ app.add_middleware(
     allow_headers=["*"],  # Allow all headers
 )
 
-# @app.post("/convert")
-# async def convert_file(
-#     file: UploadFile = File(None)
-# ):
-#     try:
-#         if not file:
-#             raise HTTPException(status_code=400, detail="Provide a file")
+@app.post("/convert")
+async def convert_file(
+    file: UploadFile = File(None)
+):
+    try:
+        if not file:
+            raise HTTPException(status_code=400, detail="Provide a file")
 
-#         filename: Path = Path(file.filename)
-#         file_type: str = filename.suffix
-#         content: bytes = await file.read()
-#         extracted_text = ""
+        filename: Path = Path(file.filename)
+        file_type: str = filename.suffix
+        content: bytes = await file.read()
+        extracted_text = ""
 
-#         with open(f"{file.filename}", "wb") as f:  # saves to the build folder
-#             f.write(content)
+        with open(f"{file.filename}", "wb") as f:  # saves to the build folder
+            f.write(content)
 
-#         # not always 100% successful if pdfs are complicated or encoded in a way that it cannot parse
-#         if file_type == ".pdf":
-#             reader = pypdf.PdfReader(f"{file.filename}")
+        # not always 100% successful if pdfs are complicated or encoded in a way that it cannot parse
+        if file_type == ".pdf":
+            reader = pypdf.PdfReader(f"{file.filename}")
 
-#             for page in reader.pages:
-#                 text = page.extract_text()
-#                 if text:
-#                     extracted_text += text + "\n"
+            num_pages_pdf = len(reader.pages)
 
-#         else:
-#             # Run Pandoc to convert the file from commandline
-#             command = [
-#                 "pandoc",
-#                 file.filename,
-#                 "-o",
-#                 "file.txt",
-#             ]
-#             completed_process = subprocess.run(command, check=True, capture_output=True)
+            for page in reader.pages:
+                text = page.extract_text()
+                if text:
+                    extracted_text += text + "\n"
 
-#             # Read the converted file
-#             with open("file.txt", "rb") as f:
-#                 converted_data = f.read()
-#                 extracted_text = converted_data
+        else:
+            # Get the number of pages by converting to pdf, does not seem possible to get pages from a docx file directly
+            convert(filename, "file.pdf")
+            reader = pypdf.PdfReader("file.pdf")
+            num_pages_pdf = len(reader.pages)
 
-#             # prompt_resp = bedrock_call(extracted_text)
-#             logger.info("We have the prompt response")
-#             logger.info(extracted_text)
 
-#             try:
-#                 # finally remove file:
-#                 os.remove("file.txt")
-#                 os.remove(f"{file.filename}")
+            # Run Pandoc to convert the file from commandline
+            command = [
+                "pandoc",
+                file.filename,
+                "-o",
+                "file.txt",
+            ]
+            completed_process = subprocess.run(command, check=True, capture_output=True)
 
-#                 logger.info(
-#                     f"File 'file.txt' and '{file.filename}'deleted successfully."
-#                 )
-#             except Exception as e:
-#                 logger.error(e)
-#         return extracted_text
-#     except Exception as e:
-#         logger.error(f"Server error: {str(e)}")
-#         raise HTTPException(status_code=500, detail=str(e))
+            # Read the converted file
+            with open("file.txt", "rb") as f:
+                converted_data = f.read()
+                extracted_text = converted_data
+
+            # prompt_resp = bedrock_call(extracted_text)
+            logger.info("We have the prompt response")
+            logger.info(extracted_text)
+
+            try:
+                # finally remove file:
+                os.remove("file.txt")
+                os.remove(f"{file.filename}")
+
+                logger.info(
+                    f"File 'file.txt' and '{file.filename}'deleted successfully."
+                )
+            except Exception as e:
+                logger.error(e)
+        return {'extracted_text': extracted_text, 'pages': num_pages_pdf}
+    except Exception as e:
+        logger.error(f"Server error: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
