@@ -5,15 +5,17 @@ from unittest.mock import patch, MagicMock
 from fastapi import UploadFile
 from starlette.datastructures import Headers
 from app.services.convert_service import convert_file_service
+from app.core.constants import CONVERTED_FILE_NAME
 
 
 @pytest.mark.asyncio
 @patch("app.services.convert_service.pypdf.PdfReader")
 async def test_convert_pdf_success(mock_pdfreader):
-    # Mock PDF extraction
+    pdf_convert_result = "PDF Converted to text output"
+
     mock_reader = MagicMock()
     mock_page = MagicMock()
-    mock_page.extract_text.return_value = "Hello PDF"
+    mock_page.extract_text.return_value = pdf_convert_result
     mock_reader.pages = [mock_page]
     mock_pdfreader.return_value = mock_reader
 
@@ -24,7 +26,7 @@ async def test_convert_pdf_success(mock_pdfreader):
     )
 
     result = await convert_file_service(upload_file)
-    assert "Hello PDF" in result
+    assert pdf_convert_result in result
 
     # Clean up the file created by the service
     if os.path.exists("test.pdf"):
@@ -34,18 +36,17 @@ async def test_convert_pdf_success(mock_pdfreader):
 @pytest.mark.asyncio
 @patch("app.services.convert_service.os.remove")
 @patch("app.services.convert_service.subprocess.run")
-async def test_convert_txt_success(mock_run, mock_remove):
+async def test_convert_docx_success(mock_run, mock_remove):
+    txt_convert_result = b"docx converted to text output"
+
     # Simulate Pandoc conversion
     mock_run.return_value = MagicMock(check=True, capture_output=True)
 
-    # This custom mock handles the two separate 'open' calls in the service
     def custom_open_mock(filename, mode="r"):
-        if filename == "file.txt":
-            # If opening the pandoc output, return the mock content
-            return io.BytesIO(b"Converted text from docx")
+        if filename == CONVERTED_FILE_NAME:
+            # If opening the pandoc output, return the mock content, otherwise the test will fail with the wrong result
+            return io.BytesIO(txt_convert_result)
         else:
-            # For any other file open (like writing the initial file),
-            # return a dummy, writable object.
             return io.BytesIO()
 
     with patch("app.services.convert_service.open", side_effect=custom_open_mock):
@@ -62,10 +63,10 @@ async def test_convert_txt_success(mock_run, mock_remove):
         )
 
         result = await convert_file_service(upload_file)
-        assert b"Converted text from docx" in result
+        assert txt_convert_result in result
 
     # Assert that the service attempted to clean up the files
-    mock_remove.assert_any_call("file.txt")
+    mock_remove.assert_any_call(CONVERTED_FILE_NAME)
     mock_remove.assert_any_call("test.docx")
 
 

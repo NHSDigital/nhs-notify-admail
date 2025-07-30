@@ -4,6 +4,7 @@ import pypdf
 from pathlib import Path
 import subprocess
 from fastapi import UploadFile, HTTPException
+from app.core.constants import CONVERTED_FILE_NAME
 
 logger = logging.getLogger(__name__)
 
@@ -33,12 +34,12 @@ async def convert_file_service(file: UploadFile):
                 "pandoc",
                 file.filename,
                 "-o",
-                "file.txt",
+                CONVERTED_FILE_NAME,
             ]
             completed_process = subprocess.run(command, check=True, capture_output=True)
 
             # Read the converted file
-            with open("file.txt", "rb") as f:
+            with open(CONVERTED_FILE_NAME, "rb") as f:
                 converted_data = f.read()
                 extracted_text = converted_data
 
@@ -48,11 +49,11 @@ async def convert_file_service(file: UploadFile):
 
             try:
                 # finally remove file:
-                os.remove("file.txt")
+                os.remove(CONVERTED_FILE_NAME)
                 os.remove(f"{file.filename}")
 
                 logger.info(
-                    f"File 'file.txt' and '{file.filename}'deleted successfully."
+                    f"File '{CONVERTED_FILE_NAME}' and '{file.filename}'deleted successfully."
                 )
             except Exception as e:
                 logger.error(e)
