@@ -62,7 +62,7 @@ export default function RoyalMailCalculator({derivedPages}) {
         <h1 className="title">Costing tool</h1>
         <p>See how much you could save the NHS if your letter is suitable for Admail.</p>
         <h2 className="title">Input Parameters</h2>
-        <h3>Your uploaded letter has {letterPages} pages</h3>
+        <h2 className="title">Your uploaded letter has {letterPages} pages</h2>
 
         {/* Pages per letter */}
         <div className="parameterGroup">
@@ -117,7 +117,7 @@ export default function RoyalMailCalculator({derivedPages}) {
               <span>100</span>
               <span>2000000</span>
             </div>
-            <input defaultValue='450000' onChange={e => setItems(e.target.value)} type="number" />
+            <input className="numberInput" defaultValue='450000' onChange={e => setItems(e.target.value)} type="number" />
           </div>
         </div>
       </div>
