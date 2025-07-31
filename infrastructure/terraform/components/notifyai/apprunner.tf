@@ -126,8 +126,9 @@ resource "aws_apprunner_service" "notifai_backend_service" {
         port          = "8080"
         start_command = "fastapi run main.py --port 8080"
         runtime_environment_variables = {
-          ENV_BASIC_AUTH_USERNAME = random_password.app-runner-basic-auth-random-username.result
-          ENV_BASIC_AUTH_PASSWORD = random_password.app-runner-basic-auth-random-password.result #TODO: get this from secret storage
+          COGNITO_REGION        = var.region
+          COGNITO_USER_POOL_ID  = aws_cognito_user_pool.main.id
+          COGNITO_APP_CLIENT_ID = aws_cognito_user_pool_client.main.id
         }
       }
       image_identifier      = "${aws_ecr_repository.notifai-backend.repository_url}:latest"
@@ -138,7 +139,7 @@ resource "aws_apprunner_service" "notifai_backend_service" {
 
   network_configuration {
     ingress_configuration {
-      is_publicly_accessible = false
+      is_publicly_accessible = true
     }
     egress_configuration {
       egress_type = "DEFAULT"

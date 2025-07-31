@@ -65,13 +65,16 @@ test: # Run all the test tasks @Testing
 		test-load
 
 _test:
-	set -e
-	script="./scripts/tests/${name}.sh"
-	if [ -e "$${script}" ]; then
-		exec $${script}
-	else
-		echo "make test-${name} not implemented: $${script} not found" >&2
-	fi
+	( \
+		set -e; \
+		script="./scripts/tests/${name}.sh"; \
+		if [ -e "$${script}" ]; then \
+			exec "$${script}"; \
+		else \
+			echo "make test-${name} not implemented: $${script} not found" >&2; \
+			exit 1; \
+		fi \
+	)
 
 ${VERBOSE}.SILENT: \
 	_test \

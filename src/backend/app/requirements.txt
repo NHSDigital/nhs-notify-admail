@@ -6,3 +6,8 @@ pandoc
 pypdf
 pytest
 docx2pdf
+pyjwt[crypto]
+python-jose
+requests
+python-dotenv
+pytest-asyncio
