@@ -17,9 +17,6 @@ cd "$(git rev-parse --show-toplevel)"
 # tests from here. If you want to run other test suites, see the predefined
 # tasks in scripts/test.mk.
 
-if ! python -m pytest --version > /dev/null 2>&1; then
-  echo "Pytest not found, installing..."
-  pip install pytest
-fi
-
-PYTHONPATH=src/backend python -m pytest src/backend/app/tests/
+PYTHONPATH=src/backend/app
+pip install -r $PYTHONPATH/requirements.txt
+python -m pytest $PYTHONPATH/tests/
