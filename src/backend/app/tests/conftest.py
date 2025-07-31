@@ -1,7 +1,13 @@
+import os
 import pytest
 from unittest.mock import patch, MagicMock
 from fastapi import HTTPException, status
 from app.core import constants
+
+# Set test environment variables
+os.environ["COGNITO_REGION"] = "test-region"
+os.environ["COGNITO_USER_POOL_ID"] = "test-pool-id"
+os.environ["COGNITO_APP_CLIENT_ID"] = "test-client-id"
 
 
 @pytest.fixture(autouse=True)
@@ -11,7 +17,6 @@ def mock_cognito_jwks():
     This prevents real network requests and allows the authenticator to initialize.
     """
     mock_response = MagicMock()
-    # A fake key structure that matches what the CognitoAuthenticator expects
     mock_response.json.return_value = {
         "keys": [
             {
