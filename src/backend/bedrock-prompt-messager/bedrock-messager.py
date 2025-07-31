@@ -172,13 +172,6 @@ def log_prompt_details_to_s3(config, promptinput, promptoutput):
         return
 
 
-def log_prompt_details_to_s3(config, promptinput, promptoutput):
-    """Logs prompt details to an S3 bucket."""
-    if not config.logging_s3_bucket or not config.logging_s3_key_prefix:
-        print("S3 logging environment variables not set. Skipping log.")
-        return
-
-
     s3_client = boto3.client("s3")
     date_time_now = datetime.now().strftime("%d-%m-%Y_%H:%M:%S")
     s3_key = f"{config.logging_s3_key_prefix}{date_time_now}.json"
