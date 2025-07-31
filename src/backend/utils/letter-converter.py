@@ -23,7 +23,6 @@ PROMPT = os.getenv('PROMPT')
 
 with open(PROMPT, 'r') as prompt_file:
     prompt_string = prompt_file.read()
-    print(prompt_string)
 
 
 
@@ -119,13 +118,18 @@ with open(RESPONSE_PATH, 'r') as responses_file:
     json_responses = json.loads(json_text)
 
     for k, v in letters.items():
-        bedrock_new_obj = copy.deepcopy(bedrock_training_object)
-        bedrock_new_obj["prompt"] = prompt_string + " Input letter: " + v
-        bedrock_new_obj["referenceResponse"] = json_responses[k]
-        bedrock_new_obj["modelResponses"][0]["response"] = json_responses[k]
-        bedrock_new_obj["modelResponses"][0]["modelIdentifier"] = MODEL
-        bedrock_list.append(bedrock_new_obj)
-
+        if k == '.DS_Store':
+            continue
+        try:
+            bedrock_new_obj = copy.deepcopy(bedrock_training_object)
+            bedrock_new_obj["prompt"] = prompt_string + " Input letter: " + v
+            bedrock_new_obj["referenceResponse"] = json_responses[k]
+            bedrock_new_obj["modelResponses"][0]["response"] = json_responses[k]
+            bedrock_new_obj["modelResponses"][0]["modelIdentifier"] = MODEL
+            bedrock_list.append(bedrock_new_obj)
+        except Exception as e:
+            print(f"Error processing letter {k}: {e}")
+            continue
 
 with jsonlines.open(DATA_PATH + 'output.jsonl', mode='w') as writer:
     for obj in bedrock_list:
