@@ -1,11 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import logging
-import os
-import pypdf
-from pathlib import Path
-import subprocess
-from docx2pdf import convert
 from app.core.auth import (
     AuthMiddleware,
     CognitoAuthenticator,
