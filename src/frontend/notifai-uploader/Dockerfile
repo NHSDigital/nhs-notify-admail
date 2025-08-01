@@ -12,7 +12,7 @@ WORKDIR /app
 COPY package.json package-lock.json ./
 
 # Install project dependencies using npm ci (ensures a clean, reproducible install)
-RUN --mount=type=cache, target=/root/.npm npm ci
+RUN --mount=type=cache,target=/root/.npm npm ci
 
 COPY . .
 
