@@ -3,6 +3,16 @@ import boto3
 import subprocess
 import base64
 
+# This script builds and pushes the backend and frontend Docker images to AWS ECR
+# The purpose of this script is to aid our deployments, where we don't have github actions to deploy
+# You can use the script by running:
+
+# python tools/push-ecrs/push_to_ecr.py --service frontend --environment dev1
+
+# Script argument defaults (if not provided):
+# environment: dev1
+# service: both (frontend and backend)
+
 
 def get_ecr_login_password(region):
     """Get ECR login password."""
@@ -56,9 +66,9 @@ def npm_install(service):
             exit(1)
 
 
-def build_and_push(service, region, account_id):
+def build_and_push(service, region, account_id, environment):
     """Build and push Docker image to ECR."""
-    image_name = f"nhs-test-notifyai-{service}"
+    image_name = f"nhs-{environment}-notifyai-{service}"
     ecr_repo = f"{account_id}.dkr.ecr.{region}.amazonaws.com/{image_name}"
     latest_tag = f"{ecr_repo}:latest"
 
@@ -106,7 +116,13 @@ def main():
     parser.add_argument(
         "--service",
         choices=["frontend", "backend"],
-        help="Specify the service to deploy (frontend or backend).",
+        help="Specify the service to deploy (frontend or backend), defaults to both if not provided.",
+    )
+    parser.add_argument(
+        "--environment",
+        choices=["dev1", "test"],
+        default="dev1",
+        help="Specify the environment to deploy to",
     )
     args = parser.parse_args()
 
@@ -119,11 +135,11 @@ def main():
     if args.service:
         if args.service == "frontend":
             npm_install(args.service)
-        build_and_push(args.service, region, account_id)
+        build_and_push(args.service, region, account_id, args.environment)
     else:
         npm_install("frontend")
-        build_and_push("frontend", region, account_id)
-        build_and_push("backend", region, account_id)
+        build_and_push("frontend", region, account_id, args.environment)
+        build_and_push("backend", region, account_id, args.environment)
 
 
 if __name__ == "__main__":
