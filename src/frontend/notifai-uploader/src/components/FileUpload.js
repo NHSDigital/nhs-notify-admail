@@ -5,7 +5,7 @@ import { useAuth } from './AuthContext';
 
 export default function FileUpload({ onFileUpload }) {
   const [uploadStatus, setUploadStatus] = useState('');
-  const { username, password } = useAuth();
+  const { user } = useAuth();
   const EnvBackendApiBaseUrl = process.env.REACT_APP_BACKEND_API_BASE_URL || '';
 
 
@@ -18,17 +18,13 @@ export default function FileUpload({ onFileUpload }) {
         const formData = new FormData();
         formData.append('file', file);
 
-        // Construct the Basic Auth header
-        // It's important to base64 encode "username:password"
-        const base64Credentials = btoa(`${username}:${password}`);
-
         const response = await axios.post(
           `https://${EnvBackendApiBaseUrl}/convert`, // Use the environment variable for the base URL
           formData,
           {
             headers: {
               'Content-Type': 'multipart/form-data',
-              'Authorization': `Basic ${base64Credentials}`,
+              'Authorization': `Bearer ${user.idToken}`,
             },
           }
         );
