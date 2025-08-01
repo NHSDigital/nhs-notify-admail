@@ -12,6 +12,7 @@ import base64
 # Script argument defaults (if not provided):
 # environment: dev1
 # service: both (frontend and backend)
+# push: true (pushes the images to ECR by default, otherwise just builds locally)
 
 
 def get_ecr_login_password(region):
@@ -66,7 +67,7 @@ def npm_install(service):
             exit(1)
 
 
-def build_and_push(service, region, account_id, environment):
+def build_and_push(service, region, account_id, environment, pushtoecr):
     """Build and push Docker image to ECR."""
     image_name = f"nhs-{environment}-notifyai-{service}"
     ecr_repo = f"{account_id}.dkr.ecr.{region}.amazonaws.com/{image_name}"
@@ -92,17 +93,18 @@ def build_and_push(service, region, account_id, environment):
         )
         print(f"Docker image for {service} built successfully.")
 
-        # Tag the Docker image
-        tag_cmd = f"docker tag {image_name}:latest {latest_tag}"
-        print(f"Tagging image: {tag_cmd}")
-        subprocess.run(tag_cmd, shell=True, check=True)
-        print("Docker image tagged successfully.")
+        if pushtoecr == "true":
+            # Tag the Docker image
+            tag_cmd = f"docker tag {image_name}:latest {latest_tag}"
+            print(f"Tagging image: {tag_cmd}")
+            subprocess.run(tag_cmd, shell=True, check=True)
+            print("Docker image tagged successfully.")
 
-        # Push the Docker image
-        push_cmd = f"docker push {latest_tag}"
-        print(f"Pushing image: {push_cmd}")
-        subprocess.run(push_cmd, shell=True, check=True)
-        print(f"Docker image for {service} pushed successfully to {latest_tag}.")
+            # Push the Docker image
+            push_cmd = f"docker push {latest_tag}"
+            print(f"Pushing image: {push_cmd}")
+            subprocess.run(push_cmd, shell=True, check=True)
+            print(f"Docker image for {service} pushed successfully to {latest_tag}.")
 
     except subprocess.CalledProcessError as e:
         print(f"Error during Docker build/push for {service}: {e}")
@@ -124,22 +126,29 @@ def main():
         default="dev1",
         help="Specify the environment to deploy to",
     )
+    parser.add_argument(
+        "--push",
+        choices=["true", "false"],
+        default="true",
+        help="Set to false, if you want to build the images but not push them to ECR",
+    )
     args = parser.parse_args()
 
     region = "eu-west-2"
     account_id = "767397886959"
 
-    password = get_ecr_login_password(region)
-    docker_login(region, account_id, password)
+    if args.push == "true":
+        password = get_ecr_login_password(region)
+        docker_login(region, account_id, password)
 
     if args.service:
         if args.service == "frontend":
             npm_install(args.service)
-        build_and_push(args.service, region, account_id, args.environment)
+        build_and_push(args.service, region, account_id, args.environment, args.push)
     else:
         npm_install("frontend")
-        build_and_push("frontend", region, account_id, args.environment)
-        build_and_push("backend", region, account_id, args.environment)
+        build_and_push("frontend", region, account_id, args.environment, args.push)
+        build_and_push("backend", region, account_id, args.environment, args.push)
 
 
 if __name__ == "__main__":

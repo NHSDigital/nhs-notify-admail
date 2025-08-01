@@ -25,7 +25,7 @@ export default function Login() {
       <div className="nhsuk-width-container">
         <form onSubmit={handleSubmit} className="nhsuk-form-group">
           <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 24 }}>
-            <img src={process.env.PUBLIC_URL + '/nhs-england-white.svg'} alt="NHS logo" className="nhsuk-login-logo" />
+            <img src={window.env?.PUBLIC_URL || process.env.PUBLIC_URL + '/nhs-england-white.svg'} alt="NHS logo" className="nhsuk-login-logo" />
           </div>
           <fieldset className="nhsuk-fieldset">
             <legend className="nhsuk-fieldset__legend nhsuk-fieldset__legend--l">
