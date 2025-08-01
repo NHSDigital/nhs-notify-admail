@@ -30,5 +30,8 @@ COPY --from=builder /app/build /usr/share/nginx/html
 
 EXPOSE 80
 
-# keeps nginx running
-CMD ["nginx", "-g", "daemon off;"]
+# Set the entrypoint
+ENTRYPOINT ["/entrypoint.sh"]
+
+# keeps nginx running replace by entrypoint.sh
+# CMD ["nginx", "-g", "daemon off;"]

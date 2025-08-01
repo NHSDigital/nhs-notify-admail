@@ -11,7 +11,7 @@ const AuthContext = createContext();
 const cognitoClient = new CognitoIdentityProviderClient({
   region: "eu-west-2",
 });
-const CLIENT_ID = process.env.REACT_APP_COGNITO_ID;
+const CLIENT_ID = window.env.REACT_APP_COGNITO_ID;
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
