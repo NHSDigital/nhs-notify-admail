@@ -28,6 +28,11 @@ COPY nginx.conf /etc/nginx/conf.d/nginx.conf
 
 COPY --from=builder /app/build /usr/share/nginx/html
 
+COPY entrypoint.sh /entrypoint.sh
+
+# Make the script executable
+RUN chmod +x /entrypoint.sh
+
 EXPOSE 80
 
 # Set the entrypoint
