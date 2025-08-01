@@ -11,7 +11,8 @@ const AuthContext = createContext();
 const cognitoClient = new CognitoIdentityProviderClient({
   region: "eu-west-2",
 });
-const CLIENT_ID = window.env.REACT_APP_COGNITO_ID;
+const CLIENT_ID = window.env?.REACT_APP_COGNITO_ID || process.env.REACT_APP_COGNITO_ID;
+const USER_POOL_ID = window.env?.REACT_APP_COGNITO_USER_POOL_ID || process.env.REACT_APP_COGNITO_USER_POOL_ID;
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
@@ -84,7 +85,7 @@ export function AuthProvider({ children }) {
         const challengeInput = {
           ChallengeName: "NEW_PASSWORD_REQUIRED",
           ClientId: CLIENT_ID,
-          UserPoolId: process.env.REACT_APP_COGNITO_USER_POOL_ID,
+          UserPoolId: USER_POOL_ID,
           ChallengeResponses: {
             USERNAME: username,
             NEW_PASSWORD: password,
