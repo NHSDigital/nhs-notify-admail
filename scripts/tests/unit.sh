@@ -17,6 +17,6 @@ cd "$(git rev-parse --show-toplevel)"
 # tests from here. If you want to run other test suites, see the predefined
 # tasks in scripts/test.mk.
 
-PYTHONPATH=src/backend/app
-pip install -r $PYTHONPATH/requirements.txt
-python -m pytest $PYTHONPATH/tests/
+PYTHONPATH=src/backend/
+pip install -r $PYTHONPATH/app/requirements.txt
+python -m pytest $PYTHONPATH/**/tests/
