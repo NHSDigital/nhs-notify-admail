@@ -27,14 +27,12 @@ FROM nginxinc/nginx-unprivileged:${NGINX_VERSION} AS runner
 # Use a built-in non-root user for security best practices
 USER nginx
 
-COPY nginx.conf /etc/nginx/nginx.conf
+# DO NOT copy a full nginx.conf.
+# Instead, copy your server-specific config to the conf.d directory.
+COPY nginx.conf /etc/nginx/conf.d/nginx.conf
 
 # Copy the static build output from the build stage to Nginx's default HTML serving directory
-COPY --chown=nginx:nginx  --from=builder /app/build /usr/share/nginx/html
+COPY --chown=nginx:nginx --from=builder /app/build /usr/share/nginx/html
 
-# Exposing port 80 as our backend is on 8080
-EXPOSE 80
-
-# Start Nginx directly with custom config
-ENTRYPOINT ["nginx", "-c", "/etc/nginx/nginx.conf"]
-CMD ["-g", "daemon off;"]
+# Exposing port 8080
+EXPOSE 8080
