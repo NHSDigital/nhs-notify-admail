@@ -78,7 +78,7 @@ jobs:
         if: always()
   perform-static-analysis:
     name: "Perform static analysis"
-    needs: [test-unit]
+    needs: [test-coverage]
     runs-on: ubuntu-latest
     permissions:
       id-token: write
