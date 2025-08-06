@@ -1,5 +1,0 @@
-[run]
-omit =
-    core/constants.py
-    core/config.py
-    tests/*

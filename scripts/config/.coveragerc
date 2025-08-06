@@ -1,0 +1,14 @@
+[run]
+omit =
+    */tests/*
+    */__init__.py
+    */__pycache__/*
+    */core/constants.py
+    */core/config.py
+
+[paths]
+source =
+    src/backend/bedrock-prompt-messager
+    /usr/src/src/backend/bedrock-prompt-messager
+    src/backend/app
+    /usr/src/src/backend/app
