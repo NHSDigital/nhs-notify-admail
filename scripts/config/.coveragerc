@@ -6,8 +6,8 @@ omit =
     */tests/*
     */__init__.py
     */__pycache__/*
-    */core/constants.py
-    */core/config.py
+    src/backend/*/core/constants.py
+    src/backend/*/core/config.py
 
 [paths]
 source =
