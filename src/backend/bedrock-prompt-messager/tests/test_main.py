@@ -12,6 +12,14 @@ def test_lambda_handler_missing_input_text():
     assert constants.ERROR_NO_INPUT_TEXT in result["body"]
 
 
+def test_lambda_handler_no_body():
+    event = {}
+    context = {}
+    response = lambda_handler(event, context)
+    assert response["statusCode"] == 400
+    assert "Request body must be a valid JSON object" in response["body"]
+
+
 def test_lambda_handler_invalid_json():
     event = {"body": "not a json"}
     context = {}

@@ -1,12 +1,17 @@
 import pytest
-from unittest.mock import patch, MagicMock, mock_open
+from unittest.mock import MagicMock, patch, mock_open
 from services.bedrock_service import BedrockService
 from core import constants
 
 
 @pytest.fixture
 def bedrock_service():
-    return BedrockService()
+    with patch("boto3.client") as mock_boto_client:
+        mock_bedrock_runtime = MagicMock()
+        mock_boto_client.return_value = mock_bedrock_runtime
+        service = BedrockService()
+        service.bedrock_runtime = mock_bedrock_runtime
+        return service
 
 
 def test_format_converse_response_tool_used(bedrock_service):
