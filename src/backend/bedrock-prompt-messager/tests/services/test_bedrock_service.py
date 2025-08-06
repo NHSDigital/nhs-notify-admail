@@ -77,34 +77,32 @@ def test_call_admail_bedrock_prompt_missing_system_prompt(
 
 
 @patch("builtins.open", new_callable=mock_open, read_data="system prompt")
-@patch("boto3.client")
-def test_call_admail_bedrock_prompt_success(
-    mock_boto_client, mock_open_file, bedrock_service
-):
-    mock_bedrock = MagicMock()
-    mock_bedrock.converse.return_value = {
-        "output": {
-            "message": {
-                "content": [
-                    {
-                        "toolUse": {
-                            "input": {
-                                "description": "desc",
-                                "rating": constants.RATING_BUSINESS,
-                                "reason": "reason",
-                                "advice": "advice",
+def test_call_admail_bedrock_prompt_success(mock_open_file, bedrock_service):
+    with patch.object(
+        bedrock_service, "bedrock_runtime", MagicMock()
+    ) as mock_bedrock_runtime:
+        mock_bedrock_runtime.converse.return_value = {
+            "output": {
+                "message": {
+                    "content": [
+                        {
+                            "toolUse": {
+                                "input": {
+                                    "description": "desc",
+                                    "rating": constants.RATING_BUSINESS,
+                                    "reason": "reason",
+                                    "advice": "advice",
+                                }
                             }
                         }
-                    }
-                ]
+                    ]
+                }
             }
         }
-    }
-    mock_bedrock.apply_guardrail.return_value = {}
-    mock_boto_client.return_value = mock_bedrock
+        mock_bedrock_runtime.apply_guardrail.return_value = {"output": {}}
 
-    with patch.object(bedrock_service, "log_prompt_details_to_s3") as mock_log:
-        result = bedrock_service.call_admail_bedrock_prompt("test letter")
-        assert result["statusCode"] == 200
-        assert "description" in result["body"]
-        mock_log.assert_called_once()
+        with patch.object(bedrock_service, "log_prompt_details_to_s3") as mock_log:
+            result = bedrock_service.call_admail_bedrock_prompt("test letter")
+            assert result["statusCode"] == 200
+            assert "description" in result["body"]
+            mock_log.assert_called_once()
