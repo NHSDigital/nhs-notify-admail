@@ -9,4 +9,4 @@ cd "$(git rev-parse --show-toplevel)"
 # add in whatever is appropriate to your project.
 PYTHONPATH=src/backend/
 find $PYTHONPATH -name "requirements.txt" -exec pip install -r {} \;
-python -m pytest $PYTHONPATH/**/tests/ --cov=$PYTHONPATH/app --cov-report=xml
+python -m pytest $PYTHONPATH/**/tests/ --cov=$PYTHONPATH --cov-report=xml
