@@ -1,4 +1,7 @@
 [run]
+source =
+    src/backend/app
+    src/backend/bedrock-prompt-messager
 omit =
     */tests/*
     */__init__.py
