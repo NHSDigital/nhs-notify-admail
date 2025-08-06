@@ -172,11 +172,12 @@ data "aws_iam_policy_document" "bedrock_guardrail_policy" {
       "bedrock:ApplyGuardrail"
     ]
     resources = [
-      aws_bedrock_guardrail.notifai-bedrock-guardrail.guardrail_arn # Reference the guardrail ARN
+      aws_bedrock_guardrail.notifai-bedrock-guardrail.guardrail_arn
     ]
   }
 }
 
+#Note: This guardrail is not enforced, but its result is logged, inside the Bedrock Lambda Function
 resource "aws_bedrock_guardrail" "notifai-bedrock-guardrail" {
   name                      = "${local.csi}-bedrock-guardrail"
   blocked_input_messaging   = "This is not an acceptable input prompt and has been rejected."
@@ -200,7 +201,7 @@ resource "aws_bedrock_guardrail" "notifai-bedrock-guardrail" {
       type            = "INSULTS"
     }
     filters_config {
-      input_strength  = "HIGH" # this prompt attack detection is not working correctly may need to pause for now
+      input_strength  = "HIGH"
       output_strength = "NONE"
       type            = "PROMPT_ATTACK"
     }
