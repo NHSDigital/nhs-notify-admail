@@ -1,13 +1,10 @@
 [run]
-source =
-    src/backend/app
-    src/backend/bedrock-prompt-messager
 omit =
     */tests/*
     */__init__.py
     */__pycache__/*
-    src/backend/*/core/constants.py
-    src/backend/*/core/config.py
+    */core/constants.py
+    */core/config.py
 
 [paths]
 source =
