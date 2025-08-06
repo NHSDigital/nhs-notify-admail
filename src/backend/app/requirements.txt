@@ -10,3 +10,5 @@ python-jose
 requests
 python-dotenv
 pytest-asyncio
+coverage
+pytest-cov
