@@ -8,7 +8,5 @@ omit =
 
 [paths]
 source =
-    src/backend/bedrock-prompt-messager
-    /usr/src/src/backend/bedrock-prompt-messager
-    src/backend/app
-    /usr/src/src/backend/app
+    .
+    /usr/src
