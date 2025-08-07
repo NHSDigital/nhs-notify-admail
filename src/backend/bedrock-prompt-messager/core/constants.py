@@ -1,4 +1,3 @@
-# pragma: no cover
 # Constants for tool definition
 TOOL_NAME = "admail_eligibility_analyzer"
 TOOL_DESCRIPTION = "Analyse a letter, and provide a description and reasoning about AdMail eligibility."
