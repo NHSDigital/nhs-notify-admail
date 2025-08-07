@@ -8,5 +8,9 @@ cd "$(git rev-parse --show-toplevel)"
 # file will be called if you run it locally as if you run it on CI.
 # add in whatever is appropriate to your project.
 PYTHONPATH=src/backend/
-pip install -r $PYTHONPATH/app/requirements.txt
-python -m pytest $PYTHONPATH/**/tests/ --cov=$PYTHONPATH/app --cov-report=xml
+find $PYTHONPATH -name "requirements.txt" -exec pip install -r {} \;
+python -m pytest \
+  $PYTHONPATH/**/tests/ \
+  --cov-config=scripts/config/.coveragerc \
+  --cov-report=xml \
+  --cov=.

@@ -18,5 +18,5 @@ cd "$(git rev-parse --show-toplevel)"
 # tasks in scripts/test.mk.
 
 PYTHONPATH=src/backend/
-pip install -r $PYTHONPATH/app/requirements.txt
+find $PYTHONPATH -name "requirements.txt" -exec pip install -r {} \;
 python -m pytest $PYTHONPATH/**/tests/
