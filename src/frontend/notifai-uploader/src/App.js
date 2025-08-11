@@ -1,16 +1,16 @@
-import './App.css';
+import "./App.css";
 import { useState } from "react";
-import Header from './components/Header';
-import FileUpload from './components/FileUpload';
-import AIFeedback from './components/AIfeedback';
-import axios from 'axios';
-import RoyalMailCalculator from './components/Costingtool';
-import { useAuth } from './components/AuthContext';
-import Login from './components/Login';
-
+import Header from "./components/Header";
+import FileUpload from "./components/FileUpload";
+import AIFeedback from "./components/AIfeedback";
+import axios from "axios";
+import RoyalMailCalculator from "./components/Costingtool";
+import Login from "./components/Login";
+import { useAuth } from "./components/AuthContext";
 
 function App() {
   const [feedback, setFeedback] = useState({});
+  const [pages, setPages] = useState(0);
   const EnvLambdaFunctionApiBaseUrl = window.env?.REACT_APP_API_GATEWAY || process.env.REACT_APP_API_GATEWAY;
   const { user, refreshSession } = useAuth();
 
@@ -52,8 +52,11 @@ function App() {
 
   const handleFileUpload = (file) => {
     setTimeout(() => {
-      const promptresp = getPromptResp(file);
-      setFeedback(promptresp);
+      // Get pages from the file feedback
+      const jsonData = JSON.parse(file);
+      setPages(jsonData.pages);
+      const promptResp = getPromptResp(jsonData.extracted_text);
+      setFeedback(promptResp);
     }, 1000); // Simulate processing delay
   };
 
@@ -65,7 +68,7 @@ function App() {
           <FileUpload onFileUpload={handleFileUpload} />
           <AIFeedback feedback={feedback} />
         </div>
-        <RoyalMailCalculator />
+        <RoyalMailCalculator pages={pages}/>
       </main>
     </div>
   );
