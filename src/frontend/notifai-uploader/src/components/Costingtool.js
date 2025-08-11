@@ -1,16 +1,14 @@
-import React, { useState } from 'react';
-import { Info } from 'lucide-react';
-import './Costingtool.css';
+import React, { useState } from "react";
+import { Info } from "lucide-react";
+import "./Costingtool.css";
 
-export default function RoyalMailCalculator({derivedPages}) {
+export default function RoyalMailCalculator({ derivedPages }) {
   const [items, setItems] = useState(450000);
   const [firstClass, setFirstClass] = useState(false);
   const [letterPages, setLetterPages] = useState(derivedPages || 2);
 
-
   // Simplified rate calculations (example rates - would need actual Royal Mail rates)
   const calculateCosts = () => {
-
     const advertisingRates = {
       1: 0.47,
       2: 0.51,
@@ -21,14 +19,14 @@ export default function RoyalMailCalculator({derivedPages}) {
 
     // see https://notify.nhs.uk/pricing/letters the index represents number of pages sent in the mail
     const businessRates = {
-      1: {"1st Class": 1.78, "Business": 0.67},
-      2: {"1st Class": 1.82, "Business": 0.71},
-      3: {"1st Class": 1.86, "Business": 0.76},
-      4: {"1st Class": 1.92, "Business": 0.81},
-      5: {"1st Class": 1.96, "Business": 0.85},
+      1: { "1st Class": 1.78, Business: 0.67 },
+      2: { "1st Class": 1.82, Business: 0.71 },
+      3: { "1st Class": 1.86, Business: 0.76 },
+      4: { "1st Class": 1.92, Business: 0.81 },
+      5: { "1st Class": 1.96, Business: 0.85 },
     };
 
-    let mailClass = firstClass === true? "1st Class": "Business";
+    let mailClass = firstClass === true ? "1st Class" : "Business";
 
     const advertisingCost = items * advertisingRates[letterPages];
     const businessCost = items * businessRates[letterPages][mailClass];
@@ -44,15 +42,15 @@ export default function RoyalMailCalculator({derivedPages}) {
   const costs = calculateCosts();
 
   const formatCurrency = (amount) => {
-    return new Intl.NumberFormat('en-GB', {
-      style: 'currency',
-      currency: 'GBP',
-      minimumFractionDigits: 2
+    return new Intl.NumberFormat("en-GB", {
+      style: "currency",
+      currency: "GBP",
+      minimumFractionDigits: 2,
     }).format(amount);
   };
 
   const formatNumber = (num) => {
-    return new Intl.NumberFormat('en-GB').format(num);
+    return new Intl.NumberFormat("en-GB").format(num);
   };
 
   return (
@@ -60,15 +58,32 @@ export default function RoyalMailCalculator({derivedPages}) {
       {/* Input Parameters Section */}
       <div className="section">
         <h1 className="title">Costing tool</h1>
-        <p>See how much you could save the NHS if your letter is suitable for Admail.</p>
+        <p>
+          See how much you could save the NHS if your letter is suitable for
+          Admail.
+        </p>
         <h2 className="title">Input Parameters</h2>
-        <h2 className="title">Your uploaded letter has {letterPages} pages</h2>
+        {derivedPages && <p>Your uploaded letter has {derivedPages} pages</p>}
 
         {/* Pages per letter */}
         <div className="parameterGroup">
           <div className="parameterHeader">
-            <label className="label">Number of pages in the letter</label>
-            <span className="value">{letterPages}</span>
+            <label className="label">Number of pages</label>
+            <input
+              type="number"
+              min="1"
+              max="5"
+              value={letterPages}
+              onChange={(e) => {
+                const val = e.target.value;
+                if (val === "") {
+                  setLetterPages(1);
+                } else {
+                  setLetterPages(Math.max(1, Math.min(5, parseInt(val, 10))));
+                }
+              }}
+              className="value editableValue"
+            />
           </div>
           <div className="sliderContainer">
             <input
@@ -94,47 +109,63 @@ export default function RoyalMailCalculator({derivedPages}) {
           </div>
         </div>
 
-        {/* Number of items */}
+        {/* Number of letters */}
         <div className="parameterGroup">
           <div className="parameterHeader">
             <label className="label">Number of letters</label>
-            <span className="value">{formatNumber(items)}</span>
+            <input
+              type="number"
+              defaultValue={450000}
+              min="1"
+              max="2000000"
+              value={items}
+              onChange={(e) => {
+                const val = e.target.value;
+                if (val === "") {
+                  setItems(1);
+                } else {
+                  setItems(Math.max(1, Math.min(2000000, parseInt(val, 10))));
+                }
+              }}
+              className="value editableValue"
+            />
           </div>
           <div className="sliderContainer">
             <input
               type="range"
-              min="100"
+              min="1"
               max="2000000"
-              step="50"
+              step="1"
               value={items}
               onChange={(e) => setItems(parseInt(e.target.value))}
               className="slider"
               style={{
-                background: `linear-gradient(to right, #ef4444 0%, #ef4444 ${((items - 100) / 1999900) * 100}%, #e5e7eb ${((items - 100) / 1999900) * 100}%, #e5e7eb 100%)`
+                background: `linear-gradient(to right, #ef4444 0%, #ef4444 ${
+                  ((items - 100) / 1999900) * 100
+                }%, #e5e7eb ${((items - 100) / 1999900) * 100}%, #e5e7eb 100%)`,
               }}
             />
             <div className="sliderLabels">
-              <span>100</span>
+              <span>1</span>
               <span>2000000</span>
             </div>
-            <input className="numberInput" defaultValue='450000' onChange={e => setItems(e.target.value)} type="number" />
           </div>
         </div>
       </div>
 
       {/* Apply 1st Class */}
       <div className="checkboxContainer">
-          <input
-            type="checkbox"
-            id="1st Class"
-            checked={firstClass}
-            onChange={(e) => setFirstClass(e.target.checked)}
-            className="checkbox"
-          />
-          <label htmlFor="firstClass" className="checkboxLabel">
-            Send via First Class mail
-          </label>
-        </div>
+        <input
+          type="checkbox"
+          id="1st Class"
+          checked={firstClass}
+          onChange={(e) => setFirstClass(e.target.checked)}
+          className="checkbox"
+        />
+        <label htmlFor="firstClass" className="checkboxLabel">
+          Send via First Class mail
+        </label>
+      </div>
 
       {/* Cost Comparison Section */}
       <div className="section">
@@ -155,13 +186,15 @@ export default function RoyalMailCalculator({derivedPages}) {
           {/* Business Mail Cost */}
           <div className="costCard">
             <div className="costHeader">
-              <h3 className="costTitle">Mail Cost {firstClass? " / First Class" : " / Business"}</h3>
+              <h3 className="costTitle">
+                Mail Cost {firstClass ? " / First Class" : " / Business"}
+              </h3>
               <Info className="infoIcon" />
             </div>
-            {firstClass && <div className='costSubTitle'>First Class applied</div>}
-            <div className="costAmount">
-              {formatCurrency(costs.business)}
-            </div>
+            {firstClass && (
+              <div className="costSubTitle">First Class applied</div>
+            )}
+            <div className="costAmount">{formatCurrency(costs.business)}</div>
           </div>
 
           {/* Savings */}
@@ -180,7 +213,12 @@ export default function RoyalMailCalculator({derivedPages}) {
       {/* Disclaimer */}
       <div className="disclaimer">
         <p className="disclaimerText">
-          <span className="disclaimerBold">Disclaimer:</span> This app uses simplified calculations based on selected parameters from the <a href="https://notify.nhs.uk/pricing/letters">NHS Notify letters</a> agreed business rates. The advertising mailing rate is taken from the currently approved supplier. Contact NHS Notify for the latest mailing rates.
+          <span className="disclaimerBold">Disclaimer:</span> This app uses
+          simplified calculations based on selected parameters from the{" "}
+          <a href="https://notify.nhs.uk/pricing/letters">NHS Notify letters</a>{" "}
+          agreed business rates. The advertising mailing rate is taken from the
+          currently approved supplier. Contact NHS Notify for the latest mailing
+          rates.
         </p>
       </div>
     </div>
