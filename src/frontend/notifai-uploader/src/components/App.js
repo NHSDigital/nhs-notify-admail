@@ -11,7 +11,7 @@ import { useAuth } from "./components/AuthContext";
 function App() {
   const [feedback, setFeedback] = useState({});
   const [pages, setPages] = useState(0);
-  const EnvLambdaFunctionApiBaseUrl = process.env.REACT_APP_API_GATEWAY || "";
+  const EnvLambdaFunctionApiBaseUrl = window.env?.REACT_APP_API_GATEWAY || process.env.REACT_APP_API_GATEWAY;
   const { user, refreshSession } = useAuth();
 
   if (!user) {

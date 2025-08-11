@@ -6,7 +6,7 @@ import { useAuth } from './AuthContext';
 export default function FileUpload({ onFileUpload }) {
   const [uploadStatus, setUploadStatus] = useState('');
   const { user } = useAuth();
-  const EnvBackendApiBaseUrl = process.env.REACT_APP_BACKEND_API_BASE_URL || '';
+  const EnvBackendApiBaseUrl = window.env?.REACT_APP_BACKEND_API_BASE_URL || process.env.REACT_APP_BACKEND_API_BASE_URL;
 
 
   const handleFileChange = async (event) => {
