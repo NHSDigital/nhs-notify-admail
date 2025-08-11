@@ -2,15 +2,14 @@
 
 ## Script Purpose
 
-This script allows us to create LLM Evaluations programmatically, to remove manual effort, and data entry errors.
+This script allows you to create LLM Evaluations programmatically, to remove manual effort, and lessen data entry errors.
+
 Also, the script can be used for automated evaluation runs, to ensure regular check-ups on the LLM performance
 
 ## Using the script
 
-- cd to tools/evaluation-runner
-- if Boto3 is not installed, run `pip install -r tools/evaluation-runner/requirements.txt`
-- run;
-`python tools/evaluation-runner/bedrock_evaluation_creator.py`
+- If the Python requirements are not installed, run `pip install -r tools/evaluation-runner/requirements.txt`
+- run `python tools/evaluation-runner/bedrock_evaluation_creator.py`
 
 ## Setting up local environment
 
