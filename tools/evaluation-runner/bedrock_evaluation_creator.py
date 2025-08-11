@@ -1,23 +1,20 @@
 import boto3
 from datetime import datetime
 import os
+from dotenv import load_dotenv
 
-# Configure knowledge base and model settings
+load_dotenv()
+
+# Configure environment variables
 evaluator_model = os.getenv("EVALUATOR_MODEL_IDENTIFIER").strip().strip('"')
 generator_model = os.getenv("INFERENCE_MODEL_IDENTIFIER").strip().strip('"')
-custom_metrics_evaluator_model = (
-    os.getenv("EVALUATOR_MODEL_IDENTIFIER").strip().strip('"')
-)
 role_arn = os.getenv("ROLE_ARN").strip().strip('"')
-
-# Specify S3 locations
 input_data = os.getenv("INPUT_PROMPT_S3_URI").strip().strip('"')
 output_path = os.getenv("RESULTS_S3_URI").strip().strip('"')
+aws_region = os.getenv("AWS_REGION").strip().strip('"')
 
 # Create Bedrock client
-bedrock_client = boto3.client(
-    "bedrock", region_name=os.getenv("AWS_REGION").strip().strip('"')
-)
+bedrock_client = boto3.client("bedrock", region_name=aws_region)
 
 rating_metric = {
     "customMetricDefinition": {
@@ -42,6 +39,8 @@ model_eval_job_name = (
     f"model-evaluation-custom-metrics-{datetime.now().strftime('%Y-%m-%d-%H-%M-%S')}"
 )
 
+print(f"Creating model evaluation job: {model_eval_job_name}")
+
 model_eval_job = bedrock_client.create_evaluation_job(
     jobName=model_eval_job_name,
     jobDescription="Evaluate model performance with custom Rating metric",
@@ -60,12 +59,19 @@ model_eval_job = bedrock_client.create_evaluation_job(
                         "name": "ModelEvalDataset",
                         "datasetLocation": {"s3Uri": input_data},
                     },
+                    # Note: the "Builtin.*" metrics, and their explainations can be found here: https://docs.aws.amazon.com/bedrock/latest/userguide/model-evaluation-metrics.html
                     "metricNames": [
                         "Builtin.Correctness",
                         "Builtin.Completeness",
+                        "Builtin.Faithfulness",
+                        "Builtin.Helpfulness",
                         "Builtin.Coherence",
                         "Builtin.Relevance",
                         "Builtin.FollowingInstructions",
+                        "Builtin.ProfessionalStyleAndTone",
+                        "Builtin.Harmfulness",
+                        "Builtin.Stereotyping",
+                        "Builtin.Refusal",
                         "Rating",
                     ],
                 }
@@ -73,9 +79,7 @@ model_eval_job = bedrock_client.create_evaluation_job(
             "customMetricConfig": {
                 "customMetrics": [rating_metric],
                 "evaluatorModelConfig": {
-                    "bedrockEvaluatorModels": [
-                        {"modelIdentifier": custom_metrics_evaluator_model}
-                    ]
+                    "bedrockEvaluatorModels": [{"modelIdentifier": evaluator_model}]
                 },
             },
             "evaluatorModelConfig": {
@@ -86,4 +90,10 @@ model_eval_job = bedrock_client.create_evaluation_job(
 )
 
 print(f"Created model evaluation job: {model_eval_job_name}")
-print(f"Job ID: {model_eval_job['jobArn']}")
+
+evaluation_aws_url = f"https://{aws_region}.console.aws.amazon.com/bedrock/home?region={aws_region}#/eval/model-evaluation/report?job={model_eval_job_name}&jobIdentifier={model_eval_job["jobArn"]}"
+print("View the evaluation report in the AWS Console with the below link;")
+print("NOTE: The report can take 10 - 15 minutes to complete")
+print("---")
+print(f"{evaluation_aws_url}")
+print("---")

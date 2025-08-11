@@ -1,4 +1,9 @@
-# LLM Evaluation Running Script How To
+# LLM Evaluation Running Script How-To
+
+## Script Purpose
+
+This script allows us to create LLM Evaluations programmatically, to remove manual effort, and data entry errors.
+Also, the script can be used for automated evaluation runs, to ensure regular check-ups on the LLM performance
 
 ## Using the script
 
