@@ -125,13 +125,13 @@ export default function RoyalMailCalculator({ pages }) {
               defaultValue={450000}
               min="1"
               max="2000000"
-              value={items}
+              value={formatNumber(items)}
               onChange={(e) => {
                 const val = e.target.value;
                 if (val === "") {
                   setItems(1);
                 } else {
-                  setItems(formatNumber(Math.max(1, Math.min(2000000, parseInt(val, 10)))));
+                  setItems(Math.max(1, Math.min(2000000, parseInt(val, 10))));
                 }
               }}
               className="value editableValue"
