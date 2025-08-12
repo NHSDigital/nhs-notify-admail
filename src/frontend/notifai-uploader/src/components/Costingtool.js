@@ -9,6 +9,7 @@ export default function RoyalMailCalculator({ derivedPages }) {
 
   useEffect(() => {
   if (derivedPages != null) {
+    console.log("Derived pages updated:", derivedPages);
     setLetterPages(derivedPages);
   }
 }, [derivedPages]);
