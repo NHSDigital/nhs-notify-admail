@@ -50,7 +50,7 @@ async def convert_file_service(file: UploadFile):
             with open(CONVERTED_FILE_NAME, "rb") as f:
                 converted_data = f.read()
                 response_obj["extracted_text"] = converted_data
-                response_obj["pages"] = ""
+                response_obj["pages"] = None
                 response_obj["file_type"] = "docx"
 
         try:

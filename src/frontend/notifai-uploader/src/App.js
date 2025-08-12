@@ -11,7 +11,7 @@ import { useAuth } from "./components/AuthContext";
 function App() {
   const [feedback, setFeedback] = useState({});
   const [pages, setPages] = useState(0);
-  const [letterType, setLetterType] = useState("docx");
+  const [letterType, setLetterType] = useState("");
   const EnvLambdaFunctionApiBaseUrl = window.env?.REACT_APP_API_GATEWAY || process.env.REACT_APP_API_GATEWAY;
   const { user, refreshSession } = useAuth();
 
@@ -54,8 +54,8 @@ function App() {
   const handleFileUpload = (file) => {
     setTimeout(() => {
       // Get pages from the file feedback
-      setLetterType(file.letterType || "docx");
-      if (file.letterType !== "docx") {
+      setLetterType(file.file_type || "docx");
+      if (file.file_type !== "docx") {
         setPages(file.pages);
       }
       const promptResp = getPromptResp(file.extracted_text);
