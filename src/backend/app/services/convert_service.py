@@ -58,7 +58,7 @@ async def convert_file_service(file: UploadFile):
                 )
             except Exception as e:
                 logger.error(e)
-        return {'extracted_text': extracted_text, 'page_count':page_count}
+        return {'extracted_text': extracted_text, 'pages':page_count}
     except Exception as e:
         logger.error(f"Server error: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))

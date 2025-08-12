@@ -28,7 +28,7 @@ export default function FileUpload({ onFileUpload }) {
           }
         );
         setUploadStatus('Successfully Uploaded');
-        onFileUpload(response.data); // Call the parent callback
+        onFileUpload(response.data.extracted_text); // Call the parent callback
         setTimeout(() => setUploadStatus(''), 3000); // Clear status after 3 seconds
       } catch (error) {
         console.error('Upload failed:', error);
