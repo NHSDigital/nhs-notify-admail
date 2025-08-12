@@ -26,7 +26,7 @@ async def test_convert_pdf_success(mock_pdfreader):
     )
 
     result = await convert_file_service(upload_file)
-    assert pdf_convert_result in result
+    assert pdf_convert_result in result.extracted_text
 
     # Clean up the file created by the service
     if os.path.exists("test.pdf"):
@@ -63,7 +63,7 @@ async def test_convert_docx_success(mock_run, mock_remove):
         )
 
         result = await convert_file_service(upload_file)
-        assert txt_convert_result in result
+        assert txt_convert_result in result.extracted_text
 
     # Assert that the service attempted to clean up the files
     mock_remove.assert_any_call(CONVERTED_FILE_NAME)
