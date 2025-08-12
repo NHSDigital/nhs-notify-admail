@@ -6,14 +6,16 @@ export default function RoyalMailCalculator({ pages, letterType }) {
   const [items, setItems] = useState(450000);
   const [firstClass, setFirstClass] = useState(false);
   const [letterPages, setLetterPages] = useState(pages || 2);
+  const [letter, setLetter] = useState("");
 
-  let letterPDF = letterType === "pdf" ? true : false;
+
 
   useEffect(() => {
   if (pages != null) {
     setLetterPages(Math.max(1, Math.min(5, Number(pages) || 1)));
   }
-}, [pages]);
+  setLetter(letterType);
+  }, [pages, letterType]);
 
   // Simplified rate calculations (example rates - would need actual Royal Mail rates)
   const calculateCosts = () => {
@@ -71,9 +73,8 @@ export default function RoyalMailCalculator({ pages, letterType }) {
           Admail.
         </p>
         <h2 className="title">Input Parameters</h2>
-        {letterPDF && <p>Your uploaded PDF letter has {pages} pages</p>}
-        {!letterPDF && <p>note: Please check your uploaded docx for page numbers</p>}
-
+        {letter === "pdf" && <p>Your uploaded PDF letter has {pages} pages</p>}
+        {letter === "docx" && <p>note: Please check your uploaded docx for page numbers</p>}
         {/* Pages per letter */}
         <div className="parameterGroup">
           <div className="parameterHeader">
@@ -127,7 +128,7 @@ export default function RoyalMailCalculator({ pages, letterType }) {
               defaultValue={450000}
               min="1"
               max="2000000"
-              value={items}
+              value={formatNumber(items)}
               onChange={(e) => {
                 const val = e.target.value;
                 if (val === "") {
@@ -145,7 +146,7 @@ export default function RoyalMailCalculator({ pages, letterType }) {
               min="1"
               max="2000000"
               step="1"
-              value={items}
+              value={formatNumber(items)}
               onChange={(e) => setItems(parseInt(e.target.value))}
               className="slider"
               style={{
