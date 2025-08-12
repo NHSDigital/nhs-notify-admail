@@ -15,6 +15,7 @@ async def convert_file_service(file: UploadFile):
         file_type: str = filename.suffix
         content: bytes = await file.read()
         extracted_text = ""
+        page_count = 0
 
         with open(f"{file.filename}", "wb") as f:  # saves to the build folder
             f.write(content)
@@ -22,6 +23,7 @@ async def convert_file_service(file: UploadFile):
         # not always 100% successful if pdfs are complicated or encoded in a way that it cannot parse
         if file_type == ".pdf":
             reader = pypdf.PdfReader(f"{file.filename}")
+            page_count += len(reader.pages)
 
             for page in reader.pages:
                 text = page.extract_text()
@@ -38,14 +40,13 @@ async def convert_file_service(file: UploadFile):
             ]
             completed_process = subprocess.run(command, check=True, capture_output=True)
 
-            # Read the converted file
-            with open(CONVERTED_FILE_NAME, "rb") as f:
-                converted_data = f.read()
-                extracted_text = converted_data
+            reader = pypdf.PdfReader(f"{file.filename}")
+            page_count += len(reader.pages)
 
-            # prompt_resp = bedrock_call(extracted_text)
-            logger.info("We have the prompt response")
-            logger.info(extracted_text)
+            for page in reader.pages:
+                text = page.extract_text()
+                if text:
+                    extracted_text += text + "\n"
 
             try:
                 # finally remove file:
@@ -57,7 +58,7 @@ async def convert_file_service(file: UploadFile):
                 )
             except Exception as e:
                 logger.error(e)
-        return extracted_text
+        return {'extracted_text': extracted_text, 'page_count':page_count}
     except Exception as e:
         logger.error(f"Server error: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))

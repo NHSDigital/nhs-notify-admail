@@ -8,7 +8,6 @@ export default function FileUpload({ onFileUpload }) {
   const { user } = useAuth();
   const EnvBackendApiBaseUrl = window.env?.REACT_APP_BACKEND_API_BASE_URL || process.env.REACT_APP_BACKEND_API_BASE_URL;
 
-
   const handleFileChange = async (event) => {
     const file = event.target.files[0];
     if (file) {
@@ -19,7 +18,7 @@ export default function FileUpload({ onFileUpload }) {
         formData.append('file', file);
 
         const response = await axios.post(
-          `https://${EnvBackendApiBaseUrl}/convert`, // Use the environment variable for the base URL
+          `https://${EnvBackendApiBaseUrl}/convert`,
           formData,
           {
             headers: {
