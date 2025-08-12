@@ -53,9 +53,8 @@ function App() {
   const handleFileUpload = (file) => {
     setTimeout(() => {
       // Get pages from the file feedback
-      const jsonData = JSON.parse(file);
-      setPages(jsonData.pages);
-      const promptResp = getPromptResp(jsonData.extracted_text);
+      setPages(file.pages);
+      const promptResp = getPromptResp(file.extracted_text);
       setFeedback(promptResp);
     }, 1000); // Simulate processing delay
   };
