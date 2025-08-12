@@ -2,14 +2,15 @@ import React, { useState, useEffect } from "react";
 import { Info } from "lucide-react";
 import "./Costingtool.css";
 
-export default function RoyalMailCalculator({ pages }) {
+export default function RoyalMailCalculator({ pages, letterType }) {
   const [items, setItems] = useState(450000);
   const [firstClass, setFirstClass] = useState(false);
   const [letterPages, setLetterPages] = useState(pages || 2);
 
+  let letterPDF = letterType === "pdf" ? true : false;
+
   useEffect(() => {
   if (pages != null) {
-    console.log("Derived pages updated:", pages);
     setLetterPages(Math.max(1, Math.min(5, Number(pages) || 1)));
   }
 }, [pages]);
@@ -70,7 +71,8 @@ export default function RoyalMailCalculator({ pages }) {
           Admail.
         </p>
         <h2 className="title">Input Parameters</h2>
-        {pages && <p>Your uploaded letter has {pages} pages</p>}
+        {letterPDF && <p>Your uploaded PDF letter has {pages} pages</p>}
+        {!letterPDF && <p>note: Please check your uploaded docx for page numbers</p>}
 
         {/* Pages per letter */}
         <div className="parameterGroup">

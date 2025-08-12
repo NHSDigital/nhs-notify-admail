@@ -10,6 +10,8 @@ logger = logging.getLogger(__name__)
 
 
 async def convert_file_service(file: UploadFile):
+    response_obj = {"extracted_text": ""}
+
     try:
         filename: Path = Path(file.filename)
         file_type: str = filename.suffix
@@ -30,6 +32,10 @@ async def convert_file_service(file: UploadFile):
                 if text:
                     extracted_text += text + "\n"
 
+            response_obj["extracted_text"] = extracted_text.strip()
+            response_obj["pages"] = page_count
+            response_obj["file_type"] = "pdf"
+
         else:
             # Run Pandoc to convert the file from commandline
             command = [
@@ -40,25 +46,24 @@ async def convert_file_service(file: UploadFile):
             ]
             completed_process = subprocess.run(command, check=True, capture_output=True)
 
-            reader = pypdf.PdfReader(f"{file.filename}")
-            page_count += len(reader.pages)
+            # Read the converted file
+            with open(CONVERTED_FILE_NAME, "rb") as f:
+                converted_data = f.read()
+                response_obj["extracted_text"] = converted_data
+                response_obj["pages"] = ""
+                response_obj["file_type"] = "docx"
 
-            for page in reader.pages:
-                text = page.extract_text()
-                if text:
-                    extracted_text += text + "\n"
+        try:
+            # finally remove file:
+            os.remove(CONVERTED_FILE_NAME)
+            os.remove(f"{file.filename}")
 
-            try:
-                # finally remove file:
-                os.remove(CONVERTED_FILE_NAME)
-                os.remove(f"{file.filename}")
-
-                logger.info(
-                    f"File '{CONVERTED_FILE_NAME}' and '{file.filename}'deleted successfully."
-                )
-            except Exception as e:
-                logger.error(e)
-        return {'extracted_text': extracted_text, 'pages':page_count}
+            logger.info(
+                f"File '{CONVERTED_FILE_NAME}' and '{file.filename}'deleted successfully."
+            )
+        except Exception as e:
+            logger.error(e)
+        return response_obj
     except Exception as e:
         logger.error(f"Server error: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
