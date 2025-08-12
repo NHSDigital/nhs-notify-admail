@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Info } from "lucide-react";
 import "./Costingtool.css";
 
@@ -6,6 +6,12 @@ export default function RoyalMailCalculator({ derivedPages }) {
   const [items, setItems] = useState(450000);
   const [firstClass, setFirstClass] = useState(false);
   const [letterPages, setLetterPages] = useState(derivedPages || 2);
+
+  useEffect(() => {
+  if (derivedPages != null) {
+    setLetterPages(derivedPages);
+  }
+}, [derivedPages]);
 
   // Simplified rate calculations (example rates - would need actual Royal Mail rates)
   const calculateCosts = () => {
@@ -124,7 +130,7 @@ export default function RoyalMailCalculator({ derivedPages }) {
                 if (val === "") {
                   setItems(1);
                 } else {
-                  setItems(Math.max(1, Math.min(2000000, parseInt(val, 10))));
+                  setItems(formatNumber(Math.max(1, Math.min(2000000, parseInt(val, 10)))));
                 }
               }}
               className="value editableValue"
