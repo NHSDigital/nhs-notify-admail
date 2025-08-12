@@ -10,7 +10,7 @@ export default function RoyalMailCalculator({ pages }) {
   useEffect(() => {
   if (pages != null) {
     console.log("Derived pages updated:", pages);
-    setLetterPages(pages);
+    setLetterPages(Math.max(1, Math.min(5, Number(pages) || 1)));
   }
 }, [pages]);
 
@@ -86,7 +86,7 @@ export default function RoyalMailCalculator({ pages }) {
                 if (val === "") {
                   setLetterPages(1);
                 } else {
-                  setLetterPages(Math.max(1, Math.min(5, parseInt(val, 10))));
+                  setLetterPages(Math.max(1, Math.min(5, parseInt(val, 10))) || 1);
                 }
               }}
               className="value editableValue"
@@ -125,7 +125,7 @@ export default function RoyalMailCalculator({ pages }) {
               defaultValue={450000}
               min="1"
               max="2000000"
-              value={formatNumber(items)}
+              value={items}
               onChange={(e) => {
                 const val = e.target.value;
                 if (val === "") {
