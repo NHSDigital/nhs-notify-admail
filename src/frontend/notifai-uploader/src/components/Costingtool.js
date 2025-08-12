@@ -2,17 +2,17 @@ import React, { useState, useEffect } from "react";
 import { Info } from "lucide-react";
 import "./Costingtool.css";
 
-export default function RoyalMailCalculator({ derivedPages }) {
+export default function RoyalMailCalculator({ pages }) {
   const [items, setItems] = useState(450000);
   const [firstClass, setFirstClass] = useState(false);
-  const [letterPages, setLetterPages] = useState(derivedPages || 2);
+  const [letterPages, setLetterPages] = useState(pages || 2);
 
   useEffect(() => {
-  if (derivedPages != null) {
-    console.log("Derived pages updated:", derivedPages);
-    setLetterPages(derivedPages);
+  if (pages != null) {
+    console.log("Derived pages updated:", pages);
+    setLetterPages(pages);
   }
-}, [derivedPages]);
+}, [pages]);
 
   // Simplified rate calculations (example rates - would need actual Royal Mail rates)
   const calculateCosts = () => {
@@ -70,7 +70,7 @@ export default function RoyalMailCalculator({ derivedPages }) {
           Admail.
         </p>
         <h2 className="title">Input Parameters</h2>
-        {derivedPages && <p>Your uploaded letter has {derivedPages} pages</p>}
+        {pages && <p>Your uploaded letter has {pages} pages</p>}
 
         {/* Pages per letter */}
         <div className="parameterGroup">
