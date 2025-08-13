@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { useAuth } from './AuthContext';
+import { useAuth } from '../components/AuthContext';
 
 
 export default function ConvertAPI() {
