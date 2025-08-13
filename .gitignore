@@ -233,7 +233,7 @@ infrastructure/terraform/**.zip
 
 #Ignore
 frontend/node_modules/
-
+node_modules/
 #Allow certain var files used by GitHub
 !**/env-var-files/*.tfvars
 
