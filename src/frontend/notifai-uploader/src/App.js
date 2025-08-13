@@ -34,17 +34,6 @@ function App() {
       if (response.status !== 401) {
         return response.data;
       }
-      await refreshSession();
-      const refreshResponse = await axios.post(
-        `${EnvLambdaFunctionApiBaseUrl}`,
-        { input_text: fileContent },
-        {
-          headers: {
-            Authorization: `Bearer ${user.idToken}`,
-          },
-        }
-      );
-      return refreshResponse.data;
     } catch (err) {
       throw new Error("Error calling Lambda or session expired. Please log in again.");
     }

@@ -2,11 +2,12 @@ import { useState } from 'react';
 import axios from 'axios'; // Import axios for HTTP requests
 import './FileUpload.css';
 import { useAuth } from './AuthContext';
+import ConvertAPI from '../api/ConvertAPI';
 
 export default function FileUpload({ onFileUpload }) {
   const [uploadStatus, setUploadStatus] = useState('');
-  const { user } = useAuth();
-  const EnvBackendApiBaseUrl = window.env?.REACT_APP_BACKEND_API_BASE_URL || process.env.REACT_APP_BACKEND_API_BASE_URL;
+  // const { user } = useAuth();
+  // const EnvBackendApiBaseUrl = window.env?.REACT_APP_BACKEND_API_BASE_URL || process.env.REACT_APP_BACKEND_API_BASE_URL;
 
 
   const handleFileChange = async (event) => {
@@ -17,17 +18,7 @@ export default function FileUpload({ onFileUpload }) {
         // Create FormData to send the file
         const formData = new FormData();
         formData.append('file', file);
-
-        const response = await axios.post(
-          `https://${EnvBackendApiBaseUrl}/convert`, // Use the environment variable for the base URL
-          formData,
-          {
-            headers: {
-              'Content-Type': 'multipart/form-data',
-              'Authorization': `Bearer ${user.idToken}`,
-            },
-          }
-        );
+        const response = ConvertAPI.post(formData);
         setUploadStatus('Successfully Uploaded');
         onFileUpload(response.data); // Call the parent callback
         setTimeout(() => setUploadStatus(''), 3000); // Clear status after 3 seconds
