@@ -24,27 +24,26 @@ export default function ConvertAPI() {
   });
 
   convertAPI.interceptors.response.use(
-  response => response,
-  async error => {
-    const originalRequest = error.config;
-    if (error.response.status === 401 && !originalRequest._retry) {
-      originalRequest._retry = true; // Mark the request as retried to avoid infinite loops.
-      try {
-        await refreshSession();
-        convertAPI.defaults.headers.common['Authorization'] = `Bearer ${user.idToken}`;
-        return convertAPI(originalRequest);
-      } catch (refreshError) {
-        console.error('Token refresh failed:', refreshError);
-        localStorage.removeItem('accessToken');
-        localStorage.removeItem('refreshToken');
-        window.location.href = '/login';
-        return Promise.reject(refreshError);
+    response => response,
+    async error => {
+      const originalRequest = error.config;
+      if (error.response.status === 401 && !originalRequest._retry) {
+        originalRequest._retry = true; // Mark the request as retried to avoid infinite loops.
+        try {
+          await refreshSession();
+          const newToken = localStorage.getItem('accessToken');
+          convertAPI.defaults.headers.common['Authorization'] = `Bearer ${newToken}`;
+          return convertAPI(originalRequest);
+        } catch (refreshError) {
+          console.error('Token refresh failed:', refreshError);
+          localStorage.removeItem('accessToken');
+          localStorage.removeItem('refreshToken');
+          window.location.href = '/login';
+          return Promise.reject(refreshError);
+        }
       }
+      return Promise.reject(error);
     }
-    return Promise.reject(error);
-  }
-);
-
-
-
+  );
+  return convertAPI;
 }
