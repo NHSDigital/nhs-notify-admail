@@ -39,11 +39,15 @@ function App() {
     }
   };
 
-  const handleFileUpload = (file) => {
-    setTimeout(() => {
-      const promptresp = getPromptResp(file);
-      setFeedback(promptresp);
-    }, 1000); // Simulate processing delay
+  // 👇 Make this function async and add try/catch
+  const handleFileUpload = async (file) => {
+    try {
+      const promptData = await getPromptResp(file);
+      setFeedback(promptData);
+    } catch (err) {
+      console.error("Failed to get AI feedback:", err);
+      setFeedback({}); // Clear old feedback
+    }
   };
 
   return (

@@ -27,12 +27,13 @@ export default function ConvertAPI() {
     response => response,
     async error => {
       const originalRequest = error.config;
-      if (error.response.status === 401 && !originalRequest._retry) {
-        originalRequest._retry = true; // Mark the request as retried to avoid infinite loops.
+      if (error.response && error.response.status === 401 && !originalRequest._retry) {
+        originalRequest._retry = true;
         try {
           await refreshSession();
           const newToken = localStorage.getItem('accessToken');
           convertAPI.defaults.headers.common['Authorization'] = `Bearer ${newToken}`;
+          originalRequest.headers['Authorization'] = `Bearer ${newToken}`;
           return convertAPI(originalRequest);
         } catch (refreshError) {
           console.error('Token refresh failed:', refreshError);
