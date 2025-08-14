@@ -1,32 +1,58 @@
 import { useState } from "react";
-import axios from "axios"; // Import axios for HTTP requests
 import "./FileUpload.css";
-import { useAuth } from "./AuthContext";
-import ConvertAPI from "../api/ConvertAPI";
+import { useConvertAPI } from "./useConvertAPI";
 
 export default function FileUpload({ onFileUpload }) {
   const [uploadStatus, setUploadStatus] = useState("");
-  // const { user } = useAuth();
-  // const EnvBackendApiBaseUrl = window.env?.REACT_APP_BACKEND_API_BASE_URL || process.env.REACT_APP_BACKEND_API_BASE_URL;
-  const convertAPI = ConvertAPI();
+  const EnvBackendApiBaseUrl =
+    window.env?.REACT_APP_BACKEND_API_BASE_URL ||
+    process.env.REACT_APP_BACKEND_API_BASE_URL;
+  const convertAPI = useConvertAPI();
 
   const handleFileChange = async (event) => {
     const file = event.target.files[0];
-    if (file) {
-      setUploadStatus("Uploading...");
-      try {
-        // Create FormData to send the file
-        const formData = new FormData();
-        formData.append("file", file);
-        const response = await convertAPI.post(formData);
-        setUploadStatus("Successfully Uploaded");
-        onFileUpload(response.data); // Call the parent callback
-        setTimeout(() => setUploadStatus(""), 3000); // Clear status after 3 seconds
-      } catch (error) {
-        console.error("Upload failed:", error);
-        setUploadStatus("Upload Failed");
-        setTimeout(() => setUploadStatus(""), 3000);
+    if (!file) {
+      setUploadStatus("No file selected");
+      setTimeout(() => setUploadStatus(""), 3000);
+      return;
+    }
+
+    if (!EnvBackendApiBaseUrl) {
+      console.error("Error: REACT_APP_BACKEND_API_BASE_URL is not defined");
+      setUploadStatus("Configuration error: API URL is missing");
+      setTimeout(() => setUploadStatus(""), 3000);
+      return;
+    }
+
+    setUploadStatus("Uploading...");
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const response = await convertAPI.post(
+        `${EnvBackendApiBaseUrl}/convert`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+
+      console.log("API Response:", response.data); // Debug the response
+
+      if (!response.data) {
+        throw new Error("Empty response from API");
       }
+
+      const resolvedData = await Promise.resolve(response.data); // Handle potential Promise
+      setUploadStatus("Successfully Uploaded");
+      onFileUpload(resolvedData);
+      setTimeout(() => setUploadStatus(""), 3000);
+    } catch (error) {
+      console.error("Upload failed:", error);
+      setUploadStatus(error.message || "Upload Failed");
+      setTimeout(() => setUploadStatus(""), 3000);
     }
   };
 

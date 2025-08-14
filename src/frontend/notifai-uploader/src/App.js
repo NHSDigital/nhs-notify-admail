@@ -12,7 +12,7 @@ import Login from './components/Login';
 function App() {
   const [feedback, setFeedback] = useState({});
   const EnvLambdaFunctionApiBaseUrl = window.env?.REACT_APP_API_GATEWAY || process.env.REACT_APP_API_GATEWAY;
-  const { user, refreshSession } = useAuth();
+  const { user } = useAuth();
 
   if (!user) {
     return <Login />;
@@ -39,14 +39,13 @@ function App() {
     }
   };
 
-  // 👇 Make this function async and add try/catch
   const handleFileUpload = async (file) => {
     try {
       const promptData = await getPromptResp(file);
       setFeedback(promptData);
     } catch (err) {
       console.error("Failed to get AI feedback:", err);
-      setFeedback({}); // Clear old feedback
+      setFeedback({});
     }
   };
 
