@@ -4,9 +4,6 @@ import { useConvertAPI } from "../api/ConvertAPI";
 
 export default function FileUpload({ onFileUpload }) {
   const [uploadStatus, setUploadStatus] = useState("");
-  const EnvBackendApiBaseUrl =
-    window.env?.REACT_APP_BACKEND_API_BASE_URL ||
-    process.env.REACT_APP_BACKEND_API_BASE_URL;
   const convertAPI = useConvertAPI();
 
   const handleFileChange = async (event) => {
@@ -17,26 +14,14 @@ export default function FileUpload({ onFileUpload }) {
       return;
     }
 
-    if (!EnvBackendApiBaseUrl) {
-      console.error("Error: REACT_APP_BACKEND_API_BASE_URL is not defined");
-      setUploadStatus("Configuration error: API URL is missing");
-      setTimeout(() => setUploadStatus(""), 3000);
-      return;
-    }
-
     setUploadStatus("Uploading...");
     try {
       const formData = new FormData();
       formData.append("file", file);
 
       const response = await convertAPI.post(
-        `${EnvBackendApiBaseUrl}/convert`,
+        `/convert`,
         formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
       );
 
       console.log("API Response:", response.data); // Debug the response

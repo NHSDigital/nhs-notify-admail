@@ -9,7 +9,10 @@ export function useConvertAPI() {
   const convertAPI = useMemo(() => {
     const instance = axios.create({
       baseURL: window.env?.REACT_APP_API_GATEWAY || process.env.REACT_APP_API_GATEWAY,
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': user?.accessToken ? `Bearer ${user.accessToken}` : '',
+      },
     });
 
     // Store refresh token request to prevent multiple simultaneous refreshes
