@@ -5,13 +5,13 @@ import { useAuth } from '../components/AuthContext';
 export function useConvertAPI() {
   const { user, refreshSession } = useAuth();
 
-  // Create Axios instance with memoization to prevent recreation on every render
+  // Prevent recreation on every render
   const convertAPI = useMemo(() => {
     const instance = axios.create({
       baseURL: `https://` + window.env?.REACT_APP_BACKEND_API_BASE_URL || process.env.REACT_APP_BACKEND_API_BASE_URL,
     });
 
-    // Store refresh token request to prevent multiple simultaneous refreshes
+    // Prevent multiple refreshes
     let isRefreshing = false;
     let failedQueue = [];
 
@@ -26,7 +26,7 @@ export function useConvertAPI() {
       failedQueue = [];
     };
 
-    // Request interceptor to add access token
+    // Request
     instance.interceptors.request.use(
       (config) => {
         if (user?.accessToken) {
@@ -37,7 +37,7 @@ export function useConvertAPI() {
       (error) => Promise.reject(error)
     );
 
-    // Response interceptor to handle 401 errors
+    // Response
     instance.interceptors.response.use(
       (response) => response,
       async (error) => {
@@ -83,7 +83,6 @@ export function useConvertAPI() {
     );
 
     return instance;
-  }, [user, refreshSession]); // Recreate instance only if user or refreshSession changes
-
+  }, [user, refreshSession]);
   return convertAPI;
 }

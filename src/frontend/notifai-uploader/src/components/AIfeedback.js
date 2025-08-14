@@ -5,7 +5,6 @@ import ReactMarkdown from "react-markdown";
 
 export default function AIFeedback({ feedback, isLoading }) {
   const [feedbackObj, setFeedbackObj] = useState(null);
-  const [spinner, setSpinner] = useState(false);
 
   const getRatingClass = (rating) => {
     try {
@@ -42,20 +41,16 @@ export default function AIFeedback({ feedback, isLoading }) {
   // Effect to handle the Promise resolution
   useEffect(() => {
     if (feedback && typeof feedback.then === "function") {
-      setSpinner(true);
       setFeedbackObj(null);
       feedback
         .then((resolvedData) => {
             setFeedbackObj(resolvedData);
-            setSpinner(false);
         })
         .catch((error) => {
           setFeedbackObj(null);
-          setSpinner(false);
         });
     } else {
       setFeedbackObj(feedback);
-      setSpinner(false);
     }
   }, [feedback]);
 
