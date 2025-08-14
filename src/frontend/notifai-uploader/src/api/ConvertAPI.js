@@ -10,7 +10,6 @@ export function useConvertAPI() {
     const instance = axios.create({
       baseURL: window.env?.REACT_APP_API_GATEWAY || process.env.REACT_APP_API_GATEWAY,
       headers: {
-        'Content-Type': 'multipart/form-data',
         'Authorization': user?.accessToken ? `Bearer ${user.accessToken}` : '',
       },
     });
