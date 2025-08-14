@@ -3,7 +3,7 @@ import "./AIfeedback.css";
 import { SpinnerCircular } from "spinners-react";
 import ReactMarkdown from "react-markdown";
 
-export default function AIFeedback({ feedback }) {
+export default function AIFeedback({ feedback, isLoading }) {
   const [feedbackObj, setFeedbackObj] = useState(null);
   const [spinner, setSpinner] = useState(false);
 
@@ -60,7 +60,7 @@ export default function AIFeedback({ feedback }) {
   }, [feedback]);
 
   const returnContent = () => {
-    if (spinner) {
+    if (isLoading) {
       return (<div className="spinner-overlay">
       <SpinnerCircular
         size={64}

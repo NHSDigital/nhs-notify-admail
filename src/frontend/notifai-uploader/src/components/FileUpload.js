@@ -2,7 +2,7 @@ import { useState } from "react";
 import "./FileUpload.css";
 import { useConvertAPI } from "../api/ConvertAPI";
 
-export default function FileUpload({ onFileUpload }) {
+export default function FileUpload({ onFileUpload, handleLoading }) {
   const [uploadStatus, setUploadStatus] = useState("");
   const convertAPI = useConvertAPI();
 
@@ -15,6 +15,7 @@ export default function FileUpload({ onFileUpload }) {
     }
 
     setUploadStatus("Uploading...");
+    handleLoading(true);
     try {
       const formData = new FormData();
       formData.append("file", file);
