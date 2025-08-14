@@ -2,7 +2,7 @@ import axios from 'axios';
 import { useAuth } from '../components/AuthContext';
 
 
-export default function ConvertAPI() {
+export default async function ConvertAPI() {
   const { user, refreshSession } = useAuth();
   const EnvBackendApiBaseUrl = window.env?.REACT_APP_BACKEND_API_BASE_URL || process.env.REACT_APP_BACKEND_API_BASE_URL;
 

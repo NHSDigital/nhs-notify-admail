@@ -18,7 +18,7 @@ export default function FileUpload({ onFileUpload }) {
         // Create FormData to send the file
         const formData = new FormData();
         formData.append("file", file);
-        const response = convertAPI.post(formData);
+        const response = await convertAPI.post(formData);
         setUploadStatus("Successfully Uploaded");
         onFileUpload(response.data); // Call the parent callback
         setTimeout(() => setUploadStatus(""), 3000); // Clear status after 3 seconds
