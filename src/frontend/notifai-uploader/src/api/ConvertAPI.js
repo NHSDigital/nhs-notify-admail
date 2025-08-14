@@ -8,7 +8,7 @@ export function useConvertAPI() {
   // Create Axios instance with memoization to prevent recreation on every render
   const convertAPI = useMemo(() => {
     const instance = axios.create({
-      baseURL: window.env?.REACT_APP_API_GATEWAY || process.env.REACT_APP_API_GATEWAY,
+      baseURL: window.env?.REACT_APP_BACKEND_API_BASE_URL || process.env.REACT_APP_BACKEND_API_BASE_URL,
       headers: {
         'Authorization': user?.accessToken ? `Bearer ${user.accessToken}` : '',
       },
