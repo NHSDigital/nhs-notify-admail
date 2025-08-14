@@ -39,6 +39,10 @@ function App() {
     }
   };
 
+  const handleLoading = (loading) => {
+    setLoading(loading);
+  }
+
   const handleFileUpload = (file) => {
     setTimeout(() => {
       // Get pages from the file feedback
