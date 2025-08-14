@@ -5,16 +5,13 @@ import { useAuth } from '../components/AuthContext';
 export function useConvertAPI() {
   const { user, refreshSession } = useAuth();
 
-  // Prevent recreation on every render
   const convertAPI = useMemo(() => {
     const instance = axios.create({
       baseURL: `https://` + window.env?.REACT_APP_BACKEND_API_BASE_URL || process.env.REACT_APP_BACKEND_API_BASE_URL,
     });
 
-    // Prevent multiple refreshes
     let isRefreshing = false;
     let failedQueue = [];
-
     const processQueue = (error, token = null) => {
       failedQueue.forEach((prom) => {
         if (token) {
@@ -26,7 +23,6 @@ export function useConvertAPI() {
       failedQueue = [];
     };
 
-    // Request
     instance.interceptors.request.use(
       (config) => {
         if (user?.accessToken) {
@@ -37,7 +33,6 @@ export function useConvertAPI() {
       (error) => Promise.reject(error)
     );
 
-    // Response
     instance.interceptors.response.use(
       (response) => response,
       async (error) => {

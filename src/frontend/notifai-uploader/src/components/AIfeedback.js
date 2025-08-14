@@ -38,7 +38,7 @@ export default function AIFeedback({ feedback, isLoading }) {
   };
 
 
-  // Effect to handle the Promise resolution
+  // This may be redundant
   useEffect(() => {
     if (feedback && typeof feedback.then === "function") {
       setFeedbackObj(null);
