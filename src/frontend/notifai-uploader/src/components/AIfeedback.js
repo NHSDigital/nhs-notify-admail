@@ -54,7 +54,7 @@ export default function AIFeedback({ feedback }) {
           setSpinner(false);
         });
     } else {
-      setFeedbackObj(null);
+      setFeedbackObj(feedback);
       setSpinner(false);
     }
   }, [feedback]);
