@@ -3,9 +3,8 @@ import "./AIfeedback.css";
 import { SpinnerCircular } from "spinners-react";
 import ReactMarkdown from "react-markdown";
 
-export default function AIFeedback({ feedback }) {
+export default function AIFeedback({ feedback, isLoading }) {
   const [feedbackObj, setFeedbackObj] = useState(null);
-  const [spinner, setSpinner] = useState(false);
 
   const getRatingClass = (rating) => {
     try {
@@ -39,28 +38,24 @@ export default function AIFeedback({ feedback }) {
   };
 
 
-  // Effect to handle the Promise resolution
+  // This may be redundant
   useEffect(() => {
     if (feedback && typeof feedback.then === "function") {
-      setSpinner(true);
       setFeedbackObj(null);
       feedback
         .then((resolvedData) => {
             setFeedbackObj(resolvedData);
-            setSpinner(false);
         })
         .catch((error) => {
           setFeedbackObj(null);
-          setSpinner(false);
         });
     } else {
-      setFeedbackObj(null);
-      setSpinner(false);
+      setFeedbackObj(feedback);
     }
   }, [feedback]);
 
   const returnContent = () => {
-    if (spinner) {
+    if (isLoading) {
       return (<div className="spinner-overlay">
       <SpinnerCircular
         size={64}
@@ -78,7 +73,7 @@ export default function AIFeedback({ feedback }) {
       } else if(feedbackObj === undefined){
         return (<p className="no-feedback">Undefined response</p>)
       }
-      else {
+      else if (typeof feedbackObj === 'object') {
         const cleanedFeedback = processObject(feedbackObj);
         return (
           <div className="assessment-container">
@@ -109,6 +104,8 @@ export default function AIFeedback({ feedback }) {
             </div>
           </div>
         )
+      } else {
+        return (<p className="no-feedback">No file uploaded yet.</p>)
       }
     }
   }

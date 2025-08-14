@@ -13,7 +13,8 @@ function App() {
   const [pages, setPages] = useState(0);
   const [letterType, setLetterType] = useState("");
   const EnvLambdaFunctionApiBaseUrl = window.env?.REACT_APP_API_GATEWAY || process.env.REACT_APP_API_GATEWAY;
-  const { user, refreshSession } = useAuth();
+  const { user } = useAuth();
+  const [isLoading, setLoading] = useState(false);
 
   if (!user) {
     return <Login />;
@@ -32,20 +33,7 @@ function App() {
           },
         }
       );
-      if (response.status !== 401) {
-        return response.data;
-      }
-      await refreshSession();
-      const refreshResponse = await axios.post(
-        `${EnvLambdaFunctionApiBaseUrl}`,
-        { input_text: fileContent },
-        {
-          headers: {
-            Authorization: `Bearer ${user.idToken}`,
-          },
-        }
-      );
-      return refreshResponse.data;
+      return response.data;
     } catch (err) {
       throw new Error("Error calling Lambda or session expired. Please log in again.");
     }
@@ -63,13 +51,15 @@ function App() {
     }, 1000); // Simulate processing delay
   };
 
+
+
   return (
     <div>
       <Header />
       <main className="container">
         <div className="two-column-content">
-          <FileUpload onFileUpload={handleFileUpload} />
-          <AIFeedback feedback={feedback} />
+          <FileUpload onFileUpload={handleFileUpload} handleLoading={handleLoading}/>
+          <AIFeedback feedback={feedback} isLoading={isLoading}/>
         </div>
         <RoyalMailCalculator pages={pages} letterType={letterType}/>
       </main>
