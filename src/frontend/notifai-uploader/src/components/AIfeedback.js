@@ -78,7 +78,7 @@ export default function AIFeedback({ feedback }) {
       } else if(feedbackObj === undefined){
         return (<p className="no-feedback">Undefined response</p>)
       }
-      else {
+      else if (typeof feedbackObj === 'object') {
         const cleanedFeedback = processObject(feedbackObj);
         return (
           <div className="assessment-container">
@@ -109,6 +109,8 @@ export default function AIFeedback({ feedback }) {
             </div>
           </div>
         )
+      } else {
+        return (<p className="no-feedback">No file uploaded yet.</p>)
       }
     }
   }
