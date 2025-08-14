@@ -45,7 +45,6 @@ function App() {
 
   const handleFileUpload = (file) => {
     setTimeout(() => {
-      // Get pages from the file feedback
       setLetterType(file.file_type || "docx");
       if (file.file_type !== "docx") {
         setPages(file.pages);
