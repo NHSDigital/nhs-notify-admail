@@ -78,7 +78,7 @@ export default function RoyalMailCalculator({ pages, letterType }) {
         {/* Pages per letter */}
         <div className="parameterGroup">
           <div className="parameterHeader">
-            <label for="Number-of-pages" className="label">Number of pages</label>
+            <label htmlFor="Number-of-pages" className="label">Number of pages</label>
             <input
 
               id="Number-of-pages"
@@ -124,11 +124,11 @@ export default function RoyalMailCalculator({ pages, letterType }) {
         {/* Number of letters */}
         <div className="parameterGroup">
           <div className="parameterHeader">
-            <label for="Number-of-letters" className="label">Number of letters</label>
+            <label htmlFor="Number-of-letters" className="label">Number of letters</label>
             <input
               id="Number-of-letters"
               type="number"
-              defaultValue={450000}
+              // defaultValue={450000}
               min="1"
               max="2000000"
               value={items}

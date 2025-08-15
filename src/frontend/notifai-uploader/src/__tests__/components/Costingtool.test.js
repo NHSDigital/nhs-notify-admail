@@ -6,10 +6,10 @@ describe("RoyalMailCalculator", () => {
   test("renders with default props and displays correct initial values", () => {
     render(<RoyalMailCalculator />);
     expect(screen.getByText(/Costing tool/i)).toBeInTheDocument();
-    // expect(screen.getByLabelText(/Number of pages/i)).toHaveValue(2);
-    //expect(screen.getByLabelText(/Number of letters/i)).toHaveValue(450000);
+    expect(screen.getByLabelText(/Number of pages/i)).toHaveValue(2);
+    expect(screen.getByLabelText(/Number of letters/i)).toHaveValue(450000);
     expect(screen.getByText(/Advertising Mail Cost/i)).toBeInTheDocument();
-    //expect(screen.getByText(/Mail Cost/i)).toBeInTheDocument();
+    expect(screen.getByText(/Mail Cost \/ Business/i)).toBeInTheDocument();
     expect(screen.getByText(/Savings/i)).toBeInTheDocument();
   });
 
