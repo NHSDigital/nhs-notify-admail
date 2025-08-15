@@ -111,7 +111,7 @@ export function AuthProvider({ children }) {
       }
       sessionStorage.setItem("userEmail", username);
       setUser({ email: username, idToken });
-      return true; // Indicate successful login
+      return true;
     } catch (err) {
       setError(err.message || "Failed to sign in");
       return false;
