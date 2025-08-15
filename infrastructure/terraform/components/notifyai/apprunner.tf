@@ -45,9 +45,35 @@ resource "aws_iam_policy" "apprunner_ecr_policy" {
   })
 }
 
+resource "aws_iam_policy" "apprunner_s3_policy" {
+  name        = "${local.csi}-apprunner-s3-policy"
+  description = "Policy for App Runner to access S3 bucket"
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Action = [
+          "s3:ListBucket",
+          "s3:GetObject"
+        ],
+        Effect = "Allow",
+        Resource = [
+          aws_s3_bucket.lambda_prompt_logging_s3_bucket.arn,
+          "${aws_s3_bucket.lambda_prompt_logging_s3_bucket.arn}/*"
+        ]
+      }
+    ]
+  })
+}
+
 resource "aws_iam_role_policy_attachment" "apprunner_ecr_attach" {
   role       = aws_iam_role.apprunner_ecr_role.name
   policy_arn = aws_iam_policy.apprunner_ecr_policy.arn
+}
+
+resource "aws_iam_role_policy_attachment" "apprunner_s3_attach" {
+  role       = aws_iam_role.apprunner_ecr_role.name
+  policy_arn = aws_iam_policy.apprunner_s3_policy.arn
 }
 
 resource "random_password" "app-runner-basic-auth-random-password" {
@@ -129,6 +155,7 @@ resource "aws_apprunner_service" "notifai_backend_service" {
           COGNITO_REGION        = var.region
           COGNITO_USER_POOL_ID  = aws_cognito_user_pool.main.id
           COGNITO_APP_CLIENT_ID = aws_cognito_user_pool_client.main.id
+          S3_BUCKET_NAME        = aws_s3_bucket.lambda_prompt_logging_s3_bucket.bucket
         }
       }
       image_identifier      = "${aws_ecr_repository.notifai-backend.repository_url}:latest"
