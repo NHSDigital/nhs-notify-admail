@@ -1,6 +1,6 @@
 import './Header.css';
 import './Shared.css';
-import { useAuth } from './AuthContext';
+import { useAuth } from './AuthContext.js';
 
 export default function Header() {
   const { logout } = useAuth();

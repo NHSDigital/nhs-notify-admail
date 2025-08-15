@@ -1,6 +1,6 @@
 import { useState } from "react";
 import "./FileUpload.css";
-import { useConvertAPI } from "../api/ConvertAPI";
+import { useConvertAPI } from "../api/ConvertAPI.js";
 
 export default function FileUpload({ onFileUpload, handleLoading }) {
   const [uploadStatus, setUploadStatus] = useState("");

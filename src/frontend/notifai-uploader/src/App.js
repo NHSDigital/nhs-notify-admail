@@ -1,12 +1,12 @@
 import "./App.css";
 import { useState } from "react";
-import Header from "./components/Header";
-import FileUpload from "./components/FileUpload";
-import AIFeedback from "./components/AIfeedback";
+import Header from "./components/Header.js";
+import FileUpload from "./components/FileUpload.js";
+import AIFeedback from "./components/AIfeedback.js";
 import axios from "axios";
-import RoyalMailCalculator from "./components/Costingtool";
-import Login from "./components/Login";
-import { useAuth } from "./components/AuthContext";
+import RoyalMailCalculator from "./components/Costingtool.js";
+import Login from "./components/Login.js";
+import { useAuth } from "./components/AuthContext.js";
 
 function App() {
   const [feedback, setFeedback] = useState({});
