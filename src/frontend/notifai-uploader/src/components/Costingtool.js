@@ -148,7 +148,7 @@ export default function RoyalMailCalculator({ pages, letterType }) {
               type="range"
               min="1"
               max="2000000"
-              step="1"
+              step="1000"
               value={items}
               onChange={(e) => setItems(parseInt(e.target.value))}
               className="slider"

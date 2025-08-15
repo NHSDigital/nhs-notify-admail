@@ -5,7 +5,6 @@ boto3
 pandoc
 pypdf
 pytest
-docx2pdf
 pyjwt[crypto]
 python-jose
 requests
