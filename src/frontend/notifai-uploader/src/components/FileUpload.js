@@ -1,6 +1,6 @@
 import { useState } from "react";
 import "./FileUpload.css";
-import { useConvertAPI } from "../api/ConvertAPI";
+import { useConvertAPI } from "../api/ConvertAPI.js";
 
 export default function FileUpload({ onFileUpload, handleLoading }) {
   const [uploadStatus, setUploadStatus] = useState("");
@@ -10,7 +10,7 @@ export default function FileUpload({ onFileUpload, handleLoading }) {
     const file = event.target.files[0];
     if (!file) {
       setUploadStatus("No file selected");
-      setTimeout(() => setUploadStatus(""), 3000);
+      setTimeout(() => setUploadStatus(""), 2000);
       return;
     }
 
@@ -34,11 +34,11 @@ export default function FileUpload({ onFileUpload, handleLoading }) {
       const resolvedData = await Promise.resolve(response.data); // Handle potential Promise
       setUploadStatus("Successfully Uploaded");
       onFileUpload(resolvedData);
-      setTimeout(() => setUploadStatus(""), 3000);
+      setTimeout(() => setUploadStatus(""), 2000);
     } catch (error) {
       console.error("Upload failed:", error);
       setUploadStatus(error.message || "Upload Failed");
-      setTimeout(() => setUploadStatus(""), 3000);
+      setTimeout(() => setUploadStatus(""), 2000);
     }
   };
 

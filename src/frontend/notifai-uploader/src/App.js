@@ -1,16 +1,17 @@
-import './App.css';
+import "./App.css";
 import { useState } from "react";
-import Header from './components/Header';
-import FileUpload from './components/FileUpload';
-import AIFeedback from './components/AIfeedback';
-import axios from 'axios';
-import RoyalMailCalculator from './components/Costingtool';
-import { useAuth } from './components/AuthContext';
-import Login from './components/Login';
-
+import Header from "./components/Header.js";
+import FileUpload from "./components/FileUpload.js";
+import AIFeedback from "./components/AIfeedback.js";
+import axios from "axios";
+import RoyalMailCalculator from "./components/Costingtool.js";
+import Login from "./components/Login.js";
+import { useAuth } from "./components/AuthContext.js";
 
 function App() {
   const [feedback, setFeedback] = useState({});
+  const [pages, setPages] = useState(0);
+  const [letterType, setLetterType] = useState("");
   const EnvLambdaFunctionApiBaseUrl = window.env?.REACT_APP_API_GATEWAY || process.env.REACT_APP_API_GATEWAY;
   const { user } = useAuth();
   const [isLoading, setLoading] = useState(false);
@@ -42,16 +43,25 @@ function App() {
     setLoading(loading);
   }
 
-  const handleFileUpload = async (file) => {
-    try {
-      const promptData = await getPromptResp(file);
-      setFeedback(promptData);
-      setLoading(false);
-    } catch (err) {
-      console.error("Failed to get AI feedback:", err);
-      setFeedback({});
-    }
-  };
+const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
+const handleFileUpload = async (file) => {
+  setLoading(true);
+  setFeedback({});
+  setLetterType(file.file_type || "docx");
+  if (file.file_type !== "docx") {
+    setPages(file.pages);
+  }
+  try {
+    const promptResp = await getPromptResp(file.extracted_text);
+    await sleep(1000);
+    setFeedback(promptResp);
+  } catch (error) {
+    console.log("Error in handleFileUpload:", error);
+  } finally {
+    setLoading(false);
+  }
+};
 
 
 
@@ -63,7 +73,7 @@ function App() {
           <FileUpload onFileUpload={handleFileUpload} handleLoading={handleLoading}/>
           <AIFeedback feedback={feedback} isLoading={isLoading}/>
         </div>
-        <RoyalMailCalculator />
+        <RoyalMailCalculator pages={pages} letterType={letterType}/>
       </main>
     </div>
   );

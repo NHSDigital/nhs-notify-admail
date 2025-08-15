@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import axios from 'axios';
-import { useAuth } from '../components/AuthContext';
+import { useAuth } from '../components/AuthContext.js';
 
 export function useConvertAPI() {
   const { user, refreshSession } = useAuth();
