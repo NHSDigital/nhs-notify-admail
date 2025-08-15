@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useCallback } from "react";
 import axios from "axios";
+import { withAuth } from "./AuthContext";
 
-function History() {
+function History({ user }) {
   const [files, setFiles] = useState([]);
   const [nextStartAfter, setNextStartAfter] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -14,6 +15,9 @@ function History() {
           batch: 10,
           start_after: nextStartAfter,
         },
+        headers: {
+          Authorization: `Bearer ${user.idToken}`,
+        },
       });
       setFiles((prevFiles) => [...prevFiles, ...response.data]);
       if (response.data.length > 0) {
@@ -24,7 +28,7 @@ function History() {
     } finally {
       setLoading(false);
     }
-  }, [nextStartAfter]);
+  }, [nextStartAfter, user.idToken]);
 
   useEffect(() => {
     fetchFiles();
@@ -32,7 +36,11 @@ function History() {
 
   const downloadFile = async (fileName) => {
     try {
-      const response = await axios.get(`/s3/download/${fileName}`);
+      const response = await axios.get(`/s3/download/${fileName}`, {
+        headers: {
+          Authorization: `Bearer ${user.idToken}`,
+        },
+      });
       window.location.href = response.data.download_url;
     } catch (error) {
       console.error("Error downloading file:", error);
@@ -78,4 +86,4 @@ function History() {
   );
 }
 
-export default History;
+export default withAuth(History);

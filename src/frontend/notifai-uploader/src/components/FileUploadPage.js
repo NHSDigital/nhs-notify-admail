@@ -2,18 +2,12 @@ import React, { useState } from "react";
 import FileUpload from "./FileUpload";
 import AIFeedback from "./AIfeedback";
 import RoyalMailCalculator from "./Costingtool";
-import Login from "./Login";
-import { useAuth } from "./AuthContext";
+import { withAuth } from "./AuthContext";
 import axios from "axios";
 
-function FileUploadPage() {
+function FileUploadPage({ user }) {
   const [feedback, setFeedback] = useState({});
   const EnvLambdaFunctionApiBaseUrl = window.env?.REACT_APP_API_GATEWAY || process.env.REACT_APP_API_GATEWAY;
-  const { user } = useAuth();
-
-  if (!user) {
-    return <Login />;
-  }
 
   const getPromptResp = async (file) => {
     let fileContent = typeof file === "string" ? file : await file.text();
@@ -55,4 +49,4 @@ function FileUploadPage() {
   );
 }
 
-export default FileUploadPage;
+export default withAuth(FileUploadPage);
