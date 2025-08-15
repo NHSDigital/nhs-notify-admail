@@ -43,16 +43,25 @@ function App() {
     setLoading(loading);
   }
 
-  const handleFileUpload = (file) => {
-    setTimeout(() => {
-      setLetterType(file.file_type || "docx");
-      if (file.file_type !== "docx") {
-        setPages(file.pages);
-      }
-      const promptResp = getPromptResp(file.extracted_text);
-      setFeedback(promptResp);
-    }, 1000); // Simulate processing delay
-  };
+const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
+const handleFileUpload = async (file) => {
+  setLoading(true);
+  setFeedback({});
+  setLetterType(file.file_type || "docx");
+  if (file.file_type !== "docx") {
+    setPages(file.pages);
+  }
+  try {
+    const promptResp = await getPromptResp(file.extracted_text);
+    await sleep(1000);
+    setFeedback(promptResp);
+  } catch (error) {
+    console.log("Error in handleFileUpload:", error);
+  } finally {
+    setLoading(false);
+  }
+};
 
 
 
