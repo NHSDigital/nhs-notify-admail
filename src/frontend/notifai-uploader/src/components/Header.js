@@ -1,8 +1,11 @@
 import './Header.css';
 import './Shared.css';
 import { Link } from "react-router-dom";
+import { useAuth } from './AuthContext';
+
 
 export default function Header() {
+    const { logout } = useAuth();
   return (
     <header className="nhsuk-header" style={{ backgroundColor: '#005eb8', padding: '10px 20px' }}>
         <div className="nhsuk-header__logo-title" style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-start' }}>
@@ -22,6 +25,13 @@ export default function Header() {
           </ul>
         </nav>
       </div>
+      <button
+        onClick={logout}
+        className="nhsuk-button nhsuk-button--secondary"
+        style={{ position: 'absolute', top: 20, right: 20, zIndex: 1000 }}
+      >
+        Logout
+      </button>
     </header>
   );
 }
