@@ -194,18 +194,13 @@
 }
 
 .value.editableValue {
-border: none;
+border: solid 1px #d1d5db;
+border-radius: 8px;
 background: transparent;
-width: 100%;
+width: fit-content;
 text-align: right;
 font: inherit;
 color: #ef4444;
 font-size: 18px;
 font-weight: 600;
-}
-
-.value.editableValue:focus {
-  outline: none;
-  border: none;
-  background: #fff; /* optional */
 }
