@@ -5,7 +5,8 @@ import os
 
 s3_client = boto3.client("s3")
 
-BUCKET_NAME = os.getenv("S3_BUCKET_NAME", "default-bucket-name")
+BUCKET_NAME = os.getenv("S3_LLM_LOGS_BUCKET")
+BUCKET_DIRECTORY = os.getenv("S3_LLM_LOGS_DIRECTORY")
 
 
 async def fetch_s3_file_history(batch: int, start_after: str = None):
@@ -13,6 +14,7 @@ async def fetch_s3_file_history(batch: int, start_after: str = None):
     operation_params = {
         "Bucket": BUCKET_NAME,
         "MaxKeys": batch,
+        "Prefix": BUCKET_DIRECTORY,
     }
     if start_after:
         operation_params["StartAfter"] = start_after
@@ -37,7 +39,7 @@ async def generate_presigned_url(file_name: str):
     try:
         url = s3_client.generate_presigned_url(
             "get_object",
-            Params={"Bucket": BUCKET_NAME, "Key": file_name},
+            Params={"Bucket": BUCKET_NAME, "Key": f"{BUCKET_DIRECTORY}{file_name}"},
             ExpiresIn=3600,
         )
         return url

@@ -155,7 +155,8 @@ resource "aws_apprunner_service" "notifai_backend_service" {
           COGNITO_REGION        = var.region
           COGNITO_USER_POOL_ID  = aws_cognito_user_pool.main.id
           COGNITO_APP_CLIENT_ID = aws_cognito_user_pool_client.main.id
-          S3_BUCKET_NAME        = aws_s3_bucket.lambda_prompt_logging_s3_bucket.bucket
+          S3_LLM_LOGS_BUCKET    = "${aws_s3_bucket.lambda_prompt_logging_s3_bucket.bucket}"
+          S3_LLM_LOGS_DIRECTORY = "${aws_s3_object.lambda_prompt_logging_s3_bucket_object.key}/"
         }
       }
       image_identifier      = "${aws_ecr_repository.notifai-backend.repository_url}:latest"
