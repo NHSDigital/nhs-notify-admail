@@ -156,7 +156,7 @@ resource "aws_apprunner_service" "notifai_backend_service" {
           COGNITO_USER_POOL_ID  = aws_cognito_user_pool.main.id
           COGNITO_APP_CLIENT_ID = aws_cognito_user_pool_client.main.id
           S3_LLM_LOGS_BUCKET    = "${aws_s3_bucket.lambda_prompt_logging_s3_bucket.bucket}"
-          S3_LLM_LOGS_DIRECTORY = "${aws_s3_object.lambda_prompt_logging_s3_bucket_object.key}/"
+          S3_LLM_LOGS_DIRECTORY = "${aws_s3_object.lambda_prompt_logging_s3_bucket_object.key}"
         }
       }
       image_identifier      = "${aws_ecr_repository.notifai-backend.repository_url}:latest"
@@ -186,8 +186,9 @@ resource "aws_apprunner_service" "notifai_backend_service" {
   }
 
   instance_configuration {
-    cpu    = "1024"
-    memory = "2048"
+    cpu               = "1024"
+    memory            = "2048"
+    instance_role_arn = aws_iam_role.apprunner_ecr_role.arn
   }
 }
 

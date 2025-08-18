@@ -19,20 +19,30 @@ async def fetch_s3_file_history(batch: int, start_after: str = None):
     if start_after:
         operation_params["StartAfter"] = start_after
 
-    page_iterator = paginator.paginate(**operation_params)
-    files = []
+    try:
+        page_iterator = paginator.paginate(**operation_params)
+        files = []
 
-    for page in page_iterator:
-        for obj in page.get("Contents", []):
-            files.append(
-                {
-                    "name": obj["Key"],
-                    "last_modified": obj["LastModified"].strftime("%Y-%m-%d %H:%M:%S"),
-                }
-            )
-        break  # Only fetch one page at a time
+        for page in page_iterator:
+            for obj in page.get("Contents", []):
+                files.append(
+                    {
+                        "name": obj["Key"],
+                        "last_modified": obj["LastModified"].strftime(
+                            "%Y-%m-%d %H:%M:%S"
+                        ),
+                    }
+                )
+            break  # Only fetch one page at a time
 
-    return files
+        return files
+
+    except ClientError as e:
+        logger.error(f"AWS ClientError: {e.response['Error']['Message']}")
+        raise Exception(f"Error fetching S3 file history: {str(e)}")
+    except Exception as e:
+        logger.error(f"Unexpected error: {str(e)}")
+        raise Exception(f"Error fetching S3 file history: {str(e)}")
 
 
 async def generate_presigned_url(file_name: str):
@@ -44,4 +54,8 @@ async def generate_presigned_url(file_name: str):
         )
         return url
     except ClientError as e:
+        logger.error(f"AWS ClientError: {e.response['Error']['Message']}")
+        raise Exception(f"Error generating presigned URL: {str(e)}")
+    except Exception as e:
+        logger.error(f"Unexpected error: {str(e)}")
         raise Exception(f"Error generating presigned URL: {str(e)}")
