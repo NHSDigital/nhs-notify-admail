@@ -1,7 +1,7 @@
 first-run   = false
 environment = "dev2"
 
-prompt-max-tokens-to-sample = 2000
+prompt-max-tokens-to-sample = 5000
 prompt-temperature          = 0.1
 prompt-top-p                = 0.5
 
