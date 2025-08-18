@@ -7,6 +7,7 @@ import axios from "axios";
 
 function FileUploadPage({ user }) {
   const [feedback, setFeedback] = useState({});
+  const [isLoading, setLoading] = useState(false);
   const EnvLambdaFunctionApiBaseUrl = window.env?.REACT_APP_API_GATEWAY || process.env.REACT_APP_API_GATEWAY;
 
   const getPromptResp = async (file) => {
@@ -29,19 +30,29 @@ function FileUploadPage({ user }) {
     }
   };
 
-  const handleFileUpload = (file) => {
-    setTimeout(() => {
-      const promptResp = getPromptResp(file);
-      setFeedback(promptResp);
-    }, 1000); // Simulate processing delay
+  const handleLoading = (loading) => {
+    setLoading(loading);
+  };
+
+  const handleFileUpload = async (file) => {
+    try {
+      handleLoading(true);
+      const promptData = await getPromptResp(file);
+      setFeedback(promptData);
+      handleLoading(false);
+    } catch (err) {
+      console.error("Failed to get AI feedback:", err);
+      setFeedback({});
+      handleLoading(false);
+    }
   };
 
   return (
     <div>
       <main className="container">
         <div className="two-column-content">
-          <FileUpload onFileUpload={handleFileUpload} />
-          <AIFeedback feedback={feedback} />
+          <FileUpload onFileUpload={handleFileUpload} handleLoading={handleLoading} />
+          <AIFeedback feedback={feedback} isLoading={isLoading} />
         </div>
         <RoyalMailCalculator />
       </main>
