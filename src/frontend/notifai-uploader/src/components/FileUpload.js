@@ -1,10 +1,10 @@
 import { useState } from "react";
 import "./FileUpload.css";
-import { useConvertAPI } from "../api/ConvertAPI";
+import { useBackendAPIClient } from "../api/BackendAPIClient";
 
 export default function FileUpload({ onFileUpload, handleLoading }) {
   const [uploadStatus, setUploadStatus] = useState("");
-  const convertAPI = useConvertAPI();
+  const backendAPIClient = useBackendAPIClient();
 
   const handleFileChange = async (event) => {
     const file = event.target.files[0];
@@ -20,7 +20,7 @@ export default function FileUpload({ onFileUpload, handleLoading }) {
       const formData = new FormData();
       formData.append("file", file);
 
-      const response = await convertAPI.post(
+      const response = await backendAPIClient.post(
         `/convert`,
         formData,
       );

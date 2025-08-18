@@ -2,10 +2,10 @@ import { useMemo } from 'react';
 import axios from 'axios';
 import { useAuth } from '../components/AuthContext';
 
-export function useConvertAPI() {
+export function useBackendAPIClient() {
   const { user, refreshSession } = useAuth();
 
-  const convertAPI = useMemo(() => {
+  const backendAPIClient = useMemo(() => {
     const instance = axios.create({
       baseURL: `https://` + window.env?.REACT_APP_BACKEND_API_BASE_URL || process.env.REACT_APP_BACKEND_API_BASE_URL,
     });
@@ -79,5 +79,5 @@ export function useConvertAPI() {
 
     return instance;
   }, [user, refreshSession]);
-  return convertAPI;
+  return backendAPIClient;
 }

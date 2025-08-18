@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useCallback } from "react";
-import axios from "axios";
 import { withAuth } from "./AuthContext";
+import { useBackendAPIClient } from '../api/BackendAPIClient';
 
 function History({ user }) {
+  const backendAPIClient = useBackendAPIClient();
   const [files, setFiles] = useState([]);
   const [nextStartAfter, setNextStartAfter] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -10,13 +11,10 @@ function History({ user }) {
   const fetchFiles = useCallback(async () => {
     setLoading(true);
     try {
-      const response = await axios.get("/s3/history", {
+      const response = await backendAPIClient.get('/s3/history', {
         params: {
           batch: 10,
           start_after: nextStartAfter,
-        },
-        headers: {
-          Authorization: `Bearer ${user.idToken}`,
         },
       });
       setFiles((prevFiles) => [...prevFiles, ...response.data]);
@@ -24,11 +22,11 @@ function History({ user }) {
         setNextStartAfter(response.data[response.data.length - 1].name);
       }
     } catch (error) {
-      console.error("Error fetching files:", error);
+      console.error('Error fetching files:', error);
     } finally {
       setLoading(false);
     }
-  }, [nextStartAfter, user.idToken]);
+  }, [nextStartAfter, backendAPIClient]);
 
   useEffect(() => {
     fetchFiles();
@@ -36,14 +34,10 @@ function History({ user }) {
 
   const downloadFile = async (fileName) => {
     try {
-      const response = await axios.get(`/s3/download/${fileName}`, {
-        headers: {
-          Authorization: `Bearer ${user.idToken}`,
-        },
-      });
+      const response = await backendAPIClient.get(`/s3/download/${fileName}`);
       window.location.href = response.data.download_url;
     } catch (error) {
-      console.error("Error downloading file:", error);
+      console.error('Error downloading file:', error);
     }
   };
 
