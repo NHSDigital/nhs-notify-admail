@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import axios from 'axios';
 import { useAuth } from '../components/AuthContext.js';
 
@@ -22,16 +22,6 @@ export function useConvertAPI() {
       });
       failedQueue = [];
     };
-
-    instance.interceptors.request.use(
-      (config) => {
-        if (user?.accessToken) {
-          config.headers.Authorization = `Bearer ${user.accessToken}`;
-        }
-        return config;
-      },
-      (error) => Promise.reject(error)
-    );
 
     instance.interceptors.response.use(
       (response) => response,
@@ -78,6 +68,21 @@ export function useConvertAPI() {
     );
 
     return instance;
-  }, [user, refreshSession]);
+  }, [refreshSession]);
+
+  useEffect(() => {
+      const requestInterceptor = convertAPI.interceptors.request.use(
+        (config) => {
+          if (user?.accessToken) {
+            config.headers.Authorization = `Bearer ${user.accessToken}`;
+          }
+          return config;
+        },
+        (error) => Promise.reject(error)
+    );
+    return () => {
+      convertAPI.interceptors.request.eject(requestInterceptor);
+    };
+  }, [user, convertAPI]);
   return convertAPI;
 }
