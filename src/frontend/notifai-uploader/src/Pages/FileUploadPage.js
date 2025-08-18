@@ -1,8 +1,8 @@
 import React, { useState } from "react";
-import FileUpload from "./FileUpload";
-import AIFeedback from "./AIfeedback";
-import RoyalMailCalculator from "./Costingtool";
-import { withAuth, useAuth } from "./AuthContext";
+import FileUpload from "../components/FileUpload";
+import AIFeedback from "../components/AIfeedback";
+import RoyalMailCalculator from "../components/Costingtool";
+import { withAuth, useAuth } from "../components/AuthContext";
 import axios from "axios";
 
 function FileUploadPage() {

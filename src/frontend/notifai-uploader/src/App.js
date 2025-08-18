@@ -1,7 +1,7 @@
 import './App.css';
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
-import FileUploadPage from "./components/FileUploadPage";
-import History from "./components/History";
+import FileUploadPage from "./Pages/FileUploadPage";
+import History from "./Pages/History";
 import Header from "./components/Header";
 import Login from "./components/Login";
 import { useAuth } from "./components/AuthContext";

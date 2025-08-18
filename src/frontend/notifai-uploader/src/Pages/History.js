@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { withAuth } from "./AuthContext";
+import { withAuth } from "../components/AuthContext";
 import { useBackendAPIClient } from '../api/BackendAPIClient';
 
 function History({ user }) {
