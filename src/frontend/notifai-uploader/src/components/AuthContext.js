@@ -17,17 +17,24 @@ const USER_POOL_ID = window.env?.REACT_APP_COGNITO_USER_POOL_ID || process.env.R
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [error, setError] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [isAuthReady, setIsAuthReady] = useState(false);
 
-  // Check for existing session on mount
   useEffect(() => {
+    try {
     const idToken = sessionStorage.getItem("idToken");
+    const accessToken = sessionStorage.getItem("accessToken");
     const userEmail = sessionStorage.getItem("userEmail");
     const refreshToken = sessionStorage.getItem("refreshToken");
-    if (idToken && userEmail) {
-      setUser({ email: userEmail, idToken, refreshToken });
+
+    if (idToken && accessToken && userEmail) {
+      setUser({ email: userEmail, idToken, refreshToken, accessToken });
     }
-    setLoading(false);
+  } catch (error) {
+    console.error("Failed to initialize auth from session storage", error);
+    setUser(null);
+  } finally {
+    setIsAuthReady(true);
+  }
   }, []);
 
   const refreshSession = async () => {
@@ -143,7 +150,7 @@ export function AuthProvider({ children }) {
 
   return (
     <AuthContext.Provider
-      value={{ user, login, logout, error, loading, refreshSession }}
+      value={{ user, login, logout, error, isAuthReady, refreshSession }}
     >
       {children}
     </AuthContext.Provider>

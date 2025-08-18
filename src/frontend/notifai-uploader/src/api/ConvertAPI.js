@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo} from 'react';
 import axios from 'axios';
 import { useAuth } from '../components/AuthContext.js';
 
@@ -73,8 +73,8 @@ export function useConvertAPI() {
   useEffect(() => {
       const requestInterceptor = convertAPI.interceptors.request.use(
         (config) => {
-          if (user?.accessToken) {
-            config.headers.Authorization = `Bearer ${user.accessToken}`;
+          if (user?.idToken) {
+            config.headers.Authorization = `Bearer ${user.idToken}`;
           }
           return config;
         },

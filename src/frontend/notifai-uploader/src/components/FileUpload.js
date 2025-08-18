@@ -24,14 +24,11 @@ export default function FileUpload({ onFileUpload, handleLoading }) {
         `/convert`,
         formData,
       );
-
-      console.log("API Response:", response.data); // Debug the response
-
       if (!response.data) {
         throw new Error("Empty response from API");
       }
 
-      const resolvedData = await Promise.resolve(response.data); // Handle potential Promise
+      const resolvedData = await Promise.resolve(response.data);
       setUploadStatus("Successfully Uploaded");
       onFileUpload(resolvedData);
       setTimeout(() => setUploadStatus(""), 2000);
