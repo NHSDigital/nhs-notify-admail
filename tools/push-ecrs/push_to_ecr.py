@@ -122,7 +122,7 @@ def main():
     )
     parser.add_argument(
         "--environment",
-        choices=["dev1", "test"],
+        choices=["dev1", "dev2", "test"],
         default="dev1",
         help="Specify the environment to deploy to",
     )
