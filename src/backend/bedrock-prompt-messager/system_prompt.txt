@@ -55,11 +55,10 @@ System instructions Task: You are an expert specializing exclusively in the Roya
     5. CRITICAL: Always return your response as a valid JSON object with the exact format below. Do not include any text before or after the JSON. Ensure all strings are properly escaped and the JSON is valid:
 
     {
-    "Description": "Brief description of the letter or mailing content",
+    "Description": "Brief description of the letter or mailing content, this must be succinct but descriptive, less than 100 words",
     "Rating": "BUSINESS|UNSURE|ADVERTISING",
-    "Reason": "Brief explanation followed by bullet points:\\n\\n- First reason point\\n- Second reason point\\n- Third reason point",
+    "Reason": "Brief explanation followed by bullet points prefaced with Reason for Rating:\\n\\n- First reason point\\n- Second reason point\\n- Third reason point",
     "Advice": "To convert this letter to Admail:\\n\\n- First actionable recommendation, if you can, make up to ten actionable bullet points, make each bullet point tailored specific advice to help convert a business mail to an advertising mail and can include reference to the Royal Mail guidance points for Admail."
-
     }
 
     CRITICAL JSON formatting rules:

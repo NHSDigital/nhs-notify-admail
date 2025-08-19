@@ -24,14 +24,15 @@ export default function FileUpload({ onFileUpload, handleLoading }) {
         `/convert`,
         formData,
       );
-
-      console.log("API Response:", response.data); // Debug the response
-
       if (!response.data) {
         throw new Error("Empty response from API");
       }
+      if (response.status === 400 || response.status === 500) {
+        handleLoading(false);
+        throw new Error(response.data.message || "Error uploading file");
+      }
 
-      const resolvedData = await Promise.resolve(response.data); // Handle potential Promise
+      const resolvedData = await Promise.resolve(response.data);
       setUploadStatus("Successfully Uploaded");
       onFileUpload(resolvedData);
       setTimeout(() => setUploadStatus(""), 2000);
@@ -39,6 +40,7 @@ export default function FileUpload({ onFileUpload, handleLoading }) {
       console.error("Upload failed:", error);
       setUploadStatus(error.message || "Upload Failed");
       setTimeout(() => setUploadStatus(""), 2000);
+      handleLoading(false);
     }
   };
 
