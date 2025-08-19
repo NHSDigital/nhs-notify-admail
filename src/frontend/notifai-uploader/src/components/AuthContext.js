@@ -57,10 +57,12 @@ export function AuthProvider({ children }) {
       // Update session storage with new tokens
       sessionStorage.setItem("idToken", newIdToken);
       sessionStorage.setItem("accessToken", newAccessToken);
+      sessionStorage.setItem("refreshToken", refreshToken);
       setUser((prev) => ({
         ...prev,
         idToken: newIdToken,
         accessToken: newAccessToken,
+        refreshToken: refreshToken
       }));
       setError(null);
       return newIdToken;

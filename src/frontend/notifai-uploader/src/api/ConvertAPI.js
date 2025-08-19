@@ -44,10 +44,10 @@ export function useConvertAPI() {
           isRefreshing = true;
 
           try {
-            const newToken = await refreshSession();
-            processQueue(null, newToken);
+            const newIdToken = await refreshSession();
+            processQueue(null, newIdToken);
 
-            originalRequest.headers.Authorization = `Bearer ${newToken}`;
+            originalRequest.headers.Authorization = `Bearer ${newIdToken}`;
             return instance(originalRequest);
           } catch (refreshError) {
             console.error('Token refresh failed:', refreshError);
