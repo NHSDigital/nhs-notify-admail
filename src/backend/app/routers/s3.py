@@ -12,7 +12,7 @@ async def get_s3_file_history(batch: int = 10, start_after: str = None):
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@router.get("/s3/download/{file_name}")
+@router.get("/s3/download")
 async def download_s3_file(file_name: str):
     try:
         file_content = await get_s3_file_content(file_name)

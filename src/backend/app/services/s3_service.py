@@ -63,11 +63,10 @@ async def fetch_s3_file_history(batch: int, start_after: str = None):
 
 
 async def get_s3_file_content(file_name: str):
-    file_key = f"{BUCKET_DIRECTORY}{file_name}"
-    logger.info(f"Attempting to fetch file content for key: {file_key}")
+    logger.info(f"Attempting to fetch file content for key: {file_name}")
 
     try:
-        response = s3_client.get_object(Bucket=BUCKET_NAME, Key=file_key)
+        response = s3_client.get_object(Bucket=BUCKET_NAME, Key=file_name)
         file_content = response["Body"].read().decode("utf-8")
         json_content = json.loads(file_content)
 

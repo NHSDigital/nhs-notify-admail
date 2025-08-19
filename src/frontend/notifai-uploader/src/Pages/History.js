@@ -7,7 +7,7 @@ function History({ user }) {
   const backendAPIClient = useBackendAPIClient();
   const [files, setFiles] = useState([]);
   const [nextStartAfter, setNextStartAfter] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const [isLoading, setLoading] = useState(false);
   const [feedback, setFeedback] = useState(null);
 
   const fetchFiles = useCallback(async () => {
@@ -35,9 +35,15 @@ function History({ user }) {
   }, [fetchFiles]);
 
   const fetchAndShowFileContent = async (fileName) => {
+    setLoading(true);
+    setFeedback({});
     try {
-      const encodedFileName = encodeURIComponent(fileName);
-      const response = await backendAPIClient.get(`/s3/download/${encodedFileName}`);
+      const response = await backendAPIClient.get('/s3/download', {
+        params: {
+          file_name: fileName,
+        },
+      });
+
       const fileData = response.data;
 
       if (fileData && fileData.prompt_output && fileData.prompt_output.body) {
@@ -47,6 +53,9 @@ function History({ user }) {
       }
     } catch (error) {
       console.error('Error fetching file content:', error);
+    }
+    finally {
+      setLoading(false);
     }
   };
 
@@ -76,13 +85,13 @@ function History({ user }) {
               ))}
             </tbody>
           </table>
-          <AIFeedback feedback={feedback} isLoading={loading} />
+          <AIFeedback feedback={feedback} isLoading={isLoading} />
         </div>
         <div>
-          {loading ? (
+          {isLoading ? (
             <p>Loading...</p>
           ) : (
-            <button onClick={fetchFiles} disabled={loading}>
+            <button onClick={fetchFiles} disabled={isLoading}>
               Load More
             </button>
           )}
