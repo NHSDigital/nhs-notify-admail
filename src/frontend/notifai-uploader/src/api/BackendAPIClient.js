@@ -70,7 +70,7 @@ export function useBackendAPIClient() {
   }, [refreshSession]);
 
   useEffect(() => {
-      const requestInterceptor = convertAPI.interceptors.request.use(
+      const requestInterceptor = backendAPIClient.interceptors.request.use(
         (config) => {
           if (user?.accessToken) {
             config.headers.Authorization = `Bearer ${user.accessToken}`;
@@ -80,8 +80,8 @@ export function useBackendAPIClient() {
         (error) => Promise.reject(error)
     );
     return () => {
-      convertAPI.interceptors.request.eject(requestInterceptor);
+      backendAPIClient.interceptors.request.eject(requestInterceptor);
     };
-  }, [user, convertAPI]);
-  return convertAPI;
+  }, [user, backendAPIClient]);
+  return backendAPIClient;
 }
