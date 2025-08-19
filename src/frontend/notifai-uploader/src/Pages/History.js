@@ -49,7 +49,7 @@ function History({ user }) {
       if (fileData && fileData.prompt_output && fileData.prompt_output.body) {
         const bodyData = JSON.parse(fileData.prompt_output.body);
 
-        setFeedback(bodyData.description);
+        setFeedback(bodyData);
       }
     } catch (error) {
       console.error('Error fetching file content:', error);
