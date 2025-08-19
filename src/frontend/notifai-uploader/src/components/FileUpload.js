@@ -27,6 +27,10 @@ export default function FileUpload({ onFileUpload, handleLoading }) {
       if (!response.data) {
         throw new Error("Empty response from API");
       }
+      if (response.status === 400 || response.status === 500) {
+        handleLoading(false);
+        throw new Error(response.data.message || "Error uploading file");
+      }
 
       const resolvedData = await Promise.resolve(response.data);
       setUploadStatus("Successfully Uploaded");
