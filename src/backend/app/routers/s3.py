@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException
-from app.services.s3_service import fetch_s3_file_history, generate_presigned_url
+from app.services.s3_service import fetch_s3_file_history, get_s3_file_content
 
 router = APIRouter()
 
@@ -15,6 +15,7 @@ async def get_s3_file_history(batch: int = 10, start_after: str = None):
 @router.get("/s3/download/{file_name}")
 async def download_s3_file(file_name: str):
     try:
-        return {"download_url": await generate_presigned_url(file_name)}
+        file_content = await get_s3_file_content(file_name)
+        return file_content
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

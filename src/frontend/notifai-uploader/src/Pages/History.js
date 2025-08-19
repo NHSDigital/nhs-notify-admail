@@ -1,12 +1,14 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { withAuth } from "../components/AuthContext";
 import { useBackendAPIClient } from '../api/BackendAPIClient';
+import AIFeedback from "../components/AIfeedback";
 
 function History({ user }) {
   const backendAPIClient = useBackendAPIClient();
   const [files, setFiles] = useState([]);
   const [nextStartAfter, setNextStartAfter] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [feedback, setFeedback] = useState(null);
 
   const fetchFiles = useCallback(async () => {
     setLoading(true);
@@ -32,12 +34,18 @@ function History({ user }) {
     fetchFiles();
   }, [fetchFiles]);
 
-  const downloadFile = async (fileName) => {
+  const fetchAndShowFileContent = async (fileName) => {
     try {
       const response = await backendAPIClient.get(`/s3/download/${fileName}`);
-      window.location.href = response.data.download_url;
+      const fileData = response.data;
+
+      if (fileData && fileData.prompt_output && fileData.prompt_output.body) {
+        const bodyData = JSON.parse(fileData.prompt_output.body);
+
+        setFeedback(bodyData.description);
+      }
     } catch (error) {
-      console.error('Error downloading file:', error);
+      console.error('Error fetching file content:', error);
     }
   };
 
@@ -61,12 +69,15 @@ function History({ user }) {
                   <td>{file.name}</td>
                   <td>{file.last_modified}</td>
                   <td>
-                    <button onClick={() => downloadFile(file.name)}>Download</button>
+                    <button onClick={() => fetchAndShowFileContent(file.name)}>View</button>
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
+          <AIFeedback feedback={feedback} isLoading={loading} />
+        </div>
+        <div>
           {loading ? (
             <p>Loading...</p>
           ) : (
