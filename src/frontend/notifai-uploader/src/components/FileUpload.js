@@ -36,6 +36,7 @@ export default function FileUpload({ onFileUpload, handleLoading }) {
       console.error("Upload failed:", error);
       setUploadStatus(error.message || "Upload Failed");
       setTimeout(() => setUploadStatus(""), 2000);
+      handleLoading(false);
     }
   };
 
