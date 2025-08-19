@@ -44,10 +44,9 @@ export function useConvertAPI() {
           isRefreshing = true;
 
           try {
-            const newIdToken = await refreshSession();
-            processQueue(null, newIdToken);
-
-            originalRequest.headers.Authorization = `Bearer ${newIdToken}`;
+            const newAccessToken = await refreshSession();
+            processQueue(null, newAccessToken);
+            originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
             return instance(originalRequest);
           } catch (refreshError) {
             console.error('Token refresh failed:', refreshError);
@@ -73,8 +72,8 @@ export function useConvertAPI() {
   useEffect(() => {
       const requestInterceptor = convertAPI.interceptors.request.use(
         (config) => {
-          if (user?.idToken) {
-            config.headers.Authorization = `Bearer ${user.idToken}`;
+          if (user?.accessToken) {
+            config.headers.Authorization = `Bearer ${user.accessToken}`;
           }
           return config;
         },

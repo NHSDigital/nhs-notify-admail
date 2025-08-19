@@ -11,8 +11,11 @@ const AuthContext = createContext();
 const cognitoClient = new CognitoIdentityProviderClient({
   region: "eu-west-2",
 });
-const CLIENT_ID = window.env?.REACT_APP_COGNITO_ID || process.env.REACT_APP_COGNITO_ID;
-const USER_POOL_ID = window.env?.REACT_APP_COGNITO_USER_POOL_ID || process.env.REACT_APP_COGNITO_USER_POOL_ID;
+const CLIENT_ID =
+  window.env?.REACT_APP_COGNITO_ID || process.env.REACT_APP_COGNITO_ID;
+const USER_POOL_ID =
+  window.env?.REACT_APP_COGNITO_USER_POOL_ID ||
+  process.env.REACT_APP_COGNITO_USER_POOL_ID;
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
@@ -21,20 +24,25 @@ export function AuthProvider({ children }) {
 
   useEffect(() => {
     try {
-    const idToken = sessionStorage.getItem("idToken");
-    const accessToken = sessionStorage.getItem("accessToken");
-    const userEmail = sessionStorage.getItem("userEmail");
-    const refreshToken = sessionStorage.getItem("refreshToken");
+      const idToken = sessionStorage.getItem("idToken");
+      const accessToken = sessionStorage.getItem("accessToken");
+      const userEmail = sessionStorage.getItem("userEmail");
+      const refreshToken = sessionStorage.getItem("refreshToken");
 
-    if (idToken && accessToken && userEmail) {
-      setUser({ email: userEmail, idToken, refreshToken, accessToken });
+      if (idToken && accessToken && userEmail) {
+        setUser({
+          email: userEmail,
+          idToken: idToken,
+          accessToken: accessToken,
+          refreshToken: refreshToken,
+        });
+      }
+    } catch (error) {
+      console.error("Failed to initialize auth from session storage", error);
+      setUser(null);
+    } finally {
+      setIsAuthReady(true);
     }
-  } catch (error) {
-    console.error("Failed to initialize auth from session storage", error);
-    setUser(null);
-  } finally {
-    setIsAuthReady(true);
-  }
   }, []);
 
   const refreshSession = async () => {
@@ -62,10 +70,10 @@ export function AuthProvider({ children }) {
         ...prev,
         idToken: newIdToken,
         accessToken: newAccessToken,
-        refreshToken: refreshToken
+        refreshToken: refreshToken,
       }));
       setError(null);
-      return newIdToken;
+      return newAccessToken;
     } catch (err) {
       setError(err.message || "Failed to refresh token");
       setUser(null);
@@ -78,6 +86,7 @@ export function AuthProvider({ children }) {
   };
 
   const login = async (username, password) => {
+    let loginResponse = null;
     try {
       setError(null);
       const command = new InitiateAuthCommand({
@@ -88,9 +97,8 @@ export function AuthProvider({ children }) {
           PASSWORD: password,
         },
       });
-      const response = await cognitoClient.send(command);
-      let idToken;
-      if (response.ChallengeName === "NEW_PASSWORD_REQUIRED") {
+      loginResponse = await cognitoClient.send(command);
+      if (loginResponse.ChallengeName === "NEW_PASSWORD_REQUIRED") {
         const challengeInput = {
           ChallengeName: "NEW_PASSWORD_REQUIRED",
           ClientId: CLIENT_ID,
@@ -99,27 +107,28 @@ export function AuthProvider({ children }) {
             USERNAME: username,
             NEW_PASSWORD: password,
           },
-          Session: response.Session
+          Session: loginResponse.Session,
         };
-        const challengeConfirm = new RespondToAuthChallengeCommand(challengeInput);
+        const challengeConfirm = new RespondToAuthChallengeCommand(
+          challengeInput
+        );
         const challengeConfirmResponse = await cognitoClient.send(
           challengeConfirm
         );
-        console.log(challengeConfirmResponse);
-        const { AccessToken, IdToken, RefreshToken } = challengeConfirmResponse.AuthenticationResult;
-        sessionStorage.setItem("idToken", IdToken);
-        sessionStorage.setItem("accessToken", AccessToken);
-        sessionStorage.setItem("refreshToken", RefreshToken);
-        idToken = IdToken;
-      } else {
-        const { AccessToken, IdToken, RefreshToken } = response.AuthenticationResult;
-        sessionStorage.setItem("accessToken", AccessToken);
-        sessionStorage.setItem("refreshToken", RefreshToken);
-        sessionStorage.setItem("idToken", IdToken);
-        idToken = IdToken;
+        loginResponse = challengeConfirmResponse;
       }
+      const { AccessToken, IdToken, RefreshToken } =
+        loginResponse.AuthenticationResult;
+      sessionStorage.setItem("accessToken", AccessToken);
+      sessionStorage.setItem("refreshToken", RefreshToken);
+      sessionStorage.setItem("idToken", IdToken);
       sessionStorage.setItem("userEmail", username);
-      setUser({ email: username, idToken });
+      setUser({
+        email: username,
+        idToken: IdToken,
+        accessToken: AccessToken,
+        refreshToken: RefreshToken,
+      });
       return true;
     } catch (err) {
       setError(err.message || "Failed to sign in");
@@ -135,13 +144,11 @@ export function AuthProvider({ children }) {
           AccessToken: accessToken,
         });
         const response = await cognitoClient.send(command);
-        console.log(response);
       }
       sessionStorage.removeItem("idToken");
       sessionStorage.removeItem("userEmail");
       sessionStorage.removeItem("accessToken");
       sessionStorage.removeItem("refreshToken");
-
       setUser(null);
       setError(null);
       return <Login />;
