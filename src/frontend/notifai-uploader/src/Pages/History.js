@@ -36,7 +36,8 @@ function History({ user }) {
 
   const fetchAndShowFileContent = async (fileName) => {
     try {
-      const response = await backendAPIClient.get(`/s3/download/${fileName}`);
+      const encodedFileName = encodeURIComponent(fileName);
+      const response = await backendAPIClient.get(`/s3/download/${encodedFileName}`);
       const fileData = response.data;
 
       if (fileData && fileData.prompt_output && fileData.prompt_output.body) {
