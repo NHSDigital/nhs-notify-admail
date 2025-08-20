@@ -14,7 +14,7 @@ s3_client = boto3.client("s3")
 
 BUCKET_NAME = os.getenv("S3_LLM_LOGS_BUCKET")
 BUCKET_DIRECTORY = os.getenv("S3_LLM_LOGS_DIRECTORY")
-BUCKET_ACCOUNT_ID = os.getenv("BUCKET_ACCOUNT_ID")
+BUCKET_ACCOUNT_ID = os.getenv("S3_LLM_LOGS_BUCKET_ACCOUNT_ID")
 
 logger.info(f"S3 Bucket Name: {BUCKET_NAME}")
 logger.info(f"S3 Bucket Directory: {BUCKET_DIRECTORY}")
