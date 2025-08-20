@@ -14,11 +14,11 @@ function FileUploadPage() {
   const { user } = useAuth();
 
 
-  const getPromptResp = async (fileContent) => {
+  const getPromptResp = async (fileContent, fileName) => {
     try {
       const response = await axios.post(
         `${EnvLambdaFunctionApiBaseUrl}`,
-        { input_text: fileContent },
+        { input_text: fileContent, file_name: fileName},
         {
           headers: {
             'Content-Type': 'application/json',
@@ -46,7 +46,7 @@ function FileUploadPage() {
       setPages(file.pages);
     }
     try {
-      const promptResp = await getPromptResp(file.extracted_text);
+      const promptResp = await getPromptResp(file.extracted_text, file.file_name);
       await sleep(1000);
       setFeedback(promptResp);
     } catch (error) {

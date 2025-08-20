@@ -113,6 +113,7 @@ function History({ user }) {
           <table>
             <thead>
               <tr>
+                <th>File Name</th>
                 <th>Date Uploaded</th>
                 <th>Action</th>
               </tr>
@@ -120,6 +121,9 @@ function History({ user }) {
             <tbody>
               {currentFiles.map((file, index) => (
                 <tr key={index}>
+                  <td>
+                    {file.name.split('__')[1] || ''}
+                  </td>
                   <td>{file.last_modified}</td>
                   <td>
                     <button onClick={() => fetchAndShowFileContent(file.name)}>View Details</button>
