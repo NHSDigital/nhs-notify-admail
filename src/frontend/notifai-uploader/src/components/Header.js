@@ -20,7 +20,7 @@ export default function Header() {
               <Link to="/" className="nhsuk-header__navigation-link" style={{ color: '#ffffff', textDecoration: 'none' }}>File Upload</Link>
             </li>
             <li className="nhsuk-header__navigation-item" style={{ marginLeft: '20px' }}>
-              <Link to="/history" className="nhsuk-header__navigation-link" style={{ color: '#ffffff', textDecoration: 'none' }}>History</Link>
+              <Link to="/history" className="nhsuk-header__navigation-link" style={{ color: '#ffffff', textDecoration: 'none' }}>File Upload History</Link>
             </li>
           </ul>
         </nav>

@@ -39,14 +39,15 @@ async def fetch_s3_file_history(batch: int, start_after: str = None):
         for page in page_iterator:
             logger.info(f"Received page with {len(page.get('Contents', []))} objects.")
             for obj in page.get("Contents", []):
-                files.append(
-                    {
-                        "name": obj["Key"],
-                        "last_modified": obj["LastModified"].strftime(
-                            "%Y-%m-%d %H:%M:%S"
-                        ),
-                    }
-                )
+                if not obj["Key"].endswith("/"):
+                    files.append(
+                        {
+                            "name": obj["Key"],
+                            "last_modified": obj["LastModified"].strftime(
+                                "%Y-%m-%d %H:%M:%S"
+                            ),
+                        }
+                    )
             break  # Only fetch one page at a time
 
         logger.info(f"Successfully fetched {len(files)} files.")
