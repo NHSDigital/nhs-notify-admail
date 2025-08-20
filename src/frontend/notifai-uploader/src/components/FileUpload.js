@@ -34,7 +34,7 @@ export default function FileUpload({ onFileUpload, handleLoading }) {
 
       const resolvedData = await Promise.resolve(response.data);
       setUploadStatus("Successfully Uploaded");
-      onFileUpload(resolvedData);
+      onFileUpload({ ...resolvedData, file_name: file.name });
       setTimeout(() => setUploadStatus(""), 2000);
     } catch (error) {
       console.error("Upload failed:", error);
@@ -47,7 +47,7 @@ export default function FileUpload({ onFileUpload, handleLoading }) {
   return (
     <div className="file-upload">
       <h2 style={{ fontWeight: "bold", fontSize: "24px", color: "#000" }}>
-        Upload File
+        Admail Eligibility Checker
       </h2>
       <p>
         Upload your template to have the letter content assessed. This service

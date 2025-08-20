@@ -5,9 +5,9 @@ router = APIRouter()
 
 
 @router.get("/s3/history")
-async def get_s3_file_history(batch: int = 10, start_after: str = None):
+async def get_s3_file_history():
     try:
-        return await fetch_s3_file_history(batch, start_after)
+        return await fetch_s3_file_history()
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 

@@ -9,42 +9,15 @@ function History({ user }) {
   const backendAPIClient = useBackendAPIClient();
   const [allFiles, setAllFiles] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const [nextStartAfter, setNextStartAfter] = useState(null);
   const [isLoading, setLoading] = useState(false);
   const [feedback, setFeedback] = useState(null);
-  const [hasMore, setHasMore] = useState(true);
 
-  const fetchFiles = useCallback(async (startAfter, isInitialLoad = false) => {
+  const fetchAllFiles = useCallback(async () => {
     setLoading(true);
     try {
-
-      const response = await backendAPIClient.get('/s3/history', {
-        params: {
-          batch: isInitialLoad ? ITEMS_PER_PAGE+11 : ITEMS_PER_PAGE,
-          start_after: startAfter,
-        },
-      });
-
-      const newFiles = response.data;
-
-      setAllFiles(prevFiles => {
-        if (newFiles.length > 0) {
-          return [...prevFiles, ...newFiles];
-        }
-        return prevFiles;
-      });
-
-      if (newFiles.length > 0) {
-        setNextStartAfter(newFiles[newFiles.length - 1].name);
-      }
-
-      if (newFiles.length < (ITEMS_PER_PAGE)) {
-        setHasMore(false);
-      }
-
-      if (isInitialLoad && newFiles.length > 0) {
-        setCurrentPage(1);
-      }
+      const response = await backendAPIClient.get('/s3/history');
+      const files = response.data;
+      setAllFiles(files);
 
     } catch (error) {
       console.error('Error fetching files:', error);
@@ -54,12 +27,8 @@ function History({ user }) {
   }, [backendAPIClient]);
 
   useEffect(() => {
-    fetchFiles(null, true);
-  }, [fetchFiles]);
-
-  const handleLoadMore = () => {
-    fetchFiles(nextStartAfter);
-  };
+    fetchAllFiles();
+  }, [fetchAllFiles]);
 
   const fetchAndShowFileContent = async (fileName) => {
     setLoading(true);
@@ -86,7 +55,6 @@ function History({ user }) {
 
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
   const currentFiles = allFiles.slice(startIndex, startIndex + ITEMS_PER_PAGE);
-
   const totalPages = Math.ceil(allFiles.length / ITEMS_PER_PAGE);
 
   const handlePageChange = (page) => {
@@ -119,17 +87,23 @@ function History({ user }) {
               </tr>
             </thead>
             <tbody>
-              {currentFiles.map((file, index) => (
-                <tr key={index}>
-                  <td>
-                    {file.name.split('__')[1] || ''}
-                  </td>
-                  <td>{file.last_modified}</td>
-                  <td>
-                    <button onClick={() => fetchAndShowFileContent(file.name)}>View Details</button>
-                  </td>
-                </tr>
-              ))}
+              {isLoading && allFiles.length === 0 ? (
+                <tr><td colSpan="3" className="text-center">Loading files...</td></tr>
+              ) : currentFiles.length > 0 ? (
+                currentFiles.map((file, index) => (
+                  <tr key={index}>
+                    <td>
+                      {file.name.split('|~')[1] || ''}
+                    </td>
+                    <td>{file.last_modified}</td>
+                    <td>
+                      <button onClick={() => fetchAndShowFileContent(file.name)}>View Details</button>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr><td colSpan="3" className="text-center">No assessment files found.</td></tr>
+              )}
             </tbody>
           </table>
           <AIFeedback feedback={feedback} isLoading={isLoading} />
@@ -150,22 +124,6 @@ function History({ user }) {
               >
                 Next
               </button>
-            </div>
-          )}
-          {hasMore && (
-            <div style={{ marginTop: '10px' }}>
-              {isLoading ? (
-                <p>Loading...</p>
-              ) : (
-                  <button onClick={handleLoadMore} disabled={isLoading}>
-                    Load 10 more assessment files
-                  </button>
-              )}
-            </div>
-          )}
-          {!hasMore && (
-            <div style={{ marginTop: '10px' }}>
-              <p>No more assessment files to load</p>
             </div>
           )}
         </div>

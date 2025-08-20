@@ -17,10 +17,10 @@ export default function Header() {
         <nav className="nhsuk-header__navigation" aria-label="Primary navigation">
           <ul className="nhsuk-header__navigation-list" style={{ display: 'flex', margin: 0, padding: 0, listStyle: 'none' }}>
             <li className="nhsuk-header__navigation-item" style={{ marginLeft: '20px' }}>
-              <Link to="/" className="nhsuk-header__navigation-link" style={{ color: '#ffffff', textDecoration: 'none' }}>File Upload</Link>
+              <Link to="/" className="nhsuk-header__navigation-link" style={{ color: '#ffffff', textDecoration: 'none' }}>Admail Eligibility Checker</Link>
             </li>
             <li className="nhsuk-header__navigation-item" style={{ marginLeft: '20px' }}>
-              <Link to="/history" className="nhsuk-header__navigation-link" style={{ color: '#ffffff', textDecoration: 'none' }}>File Upload History</Link>
+              <Link to="/history" className="nhsuk-header__navigation-link" style={{ color: '#ffffff', textDecoration: 'none' }}>Admail Eligibility History</Link>
             </li>
           </ul>
         </nav>

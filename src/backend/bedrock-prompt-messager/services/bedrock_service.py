@@ -142,7 +142,7 @@ class BedrockService:
         s3_client = boto3.client("s3")
         date_time_now = datetime.now().strftime("%d-%m-%Y_%H:%M:%S")
         s3_key = (
-            f"{self.config.logging_s3_key_prefix}{date_time_now}__{filename}__.json"
+            f"{self.config.logging_s3_key_prefix}{date_time_now}|~{filename}|~.json"
         )
 
         log_data = {

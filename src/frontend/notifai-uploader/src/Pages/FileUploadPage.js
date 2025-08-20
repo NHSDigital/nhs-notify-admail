@@ -13,7 +13,6 @@ function FileUploadPage() {
   const EnvLambdaFunctionApiBaseUrl = window.env?.REACT_APP_API_GATEWAY || process.env.REACT_APP_API_GATEWAY;
   const { user } = useAuth();
 
-
   const getPromptResp = async (fileContent, fileName) => {
     try {
       const response = await axios.post(
