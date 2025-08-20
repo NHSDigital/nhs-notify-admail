@@ -66,7 +66,9 @@ async def get_s3_file_content(file_name: str):
     logger.info(f"Attempting to fetch file content for key: {file_name}")
 
     try:
-        response = s3_client.get_object(Bucket=BUCKET_NAME, Key=file_name)
+        response = s3_client.get_object(
+            Bucket=BUCKET_NAME, Key=file_name, ExpectedBucketOwner=BUCKET_ACCOUNT_ID
+        )
         file_content = response["Body"].read().decode("utf-8")
         json_content = json.loads(file_content)
 
