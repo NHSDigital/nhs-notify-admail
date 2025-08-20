@@ -76,21 +76,6 @@ resource "aws_iam_role_policy_attachment" "apprunner_s3_attach" {
   policy_arn = aws_iam_policy.apprunner_s3_policy.arn
 }
 
-resource "random_password" "app-runner-basic-auth-random-password" {
-  length           = 20
-  special          = true
-  override_special = "!@#$%^&*()-_=+"
-}
-
-resource "random_password" "app-runner-basic-auth-random-username" {
-  length  = 10
-  special = false
-}
-
-resource "aws_secretsmanager_secret" "basic_auth_password" {
-  name = "${local.csi}-app-runner-basic-auth-password"
-}
-
 resource "aws_apprunner_service" "notifai_frontend_service" {
   service_name = "${local.csi}-frontend"
   count        = var.first-run ? 0 : 1
@@ -108,6 +93,7 @@ resource "aws_apprunner_service" "notifai_frontend_service" {
           REACT_APP_COGNITO_ID           = aws_cognito_user_pool_client.main.id
           REACT_APP_COGNITO_USER_POOL_ID = aws_cognito_user_pool_client.main.user_pool_id
           REACT_APP_API_GATEWAY          = "${aws_api_gateway_stage.main.invoke_url}/${local.api-gateway-llm-path-param}"
+          BUCKET_ACCOUNT_ID              = var.aws_account_id
         }
       }
       image_identifier      = "${aws_ecr_repository.notifai-frontend.repository_url}:latest"
