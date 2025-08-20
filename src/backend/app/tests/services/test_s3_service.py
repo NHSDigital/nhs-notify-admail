@@ -41,7 +41,7 @@ async def test_get_s3_file_content_success(mock_s3_client):
 
     assert result == {"test": "content"}
     mock_s3_client.get_object.assert_called_once_with(
-        Bucket="test-bucket", Key="test.json"
+        Bucket="test-bucket", Key="test.json", ExpectedBucketOwner=None
     )
 
 
