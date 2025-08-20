@@ -3,11 +3,13 @@ import pytest
 from unittest.mock import patch, MagicMock
 from fastapi import HTTPException, status
 from app.core import constants
+from datetime import datetime
 
-# Set test environment variables
 os.environ["COGNITO_REGION"] = "test-region"
 os.environ["COGNITO_USER_POOL_ID"] = "test-pool-id"
 os.environ["COGNITO_APP_CLIENT_ID"] = "test-client-id"
+os.environ["S3_LLM_LOGS_BUCKET"] = "test-bucket"
+os.environ["S3_LLM_LOGS_DIRECTORY"] = "test-dir"
 
 
 @pytest.fixture(autouse=True)
@@ -52,3 +54,9 @@ def mock_auth_invalid():
             headers={"WWW-Authenticate": "Bearer"},
         )
         yield mock_validate
+
+
+@pytest.fixture
+def mock_s3_client():
+    with patch("app.services.s3_service.s3_client") as mock:
+        yield mock
