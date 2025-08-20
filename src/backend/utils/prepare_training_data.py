@@ -58,7 +58,7 @@ def create_haiku_converse_data():
             data['messages'][1]['content'] = obj_info["example_response"]
             claude_training_list.append(data)
 
-    with jsonlines.open(DATA_PATH + '/training_claude_haiku.jsonl', mode='w') as writer:
+    with jsonlines.open(DATA_PATH + 'training_claude_haiku.jsonl', mode='w') as writer:
         for obj in claude_training_list:
             writer.write(obj)
 
@@ -91,7 +91,7 @@ def create_nova_pro_converse_data():
             data['messages'][1]['content'][0]['text'] = obj_info["example_response"]
             nova_pro_training_list.append(data)
 
-    with jsonlines.open(DATA_PATH + '/training_nova_pro.jsonl', mode='w') as writer:
+    with jsonlines.open(DATA_PATH + 'training_nova_pro.jsonl', mode='w') as writer:
         for obj in nova_pro_training_list:
             writer.write(obj)
 
