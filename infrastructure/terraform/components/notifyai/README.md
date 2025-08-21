@@ -29,7 +29,9 @@
 | <a name="input_region"></a> [region](#input\_region) | The AWS Region | `string` | n/a | yes |
 ## Modules
 
-No modules.
+| Name | Source | Version |
+|------|--------|---------|
+| <a name="module_eventbridge"></a> [eventbridge](#module\_eventbridge) | terraform-aws-modules/eventbridge/aws | ~> 3.0 |
 ## Outputs
 
 | Name | Description |
