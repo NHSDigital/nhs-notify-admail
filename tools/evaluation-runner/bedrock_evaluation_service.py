@@ -30,12 +30,21 @@ class BedrockEvaluator:
         logger.info("Starting model evaluation job: %s", job_name)
 
         rating_metric = {
-            "name": "Rating",
-            "instructions": "If the 'Rating' value in the {{prediction}} matches the 'Rating' value in the {{ground_truth}} return 1 else return 0.",
-            "ratingScale": [
-                {"definition": "The 'Rating' value in the prediction matches the 'Rating' value in the ground truth", "value": {"floatValue": 1}},
-                {"definition": "The 'Rating' value in the prediction does not match the 'Rating' value in the ground truth", "value": {"floatValue": 0}},
-            ],
+            "customMetricDefinition": {
+                "name": "Rating",
+                "instructions": """
+        If the 'Rating' value in the {{prediction}} matches the 'Rating' value in the {{ground_truth}} return 1 else return 0.""",
+                "ratingScale": [
+                    {
+                        "definition": "The 'Rating' value in the prediction matches the 'Rating' value in the ground truth",
+                        "value": {"floatValue": 1},
+                    },
+                    {
+                        "definition": "The 'Rating' value in the prediction does not match the 'Rating' value in the ground truth",
+                        "value": {"floatValue": 0},
+                    },
+                ],
+            }
         }
 
         try:
