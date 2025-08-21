@@ -5,7 +5,6 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-# Configure environment variables
 evaluator_model = os.getenv("EVALUATOR_MODEL_IDENTIFIER").strip().strip('"')
 generator_model = os.getenv("INFERENCE_MODEL_IDENTIFIER").strip().strip('"')
 role_arn = os.getenv("ROLE_ARN").strip().strip('"')
@@ -13,7 +12,6 @@ input_data = os.getenv("INPUT_PROMPT_S3_URI").strip().strip('"')
 output_path = os.getenv("RESULTS_S3_URI").strip().strip('"')
 aws_region = os.getenv("AWS_REGION").strip().strip('"')
 
-# Create Bedrock client
 bedrock_client = boto3.client("bedrock", region_name=aws_region)
 
 rating_metric = {
@@ -34,7 +32,6 @@ If the 'Rating' value in the {{prediction}} matchs the 'Rating' value in the {{g
     }
 }
 
-# Create the model evaluation job
 model_eval_job_name = (
     f"model-evaluation-custom-metrics-{datetime.now().strftime('%Y-%m-%d-%H-%M-%S')}"
 )
@@ -59,7 +56,6 @@ model_eval_job = bedrock_client.create_evaluation_job(
                         "name": "ModelEvalDataset",
                         "datasetLocation": {"s3Uri": input_data},
                     },
-                    # Note: the "Builtin.*" metrics, and their explainations can be found here: https://docs.aws.amazon.com/bedrock/latest/userguide/model-evaluation-metrics.html
                     "metricNames": [
                         "Builtin.Correctness",
                         "Builtin.Completeness",

@@ -26,7 +26,7 @@ class BedrockEvaluator:
         input_s3_uri: str,
         output_s3_uri: str,
     ) -> dict:
-        job_name = f"model-eval-{datetime.now().strftime('%Y-%m-%d-%H-%M-%S')}"
+        job_name = f"model-evaluation-custom-metrics-{datetime.now().strftime('%Y-%m-%d-%H-%M-%S')}"
         logger.info("Starting model evaluation job: %s", job_name)
 
         rating_metric = {

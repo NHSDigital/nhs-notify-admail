@@ -49,6 +49,8 @@ data "aws_iam_policy_document" "bedrock_access" {
       "s3:PutObject",
       "bedrock:ApplyGuardrail",
       "bedrock:CreateEvaluationJob",
+      "bedrock:DescribeEvaluationJob",
+      "bedrock:GetEvaluationJob"
     ]
     resources = [
       "arn:aws:bedrock:${var.region}::foundation-model/*",
@@ -62,6 +64,12 @@ data "aws_iam_policy_document" "bedrock_access" {
       "arn:aws:bedrock:${var.region}:${var.aws_account_id}:inference-profile/eu.amazon.nova-pro-v1:*",
       "arn:aws:bedrock:${var.region}::foundation-model/amazon.nova-pro-v1:0"
     ]
+  }
+
+  statement {
+    effect    = "Allow"
+    actions   = ["iam:PassRole"]
+    resources = [aws_iam_role.iam_for_bedrock_evaluation.arn]
   }
 }
 
