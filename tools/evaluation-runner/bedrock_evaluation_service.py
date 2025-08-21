@@ -33,8 +33,8 @@ class BedrockEvaluator:
             "name": "Rating",
             "instructions": "If the 'Rating' value in the {{prediction}} matches the 'Rating' value in the {{ground_truth}} return 1 else return 0.",
             "ratingScale": [
-                {"definition": "Match", "value": {"floatValue": 1}},
-                {"definition": "No Match", "value": {"floatValue": 0}},
+                {"definition": "The 'Rating' value in the prediction matches the 'Rating' value in the ground truth", "value": {"floatValue": 1}},
+                {"definition": "The 'Rating' value in the prediction does not match the 'Rating' value in the ground truth", "value": {"floatValue": 0}},
             ],
         }
 
@@ -74,14 +74,13 @@ class BedrockEvaluator:
                             }
                         ],
                         "customMetricConfig": {
-                            "customMetrics": [
-                                {"customMetricDefinition": rating_metric}
-                            ],
+                            "customMetrics": [rating_metric],
                             "evaluatorModelConfig": {
-                                "bedrockEvaluatorModels": [
-                                    {"modelIdentifier": evaluator_model}
-                                ]
+                                "bedrockEvaluatorModels": [{"modelIdentifier": evaluator_model}]
                             },
+                        },
+                        "evaluatorModelConfig": {
+                            "bedrockEvaluatorModels": [{"modelIdentifier": evaluator_model}]
                         },
                     }
                 },
@@ -89,9 +88,7 @@ class BedrockEvaluator:
 
             job_arn = response["jobArn"]
             console_url = f"https://{self.region}.console.aws.amazon.com/bedrock/home?region={self.region}#/eval/model-evaluation/report?job={job_name}&jobIdentifier={job_arn}"
-
             result = {"jobName": job_name, "jobArn": job_arn, "consoleUrl": console_url}
-
             logger.info("Successfully created model evaluation job: %s", job_name)
             logger.info("View progress here: %s", console_url)
 

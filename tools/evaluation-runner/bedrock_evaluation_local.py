@@ -18,7 +18,7 @@ rating_metric = {
     "customMetricDefinition": {
         "name": "Rating",
         "instructions": """
-If the 'Rating' value in the {{prediction}} matchs the 'Rating' value in the {{ground_truth}} return 1 else return 0.""",
+If the 'Rating' value in the {{prediction}} matches the 'Rating' value in the {{ground_truth}} return 1 else return 0.""",
         "ratingScale": [
             {
                 "definition": "The 'Rating' value in the prediction matches the 'Rating' value in the ground truth",
