@@ -23,3 +23,7 @@ header h1 {
   height: auto;
   display: block;
 }
+
+.nhsuk-header__navigation-link{
+  text-decoration: underline !important;
+}

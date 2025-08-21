@@ -6,7 +6,7 @@ from app.core.auth import (
     CognitoAuthenticator,
     NotFoundExceptionHandler,
 )
-from app.routers import convert
+from app.routers import convert, s3
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -30,3 +30,4 @@ app.add_middleware(
 )
 
 app.include_router(convert.router)
+app.include_router(s3.router)
