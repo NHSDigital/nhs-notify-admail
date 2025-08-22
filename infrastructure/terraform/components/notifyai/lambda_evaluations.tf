@@ -33,7 +33,7 @@ module "eventbridge" {
   source  = "terraform-aws-modules/eventbridge/aws"
   version = "~> 3.0"
 
-  bus_name = "evaluations_bus"
+  bus_name = "${local.csi}-evaluations_bus"
 
   schedules = {
     lambda-cron = {
@@ -48,7 +48,7 @@ module "eventbridge" {
 }
 
 resource "aws_iam_role" "eventbridge_scheduler_role" {
-  name = "eventbridge-scheduler-role"
+  name = "${local.csi}-eventbridge-scheduler-role"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
@@ -63,7 +63,7 @@ resource "aws_iam_role" "eventbridge_scheduler_role" {
 }
 
 resource "aws_iam_role_policy" "eventbridge_scheduler_policy" {
-  name = "eventbridge-scheduler-policy"
+  name = "${local.csi}-eventbridge-scheduler-policy"
   role = aws_iam_role.eventbridge_scheduler_role.id
 
   policy = jsonencode({
