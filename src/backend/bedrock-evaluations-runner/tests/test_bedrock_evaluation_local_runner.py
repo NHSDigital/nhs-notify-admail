@@ -8,12 +8,12 @@ import bedrock_evaluation_local_runner
 @patch.dict(
     os.environ,
     {
-        "EVALUATOR_MODEL_IDENTIFIER": "eval-model",
-        "INFERENCE_MODEL_IDENTIFIER": "gen-model",
-        "ROLE_ARN": "arn:aws:iam::123456789:role/test",
-        "INPUT_PROMPT_S3_URI": "s3://input",
-        "RESULTS_S3_URI": "s3://output",
-        "AWS_REGION": "eu-west-2",
+        "env_evaluator_model_identifier": "eval-model",
+        "env_generator_model_identifier": "gen-model",
+        "env_role_arn": "arn:aws:iam::123456789:role/test",
+        "env_input_prompt_s3_uri": "s3://input",
+        "env_results_s3_uri": "s3://output",
+        "env_region": "eu-west-2",
     },
 )
 @patch("boto3.client")
