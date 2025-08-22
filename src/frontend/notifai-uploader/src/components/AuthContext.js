@@ -169,3 +169,15 @@ export function AuthProvider({ children }) {
 export function useAuth() {
   return useContext(AuthContext);
 }
+
+export function withAuth(Component) {
+  return function AuthenticatedComponent(props) {
+    const { user } = useAuth();
+
+    if (!user) {
+      return <Login />;
+    }
+
+    return <Component {...props} user={user} />;
+  };
+}

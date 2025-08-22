@@ -45,24 +45,35 @@ resource "aws_iam_policy" "apprunner_ecr_policy" {
   })
 }
 
+resource "aws_iam_policy" "apprunner_s3_policy" {
+  name        = "${local.csi}-apprunner-s3-policy"
+  description = "Policy for App Runner to access S3 bucket"
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Action = [
+          "s3:ListBucket",
+          "s3:GetObject"
+        ],
+        Effect = "Allow",
+        Resource = [
+          aws_s3_bucket.lambda_prompt_logging_s3_bucket.arn,
+          "${aws_s3_bucket.lambda_prompt_logging_s3_bucket.arn}/*"
+        ]
+      }
+    ]
+  })
+}
+
 resource "aws_iam_role_policy_attachment" "apprunner_ecr_attach" {
   role       = aws_iam_role.apprunner_ecr_role.name
   policy_arn = aws_iam_policy.apprunner_ecr_policy.arn
 }
 
-resource "random_password" "app-runner-basic-auth-random-password" {
-  length           = 20
-  special          = true
-  override_special = "!@#$%^&*()-_=+"
-}
-
-resource "random_password" "app-runner-basic-auth-random-username" {
-  length  = 10
-  special = false
-}
-
-resource "aws_secretsmanager_secret" "basic_auth_password" {
-  name = "${local.csi}-app-runner-basic-auth-password"
+resource "aws_iam_role_policy_attachment" "apprunner_s3_attach" {
+  role       = aws_iam_role.apprunner_ecr_role.name
+  policy_arn = aws_iam_policy.apprunner_s3_policy.arn
 }
 
 resource "aws_apprunner_service" "notifai_frontend_service" {
@@ -126,9 +137,12 @@ resource "aws_apprunner_service" "notifai_backend_service" {
         port          = "8080"
         start_command = "fastapi run main.py --port 8080"
         runtime_environment_variables = {
-          COGNITO_REGION        = var.region
-          COGNITO_USER_POOL_ID  = aws_cognito_user_pool.main.id
-          COGNITO_APP_CLIENT_ID = aws_cognito_user_pool_client.main.id
+          COGNITO_REGION                = var.region
+          COGNITO_USER_POOL_ID          = aws_cognito_user_pool.main.id
+          COGNITO_APP_CLIENT_ID         = aws_cognito_user_pool_client.main.id
+          S3_LLM_LOGS_BUCKET            = "${aws_s3_bucket.lambda_prompt_logging_s3_bucket.bucket}"
+          S3_LLM_LOGS_DIRECTORY         = "${aws_s3_object.lambda_prompt_logging_s3_bucket_object.key}"
+          S3_LLM_LOGS_BUCKET_ACCOUNT_ID = var.aws_account_id
         }
       }
       image_identifier      = "${aws_ecr_repository.notifai-backend.repository_url}:latest"
@@ -158,8 +172,9 @@ resource "aws_apprunner_service" "notifai_backend_service" {
   }
 
   instance_configuration {
-    cpu    = "1024"
-    memory = "2048"
+    cpu               = "1024"
+    memory            = "2048"
+    instance_role_arn = aws_iam_role.apprunner_ecr_role.arn
   }
 }
 

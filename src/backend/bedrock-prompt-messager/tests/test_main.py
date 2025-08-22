@@ -44,7 +44,7 @@ def test_lambda_handler_success(MockBedrockService):
     assert "description" in result["body"]
     MockBedrockService.assert_called_once()
     mock_service_instance.call_admail_bedrock_prompt.assert_called_once_with(
-        "test letter"
+        "test letter", None
     )
 
 

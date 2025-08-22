@@ -19,7 +19,7 @@ class BedrockService:
             service_name="bedrock-runtime", region_name=self.config.region
         )
 
-    def call_admail_bedrock_prompt(self, input_letter):
+    def call_admail_bedrock_prompt(self, input_letter, file_name):
         try:
             with open("system_prompt.txt", mode="r", encoding="utf-8") as prompt_file:
                 system_prompt = prompt_file.read()
@@ -61,6 +61,7 @@ class BedrockService:
             promptinput=user_prompt,
             promptoutput=api_gateway_response,
             guardrail_assessment=guardrail_assessment,
+            filename=file_name,
         )
         return api_gateway_response
 
@@ -131,14 +132,18 @@ class BedrockService:
             "toolChoice": {"tool": {"name": constants.TOOL_NAME}},
         }
 
-    def log_prompt_details_to_s3(self, promptinput, promptoutput, guardrail_assessment):
+    def log_prompt_details_to_s3(
+        self, promptinput, promptoutput, guardrail_assessment, filename
+    ):
         if not self.config.logging_s3_bucket or not self.config.logging_s3_key_prefix:
             print(constants.ERROR_S3_LOGGING_NOT_CONFIGURED)
             return
 
         s3_client = boto3.client("s3")
         date_time_now = datetime.now().strftime("%d-%m-%Y_%H:%M:%S")
-        s3_key = f"{self.config.logging_s3_key_prefix}{date_time_now}.json"
+        s3_key = (
+            f"{self.config.logging_s3_key_prefix}{date_time_now}|~{filename}|~.json"
+        )
 
         log_data = {
             "prompt_input": promptinput,

@@ -2,10 +2,10 @@ import { useEffect, useMemo} from 'react';
 import axios from 'axios';
 import { useAuth } from '../components/AuthContext.js';
 
-export function useConvertAPI() {
+export function useBackendAPIClient() {
   const { user, refreshSession } = useAuth();
 
-  const convertAPI = useMemo(() => {
+  const backendAPIClient = useMemo(() => {
     const instance = axios.create({
       baseURL: `https://` + window.env?.REACT_APP_BACKEND_API_BASE_URL || process.env.REACT_APP_BACKEND_API_BASE_URL,
     });
@@ -70,7 +70,7 @@ export function useConvertAPI() {
   }, [refreshSession]);
 
   useEffect(() => {
-      const requestInterceptor = convertAPI.interceptors.request.use(
+      const requestInterceptor = backendAPIClient.interceptors.request.use(
         (config) => {
           if (user?.accessToken) {
             config.headers.Authorization = `Bearer ${user.accessToken}`;
@@ -80,8 +80,8 @@ export function useConvertAPI() {
         (error) => Promise.reject(error)
     );
     return () => {
-      convertAPI.interceptors.request.eject(requestInterceptor);
+      backendAPIClient.interceptors.request.eject(requestInterceptor);
     };
-  }, [user, convertAPI]);
-  return convertAPI;
+  }, [user, backendAPIClient]);
+  return backendAPIClient;
 }

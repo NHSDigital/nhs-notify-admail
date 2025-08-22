@@ -12,6 +12,7 @@ def lambda_handler(event, context):
         body_string = event.get("body", "{}")
         body_data = json.loads(body_string)
         input_letter = body_data.get("input_text")
+        filename = body_data.get("file_name")
 
         if not input_letter:
             logger.warning("Request received without 'input_text' in the body.")
@@ -21,7 +22,7 @@ def lambda_handler(event, context):
             }
 
         bedrock_service = BedrockService()
-        return bedrock_service.call_admail_bedrock_prompt(input_letter)
+        return bedrock_service.call_admail_bedrock_prompt(input_letter, filename)
 
     except json.JSONDecodeError:
         logger.error("Failed to decode JSON from request body.")
