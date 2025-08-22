@@ -4,9 +4,7 @@ import json
 import logging
 from datetime import datetime
 
-
-logger = logging.getLogger()
-logger.setLevel(logging.INFO)
+logger = logging.getLogger(__name__)
 
 
 class BedrockEvaluator:
@@ -85,11 +83,15 @@ class BedrockEvaluator:
                         "customMetricConfig": {
                             "customMetrics": [rating_metric],
                             "evaluatorModelConfig": {
-                                "bedrockEvaluatorModels": [{"modelIdentifier": evaluator_model}]
+                                "bedrockEvaluatorModels": [
+                                    {"modelIdentifier": evaluator_model}
+                                ]
                             },
                         },
                         "evaluatorModelConfig": {
-                            "bedrockEvaluatorModels": [{"modelIdentifier": evaluator_model}]
+                            "bedrockEvaluatorModels": [
+                                {"modelIdentifier": evaluator_model}
+                            ]
                         },
                     }
                 },

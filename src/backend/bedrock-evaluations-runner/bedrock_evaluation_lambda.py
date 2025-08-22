@@ -4,8 +4,10 @@ import logging
 from datetime import datetime
 from bedrock_evaluation_service import BedrockEvaluator
 
-logger = logging.getLogger()
-logger.setLevel(logging.INFO)
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+)
+logger = logging.getLogger(__name__)
 
 
 def lambda_handler(event, context):
