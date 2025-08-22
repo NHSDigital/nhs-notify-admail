@@ -19,7 +19,10 @@ cd "$(git rev-parse --show-toplevel)"
 
 PYTHONPATH=src/backend/
 find $PYTHONPATH -name "requirements.txt" -exec pip install -r {} \;
-python -m pytest $PYTHONPATH/**/tests/
+python -m pytest src/backend/bedrock-evaluations-runner/
+python -m pytest src/backend/bedrock-prompt-messager/
+python -m pytest src/backend/app/
+
 cd src/frontend/notifai-uploader
 npm install
 npm run test

@@ -48,6 +48,9 @@ data "aws_iam_policy_document" "bedrock_access" {
       "s3:ListBucket",
       "s3:PutObject",
       "bedrock:ApplyGuardrail",
+      "bedrock:CreateEvaluationJob",
+      "bedrock:DescribeEvaluationJob",
+      "bedrock:GetEvaluationJob"
     ]
     resources = [
       "arn:aws:bedrock:${var.region}::foundation-model/*",
@@ -59,6 +62,7 @@ data "aws_iam_policy_document" "bedrock_access" {
       "${aws_s3_bucket.lambda_prompt_logging_s3_bucket.arn}/${local.s3_lambda_logging_key}*",
       "arn:aws:bedrock:${var.region}:${var.aws_account_id}:guardrail/*",
       "arn:aws:bedrock:${var.region}:${var.aws_account_id}:inference-profile/eu.amazon.nova-pro-v1:*",
+      "arn:aws:bedrock:${var.region}::foundation-model/amazon.nova-pro-v1:0"
     ]
   }
 }
