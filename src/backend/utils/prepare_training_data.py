@@ -9,6 +9,7 @@ load_dotenv()
 
 """
 This tool helps prepare the training data for usage with Converse API, there are options to train with either a Claude 3 Haiku model or Nova Pro model.
+This tool utilises the prompts.jsonl file to create the training data.
 """
 PROMPTS_PATH = os.getenv("PROMPTS_PATH")
 DATA_PATH = os.getenv("DATA_PATH")
