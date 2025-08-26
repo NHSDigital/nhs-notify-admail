@@ -1,7 +1,7 @@
 import os
 import json
 from unittest.mock import patch, MagicMock
-from bedrock_evaluation_lambda import lambda_handler
+from bedrock_evaluations_runner.bedrock_evaluation_lambda import lambda_handler
 
 
 @patch.dict(
@@ -23,7 +23,7 @@ def test_lambda_handler_success():
         "consoleUrl": "url",
     }
     with patch(
-        "bedrock_evaluation_lambda.BedrockEvaluator", return_value=mock_evaluator
+        "bedrock_evaluations_runner.bedrock_evaluation_lambda.BedrockEvaluator", return_value=mock_evaluator
     ):
         event = {}
         context = {}
@@ -58,7 +58,7 @@ def test_lambda_handler_missing_env(monkeypatch):
 )
 def test_lambda_handler_internal_error():
     with patch(
-        "bedrock_evaluation_lambda.BedrockEvaluator", side_effect=Exception("fail")
+        "bedrock_evaluations_runner.bedrock_evaluation_lambda.BedrockEvaluator", side_effect=Exception("fail")
     ):
         event = {}
         context = {}

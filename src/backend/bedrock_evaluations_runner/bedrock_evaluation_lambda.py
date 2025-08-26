@@ -2,7 +2,7 @@ import os
 import json
 import logging
 from datetime import datetime
-from bedrock_evaluation_service import BedrockEvaluator
+from bedrock_evaluations_runner.bedrock_evaluation_service import BedrockEvaluator
 
 logging.basicConfig(
     level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
