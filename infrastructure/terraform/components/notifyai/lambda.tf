@@ -3,6 +3,10 @@ locals {
   s3_lambda_logging_key = "prompt-executions/"
 }
 
+locals {
+  evaluations_lambda_name = "${local.csi}-bedrock-evaluations"
+}
+
 resource "aws_s3_bucket" "lambda_prompt_logging_s3_bucket" {
   bucket = "logfiles-${local.lambda_name}"
 }
@@ -105,10 +109,6 @@ resource "aws_lambda_function" "bedrock-messager" {
       env_guardrail_version     = "DRAFT"
     }
   }
-}
-
-locals {
-  evaluations_lambda_name = "${local.csi}-bedrock-evaluations"
 }
 
 data "archive_file" "evaluations_lambda_file" {
