@@ -113,7 +113,7 @@ locals {
 
 data "archive_file" "evaluations_lambda_file" {
   type        = "zip"
-  source_dir  = "../../../../src/backend/bedrock-evaluations-runner"
+  source_dir  = "../../../../src/backend/bedrock_evaluations_runner"
   output_path = "lambda_evaluations.zip"
 }
 
