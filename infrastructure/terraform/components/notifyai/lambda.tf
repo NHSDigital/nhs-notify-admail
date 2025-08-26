@@ -1,9 +1,6 @@
 locals {
-  lambda_name           = "${local.csi}-bedrock-messager"
-  s3_lambda_logging_key = "prompt-executions/"
-}
-
-locals {
+  lambda_name             = "${local.csi}-bedrock-messager"
+  s3_lambda_logging_key   = "prompt-executions/"
   evaluations_lambda_name = "${local.csi}-bedrock-evaluations"
 }
 
