@@ -2,7 +2,7 @@ import os
 import importlib
 import logging
 from unittest.mock import patch
-import bedrock_evaluation_local_runner
+from bedrock_evaluations_runner import bedrock_evaluation_local_runner
 
 
 @patch.dict(

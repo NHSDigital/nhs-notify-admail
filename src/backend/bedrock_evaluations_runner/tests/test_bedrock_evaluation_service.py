@@ -1,6 +1,6 @@
 import pytest
 from unittest.mock import patch, MagicMock
-from bedrock_evaluation_service import BedrockEvaluator
+from bedrock_evaluations_runner.bedrock_evaluation_service import BedrockEvaluator
 
 
 @pytest.fixture

@@ -1,7 +1,7 @@
 import os
 import json
 from unittest.mock import patch, MagicMock
-import bedrock_evaluation_lambda as lambda_mod
+from bedrock_evaluation_lambda import lambda_handler
 
 
 @patch.dict(
@@ -27,7 +27,7 @@ def test_lambda_handler_success():
     ):
         event = {}
         context = {}
-        response = lambda_mod.lambda_handler(event, context)
+        response = lambda_handler(event, context)
         assert response["statusCode"] == 200
         body = json.loads(response["body"])
         assert body["jobName"] == "job"
@@ -39,7 +39,7 @@ def test_lambda_handler_success():
 def test_lambda_handler_missing_env(monkeypatch):
     event = {}
     context = {}
-    response = lambda_mod.lambda_handler(event, context)
+    response = lambda_handler(event, context)
     assert response["statusCode"] == 400
     body = json.loads(response["body"])
     assert "Missing environment variable" in body["error"]
@@ -62,7 +62,7 @@ def test_lambda_handler_internal_error():
     ):
         event = {}
         context = {}
-        response = lambda_mod.lambda_handler(event, context)
+        response = lambda_handler(event, context)
         assert response["statusCode"] == 500
         body = json.loads(response["body"])
         assert "internal error" in body["error"].lower()
