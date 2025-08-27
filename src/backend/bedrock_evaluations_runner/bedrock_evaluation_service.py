@@ -8,13 +8,14 @@ logger = logging.getLogger(__name__)
 
 
 class BedrockEvaluator:
-    def __init__(self, region: str, role_arn: str):
-        if not all([region, role_arn]):
+    def __init__(self, region: str, role_arn: str, alert_lambda: str):
+        if not all([region, role_arn, alert_lambda]):
             raise ValueError("Region and Role ARN must be provided.")
 
         self.region = region
         self.role_arn = role_arn
         self.bedrock_client = boto3.client("bedrock", region_name=self.region)
+        self.alert_lambda = alert_lambda
         logger.info("BedrockEvaluator initialized for region %s", self.region)
 
     def run_evaluation_job(
@@ -96,13 +97,24 @@ class BedrockEvaluator:
                     }
                 },
             )
-
-            job_arn = response["jobArn"]
             console_url = f"https://{self.region}.console.aws.amazon.com/bedrock/home?region={self.region}#/eval/model-evaluation/report?job={job_name}&jobIdentifier={job_arn}"
             result = {"jobName": job_name, "jobArn": job_arn, "consoleUrl": console_url}
             logger.info("Successfully created model evaluation job: %s", job_name)
             logger.info("View progress here: %s", console_url)
-
+            # trigger alert lambda
+            job_arn = response["jobArn"]
+            status = response["status"]
+            payload = {
+                'job_id': response.get('jobArn', ''),
+                'status': response.get('status', ''),
+                's3_uri': response.get('outputDataConfig', {}).get('s3Uri', 'N/A')
+            }
+            lambda_client = boto3.client('lambda')
+            lambda_client.invoke(
+                FunctionName=self.alert_lambda,
+                InvocationType='Event', # Asynchronous invocation
+                Payload=json.dumps(payload)
+            )
             return result
 
         except Exception as e:

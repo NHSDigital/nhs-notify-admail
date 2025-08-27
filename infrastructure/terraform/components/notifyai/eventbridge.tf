@@ -7,7 +7,7 @@ module "eventbridge" {
   schedules = {
     lambda-cron = {
       description         = "Trigger for Lambda evaluations"
-      schedule_expression = "rate(3 days)"
+      schedule_expression = "rate(10 minutes)"
       timezone            = "Europe/London"
       arn                 = aws_lambda_function.bedrock_evaluations.arn
       input               = jsonencode({ "job" : "cron-by-rate" })
