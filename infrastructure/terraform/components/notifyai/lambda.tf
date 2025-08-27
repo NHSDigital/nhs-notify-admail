@@ -160,6 +160,7 @@ data "aws_iam_policy_document" "evaluations_lambda_policy_doc" {
       "logs:CreateLogStream",
       "logs:PutLogEvents",
       "bedrock:InvokeModel",
+      "bedrock:CreateEvaluationJob",
       "s3:GetObject",
       "s3:PutObject",
     ]
@@ -167,6 +168,7 @@ data "aws_iam_policy_document" "evaluations_lambda_policy_doc" {
       "arn:aws:logs:${var.region}:${var.aws_account_id}:log-group:/aws/lambda/${local.evaluations_lambda_name}:*",
       "arn:aws:bedrock:${var.region}::foundation-model/${var.evaluation-evaluator-model-identifier}",
       "arn:aws:bedrock:${var.region}::foundation-model/${var.evaluation-inference-model-identifier}",
+      "arn:aws:bedrock:${var.region}::foundation-model/amazon.nova-pro-v1:0",
       "arn:aws:s3:::${aws_s3_object.prompts_object.bucket}/${aws_s3_object.prompts_object.key}",
       "arn:aws:s3:::${aws_s3_object.results_object.bucket}/${aws_s3_object.results_object.key}*"
     ]
