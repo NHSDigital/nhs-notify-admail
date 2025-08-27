@@ -163,6 +163,8 @@ data "aws_iam_policy_document" "evaluations_lambda_policy_doc" {
       "bedrock:CreateEvaluationJob",
       "s3:GetObject",
       "s3:PutObject",
+      "lambda:InvokeFunction",
+      "iam:PassRole"
     ]
     resources = [
       "arn:aws:logs:${var.region}:${var.aws_account_id}:log-group:/aws/lambda/${local.evaluations_lambda_name}:*",
@@ -170,7 +172,9 @@ data "aws_iam_policy_document" "evaluations_lambda_policy_doc" {
       "arn:aws:bedrock:${var.region}::foundation-model/${var.evaluation-inference-model-identifier}",
       "arn:aws:bedrock:${var.region}::foundation-model/amazon.nova-pro-v1:0",
       "arn:aws:s3:::${aws_s3_object.prompts_object.bucket}/${aws_s3_object.prompts_object.key}",
-      "arn:aws:s3:::${aws_s3_object.results_object.bucket}/${aws_s3_object.results_object.key}*"
+      "arn:aws:s3:::${aws_s3_object.results_object.bucket}/${aws_s3_object.results_object.key}*",
+      aws_iam_role.iam_for_bedrock_evaluation.arn,
+      "arn:aws:lambda:${var.region}:${var.aws_account_id}:function:${local.alerts_lambda_name}"
     ]
   }
 }

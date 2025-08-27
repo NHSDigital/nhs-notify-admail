@@ -17,6 +17,7 @@ class BedrockEvaluator:
         self.bedrock_client = boto3.client("bedrock", region_name=self.region)
         self.alert_lambda = alert_lambda
         logger.info("BedrockEvaluator initialized for region %s", self.region)
+        self.lambda_client = boto3.client('lambda')
 
     def run_evaluation_job(
         self,
@@ -97,22 +98,18 @@ class BedrockEvaluator:
                     }
                 },
             )
+            job_arn = response["jobArn"]
             console_url = f"https://{self.region}.console.aws.amazon.com/bedrock/home?region={self.region}#/eval/model-evaluation/report?job={job_name}&jobIdentifier={job_arn}"
             result = {"jobName": job_name, "jobArn": job_arn, "consoleUrl": console_url}
             logger.info("Successfully created model evaluation job: %s", job_name)
             logger.info("View progress here: %s", console_url)
             # trigger alert lambda
-            job_arn = response["jobArn"]
-            status = response["status"]
             payload = {
-                'job_id': response.get('jobArn', ''),
-                'status': response.get('status', ''),
-                's3_uri': response.get('outputDataConfig', {}).get('s3Uri', 'N/A')
+                'job_id': response.get('jobArn', '')
             }
-            lambda_client = boto3.client('lambda')
-            lambda_client.invoke(
+            self.lambda_client.invoke(
                 FunctionName=self.alert_lambda,
-                InvocationType='Event', # Asynchronous invocation
+                InvocationType='Event',
                 Payload=json.dumps(payload)
             )
             return result
