@@ -5,9 +5,9 @@ module "eventbridge" {
   bus_name = "${local.csi}-evaluations_bus"
 
   schedules = {
-    lambda-cron = {
+    "${local.csi}-lambda-cron" = {
       description         = "Trigger for Lambda evaluations"
-      schedule_expression = "rate(10 minutes)"
+      schedule_expression = "rate(${var.evaluation-schedule-days} days)"
       timezone            = "Europe/London"
       arn                 = aws_lambda_function.bedrock_evaluations.arn
       input               = jsonencode({ "job" : "cron-by-rate" })

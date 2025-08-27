@@ -99,3 +99,8 @@ variable "evaluation-inference-model-identifier" {
   type        = string
   description = "Full identifier of the model to use for the evaluation inferance"
 }
+
+variable "evaluation-schedule-days" {
+  type        = string
+  description = "The amount of days between automated evaluations being run NOTE: Set quite high for dev envrionments, to lower costs"
+}
