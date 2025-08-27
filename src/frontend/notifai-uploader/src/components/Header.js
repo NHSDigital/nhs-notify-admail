@@ -10,7 +10,7 @@ export default function Header() {
     <header className="nhsuk-header" style={{ backgroundColor: '#005eb8', padding: '10px 20px' }}>
         <div className="nhsuk-header__logo-title" style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-start' }}>
           <img src={window.env?.PUBLIC_URL || process.env.PUBLIC_URL + '/nhs-england-white.svg'} alt="NHS logo" className="nhsuk-header-logo" style={{ height: '80px', marginRight: '10px' }} />
-          <h1 style={{ margin: 0, color: '#ffffff', fontSize: '24px' }}>Notif-AI</h1>
+          <h1 style={{ margin: 0, color: '#ffffff', fontSize: '24px' }}>Notify AI</h1>
         </div>
         <div style={{ height: '100%', width: '2px', backgroundColor: '#ffffff', margin: '0 20px' }}></div>
         <div className="nhsuk-width-container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'absolute', width: '100%' }}>

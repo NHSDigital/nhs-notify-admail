@@ -18,6 +18,7 @@
 | <a name="input_environment"></a> [environment](#input\_environment) | The name of the tfscaffold environment | `string` | n/a | yes |
 | <a name="input_evaluation-evaluator-model-identifier"></a> [evaluation-evaluator-model-identifier](#input\_evaluation-evaluator-model-identifier) | Full identifier of the model to use for the evaluation evaluator | `string` | n/a | yes |
 | <a name="input_evaluation-inference-model-identifier"></a> [evaluation-inference-model-identifier](#input\_evaluation-inference-model-identifier) | Full identifier of the model to use for the evaluation inferance | `string` | n/a | yes |
+| <a name="input_evaluation-schedule-days"></a> [evaluation-schedule-days](#input\_evaluation-schedule-days) | The amount of days between automated evaluations being run NOTE: Set quite high for dev envrionments, to lower costs | `string` | n/a | yes |
 | <a name="input_first-run"></a> [first-run](#input\_first-run) | Doesn't create resources that are dependant on an external stimulus the first time, i.e. App Runner won't work first time, as it needs a docker container we upload after terraform, in the Github action | `bool` | n/a | yes |
 | <a name="input_group"></a> [group](#input\_group) | The group variables are being inherited from (often synonmous with account short-name) | `string` | n/a | yes |
 | <a name="input_log_retention_in_days"></a> [log\_retention\_in\_days](#input\_log\_retention\_in\_days) | The retention period in days for the Cloudwatch Logs events to be retained, default of 0 is indefinite | `number` | `0` | no |
