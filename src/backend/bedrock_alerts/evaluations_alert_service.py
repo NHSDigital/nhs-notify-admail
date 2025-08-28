@@ -12,14 +12,13 @@ class BedrockAlertsService:
         self,
         job_id: str = None,
         status: str = None,
-        s3_uri: str = None,
         sender_email: str = None,
         complete_template = None,
         failed_template = None,
     ):
         self.job_id = job_id
         self.status = status
-        self.s3_uri = s3_uri
+        self.s3_uri = None
         self.bedrock = boto3.client("bedrock")
         self.ses = boto3.client("ses")
         self.sender_email = sender_email
@@ -56,7 +55,7 @@ class BedrockAlertsService:
                     "CcAddresses": [],
                 },
                 ReplyToAddresses=[self.sender_email],
-                Template=template_name,
+                Template=email_template_response['Template'],
                 TemplateData=json.dumps({
                     "name": self.sender_email.split('@')[0],
                     "job_id": self.job_id,
@@ -75,4 +74,4 @@ class BedrockAlertsService:
         except Exception as e:
             print("Error sending email:", e)
             raise e
-        return {"status": self.status}
+        return response

@@ -98,21 +98,21 @@ class BedrockEvaluator:
                     }
                 },
             )
-            job_arn = response["jobArn"]
-            console_url = f"https://{self.region}.console.aws.amazon.com/bedrock/home?region={self.region}#/eval/model-evaluation/report?job={job_name}&jobIdentifier={job_arn}"
-            result = {"jobName": job_name, "jobArn": job_arn, "consoleUrl": console_url}
-            logger.info("Successfully created model evaluation job: %s", job_name)
-            logger.info("View progress here: %s", console_url)
-            # trigger alert lambda
-            payload = {
-                'job_id': response.get('jobArn', '')
-            }
-            self.lambda_client.invoke(
-                FunctionName=self.alert_lambda,
-                InvocationType='Event',
-                Payload=json.dumps(payload)
-            )
-            return result
+            # job_arn = response["jobArn"]
+            # console_url = f"https://{self.region}.console.aws.amazon.com/bedrock/home?region={self.region}#/eval/model-evaluation/report?job={job_name}&jobIdentifier={job_arn}"
+            # result = {"jobName": job_name, "jobArn": job_arn, "consoleUrl": console_url}
+            # logger.info("Successfully created model evaluation job: %s", job_name)
+            # logger.info("View progress here: %s", console_url)
+            # # trigger alert lambda
+            # payload = {
+            #     'jobArn': job_arn
+            # }
+            # self.lambda_client.invoke(
+            #     FunctionName=self.alert_lambda,
+            #     InvocationType='Event',
+            #     Payload=json.dumps(payload)
+            # )
+            return response
 
         except Exception as e:
             logger.error("Failed to create Bedrock evaluation job: %s", e)
