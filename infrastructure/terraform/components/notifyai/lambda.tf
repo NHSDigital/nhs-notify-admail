@@ -204,10 +204,12 @@ resource "aws_lambda_function" "evaluations_alerts" {
 
   environment {
     variables = {
-      env_lambda_name       = local.alerts_lambda_name
-      env_template_complete = aws_ses_template.complete.name
-      env_template_failed   = aws_ses_template.failed.name
-      env_sender_email      = aws_ses_email_identity.sender_email.email
+      env_lambda_name        = local.alerts_lambda_name
+      env_template_complete  = aws_ses_template.complete.name
+      env_template_failed    = aws_ses_template.failed.name
+      env_sender_email       = aws_ses_email_identity.sender_email.email
+      env_results_bucket     = aws_s3_bucket.evaluation_programatic_results.bucket
+      env_results_bucket_key = aws_s3_object.results_object.key
     }
   }
 }
