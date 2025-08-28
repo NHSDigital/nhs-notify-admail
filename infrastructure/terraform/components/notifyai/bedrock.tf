@@ -13,8 +13,7 @@ resource "aws_s3_bucket_versioning" "evaluation_programatic_input_prompts" {
 resource "aws_s3_object" "prompts_object" {
   bucket = aws_s3_bucket.evaluation_programatic_input_prompts.bucket
   key    = local.prompt-file-name
-  source = "${path.module}/resources/evaluation-prompts/${local.prompt-file-name}"
-  etag   = filemd5("${path.module}/resources/evaluation-prompts/${local.prompt-file-name}")
+  source = "${path.module}/resources/prompt-data/${local.prompt-file-name}"
 }
 
 resource "aws_s3_bucket" "evaluation_programatic_results" {

@@ -135,6 +135,7 @@ resource "aws_lambda_function" "bedrock_evaluations" {
       env_region                     = var.region
       env_input_prompt_s3_uri        = "s3://${aws_s3_object.prompts_object.bucket}/${aws_s3_object.prompts_object.key}"
       env_results_s3_uri             = "s3://${aws_s3_object.results_object.bucket}/${aws_s3_object.results_object.key}"
+      env_resource_prefix            = local.csi
     }
   }
 }
