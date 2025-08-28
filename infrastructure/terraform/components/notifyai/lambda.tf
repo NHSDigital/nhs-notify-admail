@@ -178,6 +178,25 @@ data "aws_iam_policy_document" "evaluations_lambda_policy_doc" {
   statement {
     effect = "Allow"
     actions = [
+      "bedrock:CreateEvaluationJob",
+      "bedrock:DescribeEvaluationJob",
+      "bedrock:GetEvaluationJob",
+      "bedrock:ListEvaluationJobs"
+    ]
+    resources = ["*"]
+  }
+
+  statement {
+    effect = "Allow"
+    actions = [
+      "iam:PassRole"
+    ]
+    resources = [aws_iam_role.iam_for_bedrock_evaluation.arn]
+  }
+
+  statement {
+    effect = "Allow"
+    actions = [
       "s3:GetObject"
     ]
     resources = ["arn:aws:s3:::${aws_s3_object.prompts_object.bucket}/${aws_s3_object.prompts_object.key}"]

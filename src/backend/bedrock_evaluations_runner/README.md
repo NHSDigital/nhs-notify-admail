@@ -10,7 +10,7 @@
 
 Note: These scripts assume you are cd to src/backend/bedrock_evaluations_runner
 
-- If the Python requirements are not installed, run `pip3 install -r ./requirements.txt`
+- If the Python requirements are not installed, run `pip3 install -r src/backend/bedrock_evaluations_runner/requirements.txt`
 - First Time? Set up the [environment variables](#setting-up-local-environment)
 - run `python3 src/backend/bedrock_evaluations_runner/bedrock_evaluation_local_runner.py`
 

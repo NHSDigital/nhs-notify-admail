@@ -2,7 +2,7 @@ import os
 import json
 import logging
 from datetime import datetime
-from bedrock_evaluations_runner.bedrock_evaluation_service import BedrockEvaluator
+from bedrock_evaluation_service import BedrockEvaluator
 
 logging.basicConfig(
     level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
@@ -18,13 +18,13 @@ def lambda_handler(event, context):
         aws_region = os.environ["env_region"]
         input_s3_uri = os.environ["env_input_prompt_s3_uri"]
         output_s3_uri = os.environ["env_results_s3_uri"]
-        # resource_prefix = os.environ["env_resource_prefix"]
+        resource_prefix = os.environ["env_resource_prefix"]
 
-        # evaluator = BedrockEvaluator(
-        #     region=aws_region,
-        #     role_arn=role_arn,
-        #     resource_prefix=resource_prefix,
-        # )
+        evaluator = BedrockEvaluator(
+            region=aws_region,
+            role_arn=role_arn,
+            resource_prefix=resource_prefix,
+        )
 
         result = evaluator.run_evaluation_job(
             evaluator_model=evaluator_model,
