@@ -2,15 +2,29 @@ import { useState } from "react";
 import "./FileUpload.css";
 import { useBackendAPIClient } from "../api/BackendAPIClient";
 
+const SUPPORTED_EXTENSIONS = [
+  'docx', 'md', 'txt', 'odt', 'pdf'
+];
+
 export default function FileUpload({ onFileUpload, handleLoading }) {
   const [uploadStatus, setUploadStatus] = useState("");
   const backendAPIClient = useBackendAPIClient();
+
+  const acceptString = SUPPORTED_EXTENSIONS.map(ext => `.${ext}`).join(',');
 
   const handleFileChange = async (event) => {
     const file = event.target.files[0];
     if (!file) {
       setUploadStatus("No file selected");
       setTimeout(() => setUploadStatus(""), 2000);
+      return;
+    }
+
+    const fileExtension = file.name.split('.').pop().toLowerCase();
+    if (!SUPPORTED_EXTENSIONS.includes(fileExtension)) {
+      setUploadStatus(`Error: .${fileExtension} files are not supported.`);
+      setTimeout(() => setUploadStatus(""), 4000);
+      event.target.value = null;
       return;
     }
 
@@ -77,11 +91,17 @@ export default function FileUpload({ onFileUpload, handleLoading }) {
         : This letter is suitable for Admail.
       </p>
 
-      <input type="file" onChange={handleFileChange} className="file-upload" />
+      <input
+        type="file"
+        onChange={handleFileChange}
+        className="file-upload"
+        accept={acceptString}
+      />
+
       {uploadStatus && (
         <p
           className={
-            uploadStatus.includes("Failed")
+            uploadStatus.includes("Failed") || uploadStatus.includes("Error")
               ? "error-message"
               : "success-message"
           }
