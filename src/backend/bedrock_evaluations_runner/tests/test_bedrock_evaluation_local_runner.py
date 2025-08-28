@@ -1,7 +1,12 @@
 import os
+import sys
 import importlib
 import logging
 from unittest.mock import patch
+
+# Add the parent directory to the system path to allow for absolute imports
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+
 from bedrock_evaluations_runner import bedrock_evaluation_local_runner
 
 
@@ -14,6 +19,7 @@ from bedrock_evaluations_runner import bedrock_evaluation_local_runner
         "env_input_prompt_s3_uri": "s3://input",
         "env_results_s3_uri": "s3://output",
         "env_region": "eu-west-2",
+        "env_resource_prefix": "test-prefix",
     },
 )
 @patch("boto3.client")
