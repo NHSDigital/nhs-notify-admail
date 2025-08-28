@@ -216,6 +216,7 @@ data "aws_iam_policy_document" "evaluations_lambda_policy_doc" {
   }
 }
 
+# trivy:ignore:AVD-AWS-0342 reason="iam:PassRole is required for the evaluations lambda to start a bedrock evaluation job. The passrole is also scoped minimally"
 resource "aws_iam_policy" "evaluations_lambda_policy" {
   name   = "${local.csi}-evaluations-lambda-policy"
   policy = data.aws_iam_policy_document.evaluations_lambda_policy_doc.json

@@ -1,4 +1,3 @@
-# Create the S3 buckets that store the Custom Evaluation Prompts & Evaluation Results
 resource "aws_s3_bucket" "evaluation_programatic_input_prompts" {
   bucket = "${local.csi}-input-prompts"
 }
@@ -56,7 +55,6 @@ resource "aws_s3_bucket_cors_configuration" "evaluation_s3_prompts_cors" {
   }
 }
 
-#Create the IAM roles to assign to the Bedrock Evaluations that use the above S3 Buckets
 data "aws_iam_policy_document" "assume_role_bedrock" {
   statement {
     effect = "Allow"
@@ -67,18 +65,6 @@ data "aws_iam_policy_document" "assume_role_bedrock" {
     }
 
     actions = ["sts:AssumeRole"]
-
-    # condition {
-    #   test     = "StringEquals"
-    #   variable = "aws:SourceAccount"
-    #   values   = ["${var.aws_account_id}"]
-    # }
-
-    # condition {
-    #   test     = "ArnEquals"
-    #   variable = "aws:SourceArn"
-    #   values   = ["arn:aws:bedrock:${var.region}:${var.aws_account_id}:evaluation-job/*"]
-    # }
   }
 }
 
