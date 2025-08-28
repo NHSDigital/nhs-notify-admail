@@ -192,6 +192,11 @@ data "aws_iam_policy_document" "evaluations_lambda_policy_doc" {
       "iam:PassRole"
     ]
     resources = [aws_iam_role.iam_for_bedrock_evaluation.arn]
+    condition {
+      test     = "StringEquals"
+      variable = "iam:PassedToService"
+      values   = ["bedrock.amazonaws.com"]
+    }
   }
 
   statement {
