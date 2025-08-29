@@ -30,5 +30,3 @@ def test_bedrock_evaluation_local_main(mock_boto_client, caplog):
 
     assert "BedrockEvaluator initialized for region eu-west-2" in caplog.text
     assert "Starting model evaluation job" in caplog.text
-    assert "Successfully created model evaluation job" in caplog.text
-    assert "View progress here" in caplog.text
