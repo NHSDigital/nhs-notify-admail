@@ -8,14 +8,13 @@ logger = logging.getLogger(__name__)
 
 
 class BedrockEvaluator:
-    def __init__(self, region: str, role_arn: str, alert_lambda: str):
-        if not all([region, role_arn, alert_lambda]):
+    def __init__(self, region: str, role_arn: str):
+        if not all([region, role_arn]):
             raise ValueError("Region and Role ARN must be provided.")
 
         self.region = region
         self.role_arn = role_arn
         self.bedrock_client = boto3.client("bedrock", region_name=self.region)
-        self.alert_lambda = alert_lambda
         logger.info("BedrockEvaluator initialized for region %s", self.region)
         self.lambda_client = boto3.client('lambda')
 

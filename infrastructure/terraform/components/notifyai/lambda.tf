@@ -130,13 +130,12 @@ resource "aws_lambda_function" "bedrock_evaluations" {
 
   environment {
     variables = {
-      env_evaluator_model_identifier  = var.evaluation-evaluator-model-identifier
-      env_generator_model_identifier  = var.evaluation-inference-model-identifier
-      env_role_arn                    = aws_iam_role.iam_for_bedrock_evaluation.arn
-      env_region                      = var.region
-      env_input_prompt_s3_uri         = "s3://${aws_s3_object.prompts_object.bucket}/${aws_s3_object.prompts_object.key}"
-      env_results_s3_uri              = "s3://${aws_s3_object.results_object.bucket}/${aws_s3_object.results_object.key}"
-      env_lambda_alerts_function_name = local.alerts_lambda_name
+      env_evaluator_model_identifier = var.evaluation-evaluator-model-identifier
+      env_generator_model_identifier = var.evaluation-inference-model-identifier
+      env_role_arn                   = aws_iam_role.iam_for_bedrock_evaluation.arn
+      env_region                     = var.region
+      env_input_prompt_s3_uri        = "s3://${aws_s3_object.prompts_object.bucket}/${aws_s3_object.prompts_object.key}"
+      env_results_s3_uri             = "s3://${aws_s3_object.results_object.bucket}/${aws_s3_object.results_object.key}"
     }
   }
 }
