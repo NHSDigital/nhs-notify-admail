@@ -2,6 +2,7 @@ locals {
   lambda_name             = "${local.csi}-bedrock-messager"
   s3_lambda_logging_key   = "prompt-executions/"
   evaluations_lambda_name = "${local.csi}-bedrock-evaluations"
+  alerts_lambda_name      = "${local.csi}-bedrock-evaluations-alerts"
 }
 
 resource "aws_s3_bucket" "lambda_prompt_logging_s3_bucket" {
@@ -162,15 +163,14 @@ data "aws_iam_policy_document" "evaluations_lambda_policy_doc" {
     actions = [
       "logs:CreateLogGroup",
       "logs:CreateLogStream",
-      "logs:PutLogEvents"
+      "logs:PutLogEvents",
+      "bedrock:InvokeModel",
+      "bedrock:CreateEvaluationJob",
+      "s3:GetObject",
+      "s3:PutObject",
     ]
-    resources = ["arn:aws:logs:${var.region}:${var.aws_account_id}:log-group:/aws/lambda/${local.evaluations_lambda_name}:*"]
-  }
-
-  statement {
-    effect  = "Allow"
-    actions = ["bedrock:InvokeModel"]
     resources = [
+      "arn:aws:logs:${var.region}:${var.aws_account_id}:log-group:/aws/lambda/${local.evaluations_lambda_name}:*",
       "arn:aws:bedrock:${var.region}::foundation-model/${var.evaluation-evaluator-model-identifier}",
       "arn:aws:bedrock:${var.region}::foundation-model/${var.evaluation-inference-model-identifier}"
     ]
@@ -225,4 +225,82 @@ resource "aws_iam_policy" "evaluations_lambda_policy" {
 resource "aws_iam_role_policy_attachment" "evaluations_lambda_attachment" {
   role       = aws_iam_role.iam_for_evaluations_lambda.name
   policy_arn = aws_iam_policy.evaluations_lambda_policy.arn
+}
+
+resource "aws_lambda_function" "evaluations_alerts" {
+  function_name    = local.alerts_lambda_name
+  role             = aws_iam_role.iam_for_evaluations_alerts_lambda.arn
+  filename         = data.archive_file.evaluations_alerts_zip.output_path
+  source_code_hash = data.archive_file.evaluations_alerts_zip.output_base64sha256
+  handler          = "evaluations_alert_lambda.lambda_handler"
+  runtime          = "python3.12"
+  timeout          = 30
+
+  environment {
+    variables = {
+      env_lambda_name        = local.alerts_lambda_name
+      env_sender_email       = aws_ses_email_identity.sender_email.email
+      env_results_bucket     = aws_s3_bucket.evaluation_programatic_results.bucket
+      env_results_bucket_key = aws_s3_object.results_object.key
+    }
+  }
+}
+
+data "archive_file" "evaluations_alerts_zip" {
+  type        = "zip"
+  source_dir  = "../../../../src/backend/bedrock_alerts/lambda_build"
+  output_path = "${path.module}/evaluations_alerts.zip"
+}
+
+
+resource "aws_iam_role" "iam_for_evaluations_alerts_lambda" {
+  name = "${local.csi}-iam-for-evaluations-alerts-lambda"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect    = "Allow"
+        Principal = { Service = "lambda.amazonaws.com" }
+        Action    = "sts:AssumeRole"
+      }
+    ]
+  })
+}
+
+data "aws_iam_policy_document" "evaluations_lambda_alerts_policy_doc" {
+  statement {
+    effect = "Allow"
+    actions = [
+      "bedrock:GetEvaluationJob",
+      "bedrock:DescribeEvaluationJob",
+      "bedrock:ListEvaluationJobs",
+      "ses:SendEmail",
+      "ses:SendRawEmail",
+      "ses:GetTemplate",
+      "ses:SendTemplatedEmail",
+      "s3:GetObject",
+      "logs:CreateLogGroup",
+      "logs:CreateLogStream",
+      "logs:PutLogEvents",
+      "s3:ListBucket"
+    ]
+    resources = [
+      "arn:aws:s3:::${aws_s3_object.results_object.bucket}/${aws_s3_object.results_object.key}*",
+      "arn:aws:bedrock:${var.region}:${var.aws_account_id}:evaluation-job/*",
+      "arn:aws:logs:${var.region}:${var.aws_account_id}:log-group:/aws/lambda/${local.alerts_lambda_name}:*",
+      aws_ses_email_identity.sender_email.arn,
+      "arn:aws:s3:::${aws_s3_object.results_object.bucket}"
+    ]
+  }
+}
+
+resource "aws_iam_policy" "evaluations_lambda_alerts_policy" {
+  name   = "${local.csi}-evaluations-lambda-alerts-policy"
+  policy = data.aws_iam_policy_document.evaluations_lambda_alerts_policy_doc.json
+}
+
+resource "aws_iam_role_policy_attachment" "evaluations_lambda_alerts_attachment" {
+  role       = aws_iam_role.iam_for_evaluations_alerts_lambda.name
+  policy_arn = aws_iam_policy.evaluations_lambda_alerts_policy.arn
 }
