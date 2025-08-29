@@ -12,25 +12,26 @@ logger = logging.getLogger(__name__)
 
 
 class BedrockAlertsService:
-    def __init__(
-        self,
-        sender_email: str = None,
-    ):
-        self.ses = boto3.client("ses")
-        self.sender_email = sender_email
+    def __init__(self, sender_email=None, ses_client=None, s3_client=None):
+        self.sender_email = sender_email or "christopher.bacon@hippodigital.co.uk"
+
+        # Use the provided client, or create a new one if none is provided.
+        self.ses = ses_client if ses_client is not None else boto3.client("ses")
+        self.s3 = s3_client if s3_client is not None else boto3.client("s3")
+
         self.success_percentage = 0.0
-        self.s3_client = boto3.client('s3')
+        # ... rest of your class
 
     def find_results_file_in_s3(self, bucket, prefix):
         try:
             print(f"Searching for files in bucket '{bucket}' with prefix '{prefix}'...")
-            paginator = self.s3_client.get_paginator('list_objects_v2')
+            paginator = self.s3.get_paginator('list_objects_v2')
             pages = paginator.paginate(Bucket=bucket, Prefix=prefix)
             for page in pages:
                 if "Contents" in page:
                     for obj in page["Contents"]:
                         if obj['Key'].endswith('_output.jsonl'):
-                            response = self.s3_client.get_object(Bucket=bucket, Key=obj['Key'])
+                            response = self.s3.get_object(Bucket=bucket, Key=obj['Key'])
                             file_content_string = response['Body'].read().decode('utf-8')
                             try:
                                 file_like_object = io.StringIO(file_content_string)

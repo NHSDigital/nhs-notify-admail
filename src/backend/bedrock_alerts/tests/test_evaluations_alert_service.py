@@ -60,8 +60,10 @@ def test_find_results_file_in_s3(s3_client):
         writer.write_all(MOCK_RECORDS_LIST)
     file_content = string_io.getvalue()
     s3_client.put_object(Bucket=bucket_name, Key=file_key, Body=file_content.encode("utf-8"))
-    service = BedrockAlertsService(sender_email="test@example.com")
-    service.s3_client = s3_client
+
+    # FIX: Pass the mocked s3_client directly into the constructor.
+    service = BedrockAlertsService(sender_email="test@example.com", s3_client=s3_client)
+
     result = service.find_results_file_in_s3(bucket_name, "results/")
 
     assert result is not None
@@ -73,9 +75,10 @@ def test_calculate_rating_percentage_from_list():
     """
     Tests the rating calculation logic with valid data.
     """
-    service = BedrockAlertsService()
+    # FIX: Create a mock client within the test's mocked context.
+    mock_ses = boto3.client("ses", region_name="us-east-1")
+    service = BedrockAlertsService(ses_client=mock_ses)
     percentage = service.calculate_rating_percentage_from_list(MOCK_RECORDS_LIST)
-
     assert percentage == 67.0
 
 @mock_aws
@@ -83,49 +86,46 @@ def test_calculate_rating_percentage_handles_empty_records():
     """
     Tests that the rating calculation logic handles empty and partial records gracefully.
     """
-    service = BedrockAlertsService()
-
+    mock_ses = boto3.client("ses", region_name="us-east-1")
+    service = BedrockAlertsService(ses_client=mock_ses)
     assert service.calculate_rating_percentage_from_list([]) == 0.0
     assert service.calculate_rating_percentage_from_list([{"scores": []}]) == 0.0
 
 @mock_aws
 def test_calculate_rating_percentage_handles_invalid_data_type():
     """
-    Tests that the calculation logic correctly raises an AttributeError for invalid data types
-    like None or strings in the list, as the current source code does not handle this.
+    Tests that the calculation logic correctly raises an AttributeError.
     """
-    service = BedrockAlertsService()
+    mock_ses = boto3.client("ses", region_name="us-east-1")
+    service = BedrockAlertsService(ses_client=mock_ses)
     invalid_records = [None, "not_a_dict"]
-
     with pytest.raises(AttributeError, match="'NoneType' object has no attribute 'get'"):
         service.calculate_rating_percentage_from_list(invalid_records)
-
 
 @mock_aws
 def test_calculate_rating_percentage_no_ratings():
     """
     Tests the case where no records have a 'Rating' metric.
     """
-    service = BedrockAlertsService(sender_email="test@example.com")
+    mock_ses = boto3.client("ses", region_name="us-east-1")
+    service = BedrockAlertsService(sender_email="test@example.com", ses_client=mock_ses)
     records_without_rating = [
         {"automatedEvaluationResult": {"scores": [{"metricName": "SomeOtherMetric", "result": 0.5}]}},
         {"automatedEvaluationResult": {"scores": [{"metricName": "AnotherMetric", "result": 1.0}]}}
     ]
     percentage = service.calculate_rating_percentage_from_list(records_without_rating)
-
     assert percentage == 0.0
 
 def test_send_alert(ses_client):
     """
     Tests that the send_alert method correctly calls the SES send_raw_email API.
     """
-    service = BedrockAlertsService(sender_email="test@example.com")
-    service.ses = ses_client
+    # FIX: Pass the mocked ses_client from the fixture into the constructor.
+    service = BedrockAlertsService(sender_email="test@example.com", ses_client=ses_client)
     service.success_percentage = 42.0
     response = service.send_alert()
 
     assert response is not None
     assert response['ResponseMetadata']['HTTPStatusCode'] == 200
-
     sent_messages = ses_client.get_send_statistics()['SendDataPoints']
     assert len(sent_messages) == 1
