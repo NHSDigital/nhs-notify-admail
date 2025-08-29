@@ -167,8 +167,6 @@ data "aws_iam_policy_document" "evaluations_lambda_policy_doc" {
       "bedrock:CreateEvaluationJob",
       "s3:GetObject",
       "s3:PutObject",
-      "lambda:InvokeFunction",
-      "iam:PassRole"
     ]
     resources = [
       "arn:aws:logs:${var.region}:${var.aws_account_id}:log-group:/aws/lambda/${local.evaluations_lambda_name}:*",
