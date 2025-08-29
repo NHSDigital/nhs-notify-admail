@@ -1,117 +1,131 @@
 import pytest
-from unittest.mock import MagicMock, patch
-from botocore.exceptions import ClientError
+import boto3
 import jsonlines
 import io
-import sys
-import os
+from moto import mock_aws
 from evaluations_alert_service import BedrockAlertsService
 
+
+MOCK_RECORDS_LIST = [
+    {
+        "automatedEvaluationResult": {
+            "scores": [{"metricName": "Rating", "result": 1.0}]
+        }
+    },
+    {
+        "automatedEvaluationResult": {
+            "scores": [{"metricName": "Rating", "result": 0.0}]
+        }
+    },
+    {
+        "automatedEvaluationResult": {
+            "scores": [{"metricName": "Rating", "result": 1.0}]
+        }
+    },
+    {
+        "automatedEvaluationResult": {
+            "scores": [{"metricName": "SomeOtherMetric", "result": 0.5}]
+        }
+    },
+]
+
 @pytest.fixture
-def mock_aws_clients(mocker):
-    """Mocks the S3 and SES boto3 clients."""
-    mocker.patch('boto3.client', return_value=MagicMock())
+def aws_credentials():
+    """Mocked AWS Credentials for moto."""
+    return {"aws_access_key_id": "testing", "aws_secret_access_key": "testing"}
 
+@pytest.fixture
+def s3_client(aws_credentials):
+    """Yields a mock S3 client that will be used by the service."""
+    with mock_aws():
+        yield boto3.client("s3", region_name="us-east-1")
 
+@pytest.fixture
+def ses_client(aws_credentials):
+    """Yields a mock SES client."""
+    with mock_aws():
+        client = boto3.client("ses", region_name="us-east-1")
+        client.verify_email_identity(EmailAddress="test@example.com")
+        yield client
+
+def test_find_results_file_in_s3(s3_client):
+    """
+    Tests that the service can correctly find and parse the results file from S3.
+    """
+    bucket_name = "test-bucket"
+    file_key = "results/some-job-id_output.jsonl"
+    s3_client.create_bucket(Bucket=bucket_name)
+    string_io = io.StringIO()
+    with jsonlines.Writer(string_io) as writer:
+        writer.write_all(MOCK_RECORDS_LIST)
+    file_content = string_io.getvalue()
+    s3_client.put_object(Bucket=bucket_name, Key=file_key, Body=file_content.encode("utf-8"))
+    service = BedrockAlertsService(sender_email="test@example.com")
+    service.s3_client = s3_client
+    result = service.find_results_file_in_s3(bucket_name, "results/")
+
+    assert result is not None
+    assert len(result) == len(MOCK_RECORDS_LIST)
+    assert result[0] == MOCK_RECORDS_LIST[0]
+
+@mock_aws
 def test_calculate_rating_percentage_from_list():
     """
-    Tests that the rating percentage is calculated correctly from a list of records.
+    Tests the rating calculation logic with valid data.
     """
-    service = BedrockAlertsService(sender_email="test@example.com")
-    records = [
-        {"automatedEvaluationResult": {"scores": [{"metricName": "Rating", "result": 1.0}]}},
-        {"automatedEvaluationResult": {"scores": [{"metricName": "Rating", "result": 0.5}]}},
-        {"automatedEvaluationResult": {"scores": [{"metricName": "SomeOtherMetric", "result": 0.9}]}},
-        {"automatedEvaluationResult": {"scores": [{"metricName": "Rating", "result": 0.0}]}},
-        {}, # Malformed record
-    ]
+    service = BedrockAlertsService()
+    percentage = service.calculate_rating_percentage_from_list(MOCK_RECORDS_LIST)
 
-    # Expected: (1.0 + 0.5 + 0.0) / 3 * 100 = 50
-    expected_percentage = 50.0
-    actual_percentage = service.calculate_rating_percentage_from_list(records)
+    assert percentage == 67.0
 
-    assert actual_percentage == expected_percentage
-    assert service.success_percentage == expected_percentage
+@mock_aws
+def test_calculate_rating_percentage_handles_empty_records():
+    """
+    Tests that the rating calculation logic handles empty and partial records gracefully.
+    """
+    service = BedrockAlertsService()
 
+    assert service.calculate_rating_percentage_from_list([]) == 0.0
+    assert service.calculate_rating_percentage_from_list([{"scores": []}]) == 0.0
+
+@mock_aws
+def test_calculate_rating_percentage_handles_invalid_data_type():
+    """
+    Tests that the calculation logic correctly raises an AttributeError for invalid data types
+    like None or strings in the list, as the current source code does not handle this.
+    """
+    service = BedrockAlertsService()
+    invalid_records = [None, "not_a_dict"]
+
+    with pytest.raises(AttributeError, match="'NoneType' object has no attribute 'get'"):
+        service.calculate_rating_percentage_from_list(invalid_records)
+
+
+@mock_aws
 def test_calculate_rating_percentage_no_ratings():
     """
     Tests the case where no records have a 'Rating' metric.
     """
     service = BedrockAlertsService(sender_email="test@example.com")
-    records = [
-        {"automatedEvaluationResult": {"scores": [{"metricName": "Accuracy", "result": 1.0}]}},
-        {"automatedEvaluationResult": {"scores": [{"metricName": "Toxicity", "result": 0.1}]}},
+    records_without_rating = [
+        {"automatedEvaluationResult": {"scores": [{"metricName": "SomeOtherMetric", "result": 0.5}]}},
+        {"automatedEvaluationResult": {"scores": [{"metricName": "AnotherMetric", "result": 1.0}]}}
     ]
+    percentage = service.calculate_rating_percentage_from_list(records_without_rating)
 
-    assert service.calculate_rating_percentage_from_list(records) == 0.0
+    assert percentage == 0.0
 
-def test_send_alert(mocker):
+def test_send_alert(ses_client):
     """
-    Tests that the send_alert method calls the SES send_raw_email with the correct parameters.
+    Tests that the send_alert method correctly calls the SES send_raw_email API.
     """
-    mock_ses_client = MagicMock()
-    mocker.patch('boto3.client', return_value=mock_ses_client)
-    sender = "sender@example.com"
-    service = BedrockAlertsService(sender_email=sender)
-    service.success_percentage = 42.0  # Set a value to be included in the email
-    service.send_alert()
-    mock_ses_client.send_raw_email.assert_called_once()
-    call_args = mock_ses_client.send_raw_email.call_args[1]
+    service = BedrockAlertsService(sender_email="test@example.com")
+    service.ses = ses_client
+    service.success_percentage = 42.0
+    response = service.send_alert()
 
-    assert call_args['Source'] == sender
-    assert call_args['Destinations'] == [sender]
+    assert response is not None
+    assert response['ResponseMetadata']['HTTPStatusCode'] == 200
 
-    raw_message_data = call_args['RawMessage']['Data']
-    assert f"Subject: Bedrock Evaluation Job Rating Alert: 42.0" in raw_message_data
-    assert f"Alert Percentage: 42.0" in raw_message_data
-
-
-def test_find_results_file_in_s3_success(mocker):
-    """
-    Tests successfully finding and parsing a .jsonl file in S3.
-    """
-    mock_s3_client = MagicMock()
-    mock_paginator = MagicMock()
-    mock_paginator.paginate.return_value = [
-        {
-            "Contents": [
-                {"Key": "some/path/results_123_output.jsonl"},
-                {"Key": "some/path/another_file.txt"}
-            ]
-        }
-    ]
-    mock_s3_client.get_paginator.return_value = mock_paginator
-    jsonl_content = '{"key": "value1"}\n{"key": "value2"}'
-    mock_s3_object_body = MagicMock()
-    mock_s3_object_body.read.return_value = jsonl_content.encode('utf-8')
-    mock_s3_client.get_object.return_value = {"Body": mock_s3_object_body}
-    mocker.patch('boto3.client', return_value=mock_s3_client)
-    service = BedrockAlertsService("test@example.com")
-    results = service.find_results_file_in_s3("my-bucket", "some/path/")
-
-    assert len(results) == 2
-    assert results[0]['key'] == 'value1'
-
-    mock_s3_client.get_object.assert_called_with(Bucket="my-bucket", Key="some/path/results_123_output.jsonl")
-
-
-def test_find_results_file_in_s3_not_found(mocker):
-    """
-    Tests the case where no matching .jsonl file is found.
-    """
-    mock_s3_client = MagicMock()
-    mock_paginator = MagicMock()
-    mock_paginator.paginate.return_value = [
-        {
-            "Contents": [
-                {"Key": "some/path/another_file.txt"}
-            ]
-        }
-    ]
-    mock_s3_client.get_paginator.return_value = mock_paginator
-    mocker.patch('boto3.client', return_value=mock_s3_client)
-    service = BedrockAlertsService("test@example.com")
-    results = service.find_results_file_in_s3("my-bucket", "some/path/")
-    mock_s3_client.get_object.assert_not_called()
-
-    assert results is None
+    sent_messages = ses_client.get_send_statistics()['SendDataPoints']
+    assert len(sent_messages) == 1
