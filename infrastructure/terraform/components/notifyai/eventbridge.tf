@@ -47,47 +47,53 @@ resource "aws_iam_role_policy" "eventbridge_scheduler_policy" {
   })
 }
 
-# 1. Define the EventBridge Rule and its Event Pattern
-# This rule listens for Bedrock evaluation jobs that have completed or failed.
-resource "aws_cloudwatch_event_rule" "bedrock_evaluation_job_finished" {
-  name        = "${local.csi}-bedrock-evaluation-finished-rule"
-  description = "Triggers a Lambda when a Bedrock evaluation job completes or fails"
+resource "aws_s3_bucket_notification" "bucket_notification" {
+  bucket = aws_s3_bucket.evaluation_programatic_results.id # Your S3 bucket ID
 
-  event_pattern = jsonencode({
-    "source"      = ["aws.bedrock"],
-    "detail-type" = ["Bedrock Model Evaluation Job State Change"],
-    "detail" = {
-      "status" = ["Complete", "Failed"]
-    }
-  })
+  eventbridge = true # This flag enables sending notifications directly to EventBridge
 }
 
-# 2. Set the Target for the Rule (with a custom input)
-resource "aws_cloudwatch_event_target" "invoke_alerts_lambda_on_job_finish" {
-  rule      = aws_cloudwatch_event_rule.bedrock_evaluation_job_finished.name
+resource "aws_cloudwatch_event_rule" "evaluation_results_uploaded" {
+  name        = "${local.csi}-evaluation-results-uploaded-rule"
+  description = "Triggers a Lambda when evaluation results are uploaded to S3"
+
+  event_pattern = jsonencode({
+    "source" : ["aws.s3"],
+    "detail-type" : ["Object Created"],
+    "detail" : {
+      "bucket" : {
+        "name" : [aws_s3_bucket.evaluation_programatic_results.id]
+      }
+    }
+  })
+
+  depends_on = [aws_s3_bucket_notification.bucket_notification]
+}
+
+resource "aws_cloudwatch_event_target" "invoke_alerts_lambda_on_results_upload" {
+  rule      = aws_cloudwatch_event_rule.evaluation_results_uploaded.name
   target_id = "InvokeAlertsLambda"
   arn       = aws_lambda_function.evaluations_alerts.arn
 
   input_transformer {
     input_paths = {
-      "jobArn"    = "$.detail.jobArn",
-      "jobStatus" = "$.detail.status"
+      "bucket" = "$.detail.bucket.name",
+      "key"    = "$.detail.object.key"
     }
     input_template = <<EOF
     {
-      "jobArn": <jobArn>,
-      "status": <jobStatus>
+      "message": "Object created in bucket <bucket> with key <key>.",
+      "s3_bucket": <bucket>,
+      "s3_key": <key>
     }
     EOF
   }
 }
 
-# 3. Grant EventBridge Permission to Invoke the Lambda
-# This policy is required for the EventBridge service to trigger your function.
 resource "aws_lambda_permission" "allow_eventbridge_to_invoke_alerts_lambda" {
   statement_id  = "AllowEventBridgeInvoke"
   action        = "lambda:InvokeFunction"
   function_name = aws_lambda_function.evaluations_alerts.function_name
   principal     = "events.amazonaws.com"
-  source_arn    = aws_cloudwatch_event_rule.bedrock_evaluation_job_finished.arn
+  source_arn    = aws_cloudwatch_event_rule.evaluation_results_uploaded.arn
 }

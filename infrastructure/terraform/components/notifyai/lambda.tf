@@ -205,8 +205,6 @@ resource "aws_lambda_function" "evaluations_alerts" {
   environment {
     variables = {
       env_lambda_name        = local.alerts_lambda_name
-      env_template_complete  = aws_ses_template.complete.name
-      env_template_failed    = aws_ses_template.failed.name
       env_sender_email       = aws_ses_email_identity.sender_email.email
       env_results_bucket     = aws_s3_bucket.evaluation_programatic_results.bucket
       env_results_bucket_key = aws_s3_object.results_object.key
@@ -216,7 +214,7 @@ resource "aws_lambda_function" "evaluations_alerts" {
 
 data "archive_file" "evaluations_alerts_zip" {
   type        = "zip"
-  source_dir  = "../../../../src/backend/bedrock_alerts"
+  source_dir  = "../../../../src/backend/bedrock_alerts/lambda_build"
   output_path = "${path.module}/evaluations_alerts.zip"
 }
 
@@ -251,14 +249,14 @@ data "aws_iam_policy_document" "evaluations_lambda_alerts_policy_doc" {
       "logs:CreateLogGroup",
       "logs:CreateLogStream",
       "logs:PutLogEvents",
+      "s3:ListBucket"
     ]
     resources = [
       "arn:aws:s3:::${aws_s3_object.results_object.bucket}/${aws_s3_object.results_object.key}*",
       "arn:aws:bedrock:${var.region}:${var.aws_account_id}:evaluation-job/*",
       "arn:aws:logs:${var.region}:${var.aws_account_id}:log-group:/aws/lambda/${local.alerts_lambda_name}:*",
-      "arn:aws:ses:${var.region}:${var.aws_account_id}:template/${aws_ses_template.complete.name}",
-      "arn:aws:ses:${var.region}:${var.aws_account_id}:template/${aws_ses_template.failed.name}",
-      aws_ses_email_identity.sender_email.arn
+      aws_ses_email_identity.sender_email.arn,
+      "arn:aws:s3:::${aws_s3_object.results_object.bucket}"
     ]
   }
 }

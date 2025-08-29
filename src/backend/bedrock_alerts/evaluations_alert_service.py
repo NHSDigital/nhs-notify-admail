@@ -14,56 +14,23 @@ logger = logging.getLogger(__name__)
 class BedrockAlertsService:
     def __init__(
         self,
-        job_id: str = None,
-        status: str = None,
         sender_email: str = None,
-        complete_template=None,
-        failed_template=None,
     ):
-        self.job_id = job_id
-        self.status = status
-        self.s3_uri = None
-        self.bedrock = boto3.client("bedrock")
         self.ses = boto3.client("ses")
         self.sender_email = sender_email
-        self.complete_template = complete_template
-        self.failed_template = failed_template
         self.success_percentage = 0.0
-
-    def get_evaluation_status(self):
-        try:
-            response = self.bedrock.get_evaluation_job(jobIdentifier=self.job_id)
-            self.status = response["status"]
-            return self.status
-        except Exception as e:
-            logger.error(
-                f"Failed to get evaluation status for job {self.job_id}: {str(e)}"
-            )
-            raise
-
-    def get_evaluation_results(self):
-        try:
-            response = self.bedrock.get_evaluation_job(jobIdentifier=self.job_id)
-            self.s3_uri = response.get("outputDataConfig", {}).get("s3Uri", "N/A")
-            return response
-        except Exception as e:
-            logger.error(
-                f"Failed to get evaluation results for job {self.job_id}: {str(e)}"
-            )
-            raise
+        self.s3_client = boto3.client('s3')
 
     def find_results_file_in_s3(self, bucket, prefix):
-        s3_client = boto3.client('s3')
         try:
             print(f"Searching for files in bucket '{bucket}' with prefix '{prefix}'...")
-            # Use a paginator for potentially large numbers of files
-            paginator = s3_client.get_paginator('list_objects_v2')
+            paginator = self.s3_client.get_paginator('list_objects_v2')
             pages = paginator.paginate(Bucket=bucket, Prefix=prefix)
             for page in pages:
                 if "Contents" in page:
                     for obj in page["Contents"]:
                         if obj['Key'].endswith('_output.jsonl'):
-                            response = s3_client.get_object(Bucket=bucket, Key=obj['Key'])
+                            response = self.s3_client.get_object(Bucket=bucket, Key=obj['Key'])
                             file_content_string = response['Body'].read().decode('utf-8')
                             try:
                                 file_like_object = io.StringIO(file_content_string)
@@ -103,12 +70,10 @@ class BedrockAlertsService:
 
     def send_alert(self):
         try:
-            subject = f"Bedrock Evaluation Job {self.status} Rating Alert: {self.success_percentage}"
+            subject = f"Bedrock Evaluation Job Rating Alert: {self.success_percentage}"
             body = f"""
-            Job ID: {self.job_id or 'N/A'}\n
-            Status: {self.status or 'N/A'}\n
-            Results Location: {self.s3_uri or 'N/A'}\n
-            Alert Percentage: {self.success_percentage or 'N/A'}
+            Alert Percentage: {self.success_percentage or 'N/A'}\n\n
+            This alert is below the threshold, please review bedrock model evaluations performance.
             \n\nThis is an automated alert from Bedrock.\n"""
             msg = MIMEMultipart()
             msg["Subject"] = subject
@@ -121,10 +86,10 @@ class BedrockAlertsService:
                 Destinations=[self.sender_email],
                 RawMessage={"Data": msg.as_string()},
             )
-            logger.info(f"Raw alert email sent successfully for job {self.job_id}")
+            logger.info(f"Raw alert email sent successfully")
             return response
         except Exception as e:
             logger.error(
-                f"Failed to send raw alert email for job {self.job_id}: {str(e)}"
+                f"Failed to send raw alert email: {str(e)}"
             )
             raise
