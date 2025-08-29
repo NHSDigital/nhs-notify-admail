@@ -48,6 +48,7 @@ def ses_client(aws_credentials):
         client.verify_email_identity(EmailAddress="test@example.com")
         yield client
 
+@mock_aws
 def test_find_results_file_in_s3(s3_client):
     """
     Tests that the service can correctly find and parse the results file from S3.
