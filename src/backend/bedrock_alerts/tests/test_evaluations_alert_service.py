@@ -3,7 +3,7 @@ import boto3
 import jsonlines
 import io
 from moto import mock_aws
-from evaluations_alert_service import BedrockAlertsService
+from bedrock_alerts.evaluations_alert_service import BedrockAlertsService
 
 
 MOCK_RECORDS_LIST = [

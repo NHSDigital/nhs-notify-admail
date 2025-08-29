@@ -1,5 +1,5 @@
 import json
-from evaluations_alert_service import BedrockAlertsService
+from bedrock_alerts.evaluations_alert_service import BedrockAlertsService
 import os
 import logging
 

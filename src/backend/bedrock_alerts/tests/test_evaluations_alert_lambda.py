@@ -2,7 +2,7 @@ import pytest
 from unittest.mock import MagicMock, patch
 import sys
 import os
-from evaluations_alert_lambda import lambda_handler
+from bedrock_alerts.evaluations_alert_lambda import lambda_handler
 
 
 @pytest.fixture(autouse=True)
@@ -16,7 +16,7 @@ def mock_bedrock_service(mocker):
     """Mocks the BedrockAlertsService and its methods."""
     mock_service_instance = MagicMock()
     mocker.patch(
-        'evaluations_alert_lambda.BedrockAlertsService',
+        'bedrock_alerts.evaluations_alert_lambda.BedrockAlertsService',
         return_value=mock_service_instance
     )
     return mock_service_instance
