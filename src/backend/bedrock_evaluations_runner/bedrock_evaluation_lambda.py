@@ -18,9 +18,8 @@ def lambda_handler(event, context):
         aws_region = os.environ["env_region"]
         input_s3_uri = os.environ["env_input_prompt_s3_uri"]
         output_s3_uri = os.environ["env_results_s3_uri"]
-        alert_lambda = os.environ["env_lambda_alerts_function_name"]
 
-        evaluator = BedrockEvaluator(region=aws_region, role_arn=role_arn, alert_lambda=alert_lambda)
+        evaluator = BedrockEvaluator(region=aws_region, role_arn=role_arn)
         result = evaluator.run_evaluation_job(
             evaluator_model=evaluator_model,
             generator_model=generator_model,
