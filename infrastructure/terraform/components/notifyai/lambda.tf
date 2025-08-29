@@ -232,7 +232,7 @@ resource "aws_lambda_function" "evaluations_alerts" {
   role             = aws_iam_role.iam_for_evaluations_alerts_lambda.arn
   filename         = data.archive_file.evaluations_alerts_zip.output_path
   source_code_hash = data.archive_file.evaluations_alerts_zip.output_base64sha256
-  handler          = "evaluations_alert_lambda.lambda_handler"
+  handler          = "bedrock_alerts.evaluations_alert_lambda.lambda_handler"
   runtime          = "python3.12"
   timeout          = 30
 

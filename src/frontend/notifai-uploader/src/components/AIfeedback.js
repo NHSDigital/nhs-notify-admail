@@ -89,7 +89,7 @@ export default function AIFeedback({ feedback, isLoading }) {
               <strong style={{ fontSize: "19px" }}>Rating:</strong>{" "}
               <span
                 className={
-                  getRatingClass(cleanedFeedback.rating || cleanedFeedback.rating) || "rating-default"
+                  getRatingClass(cleanedFeedback.rating || cleanedFeedback.Rating) || "rating-default"
                 }
               >
                 {cleanedFeedback.rating}
