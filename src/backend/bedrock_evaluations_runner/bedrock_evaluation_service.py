@@ -17,6 +17,7 @@ class BedrockEvaluator:
         self.resource_prefix = resource_prefix
         self.bedrock_client = boto3.client("bedrock", region_name=self.region)
         logger.info("BedrockEvaluator initialized for region %s", self.region)
+        self.lambda_client = boto3.client('lambda')
 
     def run_evaluation_job(
         self,
@@ -97,14 +98,7 @@ class BedrockEvaluator:
                     }
                 },
             )
-
-            job_arn = response["jobArn"]
-            console_url = f"https://{self.region}.console.aws.amazon.com/bedrock/home?region={self.region}#/eval/model-evaluation/report?job={job_name}&jobIdentifier={job_arn}"
-            result = {"jobName": job_name, "jobArn": job_arn, "consoleUrl": console_url}
-            logger.info("Successfully created model evaluation job: %s", job_name)
-            logger.info("View progress here: %s", console_url)
-
-            return result
+            return response
 
         except Exception as e:
             logger.error("Failed to create Bedrock evaluation job: %s", e)
