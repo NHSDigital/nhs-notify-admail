@@ -62,7 +62,6 @@ System instructions Task: You are an expert specializing exclusively in the Roya
     }
 
     CRITICAL JSON formatting rules:
-    - Use lowercase keys: "description", "rating", "reason", "advice"
     - Use double quotes for all strings
     - Use \\n for line breaks and \\n- for bullet points
     - Escape any internal quotes with \\"

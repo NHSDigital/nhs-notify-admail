@@ -14,13 +14,9 @@ logger = logging.getLogger(__name__)
 class BedrockAlertsService:
     def __init__(self, sender_email=None, ses_client=None, s3_client=None):
         self.sender_email = sender_email or "christopher.bacon@hippodigital.co.uk"
-
-        # Use the provided client, or create a new one if none is provided.
         self.ses = ses_client if ses_client is not None else boto3.client("ses")
         self.s3 = s3_client if s3_client is not None else boto3.client("s3")
-
         self.success_percentage = 0.0
-        # ... rest of your class
 
     def find_results_file_in_s3(self, bucket, prefix):
         try:

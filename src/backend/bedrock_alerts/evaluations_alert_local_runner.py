@@ -1,7 +1,7 @@
 import os
 import json
 import logging
-from evaluations_alert_lambda import lambda_handler
+from bedrock_alerts.evaluations_alert_lambda import lambda_handler
 from dotenv import load_dotenv
 
 logging.basicConfig(
