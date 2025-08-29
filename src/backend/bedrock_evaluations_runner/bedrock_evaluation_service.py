@@ -8,12 +8,13 @@ logger = logging.getLogger(__name__)
 
 
 class BedrockEvaluator:
-    def __init__(self, region: str, role_arn: str):
+    def __init__(self, region: str, role_arn: str, resource_prefix: str):
         if not all([region, role_arn]):
-            raise ValueError("Region and Role ARN must be provided.")
+            raise ValueError("Region, Role ARN and resource prefix must be provided.")
 
         self.region = region
         self.role_arn = role_arn
+        self.resource_prefix = resource_prefix
         self.bedrock_client = boto3.client("bedrock", region_name=self.region)
         logger.info("BedrockEvaluator initialized for region %s", self.region)
 
@@ -24,7 +25,7 @@ class BedrockEvaluator:
         input_s3_uri: str,
         output_s3_uri: str,
     ) -> dict:
-        job_name = f"model-evaluation-custom-metrics-{datetime.now().strftime('%Y-%m-%d-%H-%M-%S')}"
+        job_name = f"{self.resource_prefix}-evaluation-{datetime.now().strftime('%Y-%m-%d-%H-%M-%S')}"
         logger.info("Starting model evaluation job: %s", job_name)
 
         rating_metric = {

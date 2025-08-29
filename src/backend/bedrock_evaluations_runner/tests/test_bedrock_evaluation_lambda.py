@@ -1,7 +1,12 @@
 import os
+import sys
 import json
 from unittest.mock import patch, MagicMock
-from bedrock_evaluations_runner.bedrock_evaluation_lambda import lambda_handler
+
+# Add the parent directory to the system path to allow for absolute imports
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+
+from bedrock_evaluation_lambda import lambda_handler
 
 
 @patch.dict(
@@ -13,6 +18,7 @@ from bedrock_evaluations_runner.bedrock_evaluation_lambda import lambda_handler
         "env_region": "eu-west-2",
         "env_input_prompt_s3_uri": "s3://input",
         "env_results_s3_uri": "s3://output",
+        "env_resource_prefix": "test-prefix",
     },
 )
 def test_lambda_handler_success():
@@ -23,7 +29,8 @@ def test_lambda_handler_success():
         "consoleUrl": "url",
     }
     with patch(
-        "bedrock_evaluations_runner.bedrock_evaluation_lambda.BedrockEvaluator", return_value=mock_evaluator
+        "bedrock_evaluation_lambda.BedrockEvaluator",
+        return_value=mock_evaluator,
     ):
         event = {}
         context = {}
@@ -54,11 +61,13 @@ def test_lambda_handler_missing_env(monkeypatch):
         "env_region": "eu-west-2",
         "env_input_prompt_s3_uri": "s3://input",
         "env_results_s3_uri": "s3://output",
+        "env_resource_prefix": "test-prefix",
     },
 )
 def test_lambda_handler_internal_error():
     with patch(
-        "bedrock_evaluations_runner.bedrock_evaluation_lambda.BedrockEvaluator", side_effect=Exception("fail")
+        "bedrock_evaluation_lambda.BedrockEvaluator",
+        side_effect=Exception("fail"),
     ):
         event = {}
         context = {}

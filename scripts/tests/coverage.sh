@@ -10,7 +10,7 @@ cd "$(git rev-parse --show-toplevel)"
 PYTHONPATH=src/backend/
 find $PYTHONPATH -name "requirements.txt" -exec pip install -r {} \;
 python -m pytest \
-  $PYTHONPATH/**/tests/ \
+  $PYTHONPATH \
   --cov-config=scripts/config/.coveragerc \
   --cov-report=xml \
   --cov=.

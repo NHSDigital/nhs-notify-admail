@@ -135,6 +135,7 @@ resource "aws_lambda_function" "bedrock_evaluations" {
       env_region                     = var.region
       env_input_prompt_s3_uri        = "s3://${aws_s3_object.prompts_object.bucket}/${aws_s3_object.prompts_object.key}"
       env_results_s3_uri             = "s3://${aws_s3_object.results_object.bucket}/${aws_s3_object.results_object.key}"
+      env_resource_prefix            = local.csi
     }
   }
 }
@@ -154,6 +155,7 @@ resource "aws_iam_role" "iam_for_evaluations_lambda" {
   })
 }
 
+# trivy:ignore:AVD-AWS-0342 reason="iam:PassRole is required for the evaluations lambda to start a bedrock evaluation job. The passrole is also scoped minimally"
 data "aws_iam_policy_document" "evaluations_lambda_policy_doc" {
   statement {
     effect = "Allow"
@@ -172,6 +174,30 @@ data "aws_iam_policy_document" "evaluations_lambda_policy_doc" {
       "arn:aws:bedrock:${var.region}::foundation-model/${var.evaluation-evaluator-model-identifier}",
       "arn:aws:bedrock:${var.region}::foundation-model/${var.evaluation-inference-model-identifier}"
     ]
+  }
+
+  statement {
+    effect = "Allow"
+    actions = [
+      "bedrock:CreateEvaluationJob",
+      "bedrock:DescribeEvaluationJob",
+      "bedrock:GetEvaluationJob",
+      "bedrock:ListEvaluationJobs"
+    ]
+    resources = ["*"]
+  }
+
+  statement {
+    effect = "Allow"
+    actions = [
+      "iam:PassRole"
+    ]
+    resources = [aws_iam_role.iam_for_bedrock_evaluation.arn]
+    condition {
+      test     = "StringEquals"
+      variable = "iam:PassedToService"
+      values   = ["bedrock.amazonaws.com"]
+    }
   }
 
   statement {
