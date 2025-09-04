@@ -135,7 +135,7 @@ class BedrockService:
     def log_prompt_details_to_s3(
         self, promptinput, promptoutput, guardrail_assessment, filename
     ):
-        if not self.config.logging_s3_bucket or not self.config.logging_s3_key_prefix:
+        if not self.config.logging_s3_bucket or not self.config.logging_s3_key_prefix or not self.config.logging_s3_account_id:
             print(constants.ERROR_S3_LOGGING_NOT_CONFIGURED)
             return
 
@@ -164,6 +164,7 @@ class BedrockService:
                 Key=s3_key,
                 Body=json.dumps(log_data, indent=4),
                 ContentType="application/json",
+                ExpectedBucketOwner=self.config.logging_s3_account_id,
             )
         except Exception as e:
             print(f"Error logging to S3: {e}")
