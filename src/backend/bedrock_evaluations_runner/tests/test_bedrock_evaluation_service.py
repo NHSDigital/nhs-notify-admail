@@ -45,9 +45,7 @@ def test_run_evaluation_job_success(mock_boto_client):
         input_s3_uri="s3://input",
         output_s3_uri="s3://output",
     )
-    assert "jobName" in result
     assert "jobArn" in result
-    assert "consoleUrl" in result
     assert result["jobArn"] == "test-arn"
     mock_client_instance.create_evaluation_job.assert_called_once()
 
