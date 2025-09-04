@@ -12,3 +12,4 @@ class BedrockConfig:
         self.logging_s3_key_prefix = os.environ.get("env_logging_s3_key_prefix")
         self.guardrail = os.environ.get("env_guardrail_arn")
         self.guardrail_version = os.environ.get("env_guardrail_version")
+        self.logging_s3_account_id = os.environ.get("env_logging_s3_account_id")

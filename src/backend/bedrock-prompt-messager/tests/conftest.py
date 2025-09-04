@@ -12,3 +12,4 @@ def set_env_vars(monkeypatch):
     monkeypatch.setenv("env_logging_s3_key_prefix", "logs/")
     monkeypatch.setenv("env_guardrail_arn", "test-arn")
     monkeypatch.setenv("env_guardrail_version", "1")
+    monkeypatch.setenv("env_logging_s3_account_id", "123456789012")
