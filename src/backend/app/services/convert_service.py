@@ -60,7 +60,6 @@ async def convert_file_service(file: UploadFile):
             # finally remove file:
             os.remove(CONVERTED_FILE_NAME)
             os.remove(f"{safe_filename}")
-            os.remove(f"{file.filename}")  # type: ignore
 
             logger.info(
                 f"File '{CONVERTED_FILE_NAME}' and '{safe_filename}' deleted successfully."
