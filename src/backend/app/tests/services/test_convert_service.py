@@ -33,6 +33,31 @@ async def test_convert_pdf_success(mock_pdfreader):
     if os.path.exists("test.pdf"):
         os.remove("test.pdf")
 
+@pytest.mark.asyncio
+@patch("app.services.convert_service.pypdf.PdfReader")
+async def test_convert_pdf_safe_filename_success(mock_pdfreader):
+    pdf_convert_result = "PDF Converted to text output"
+
+    mock_reader = MagicMock()
+    mock_page = MagicMock()
+    mock_page.extract_text.return_value = pdf_convert_result
+    mock_reader.pages = [mock_page]
+    mock_pdfreader.return_value = mock_reader
+
+    file_content = b"%PDF-1.4 test content"
+    headers = Headers({"content-type": "application/pdf"})
+    upload_file = UploadFile(
+        filename="../../test.pdf", file=io.BytesIO(file_content), headers=headers
+    )
+
+    result = await convert_file_service(upload_file)
+    extracted_text = result['extracted_text']
+    assert pdf_convert_result in extracted_text
+
+    # Clean up the file created by the service
+    if os.path.exists("test.pdf"):
+        os.remove("test.pdf")
+
 
 @pytest.mark.asyncio
 @patch("app.services.convert_service.os.remove")
