@@ -12,3 +12,4 @@ python-dotenv
 pytest-asyncio
 coverage
 pytest-cov
+aiofiles
