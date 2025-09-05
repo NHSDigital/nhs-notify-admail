@@ -90,11 +90,17 @@ async def test_convert_docx_success(mock_run, mock_remove):
 
         result = await convert_file_service(upload_file)
         extracted_text = result['extracted_text']
-        assert txt_convert_result in extracted_text
+        pages = result['pages']
+        assert pages is None
+        assert txt_convert_result in extracted_text # type: ignore
+        assert result['file_type'] == "docx"
+        assert mock_run.called
 
     # Assert that the service attempted to clean up the files
     mock_remove.assert_any_call(CONVERTED_FILE_NAME)
     mock_remove.assert_any_call("test.docx")
+    if os.path.exists("test.docx"):
+        os.remove("test.docx")
 
 
 @pytest.mark.asyncio
