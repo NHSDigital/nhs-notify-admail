@@ -27,7 +27,7 @@ async def convert_file_service(file: UploadFile):
 
         # not always 100% successful if pdfs are complicated or encoded in a way that it cannot parse
         if file_type == ".pdf":
-            reader = pypdf.PdfReader(f"{safe_filename}")
+            reader = pypdf.PdfReader(f"{safe_filename}")  # type: ignore
             page_count += len(reader.pages)
 
             for page in reader.pages:
@@ -58,7 +58,9 @@ async def convert_file_service(file: UploadFile):
 
         try:
             # finally remove file:
-            os.remove(CONVERTED_FILE_NAME)
+
+            if os.path.exists(CONVERTED_FILE_NAME):
+                os.remove(CONVERTED_FILE_NAME)
             os.remove(f"{safe_filename}")
 
             logger.info(

@@ -61,8 +61,9 @@ async def test_convert_pdf_safe_filename_success(mock_pdfreader):
 
 @pytest.mark.asyncio
 @patch("app.services.convert_service.os.remove")
+@patch("os.path.exists", return_value=True)
 @patch("app.services.convert_service.subprocess.run")
-async def test_convert_docx_success(mock_run, mock_remove):
+async def test_convert_docx_success(mock_run, mock_exixts, mock_remove):
     txt_convert_result = b"docx converted to text output"
 
     # Simulate Pandoc conversion
@@ -97,6 +98,7 @@ async def test_convert_docx_success(mock_run, mock_remove):
         assert mock_run.called
 
     # Assert that the service attempted to clean up the files
+    mock_exixts.assert_called()
     mock_remove.assert_any_call(CONVERTED_FILE_NAME)
     mock_remove.assert_any_call("test.docx")
     if os.path.exists("test.docx"):
