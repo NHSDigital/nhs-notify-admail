@@ -50,8 +50,8 @@ async def convert_file_service(file: UploadFile):
             completed_process = subprocess.run(command, check=True, capture_output=True)
 
             # Read the converted file
-            with open(CONVERTED_FILE_NAME, "rb") as f:
-                converted_data = f.read()
+            async with aiofiles.open(CONVERTED_FILE_NAME, "rb") as f:
+                converted_data = await f.read()
                 response_obj["extracted_text"] = converted_data
                 response_obj["pages"] = None
                 response_obj["file_type"] = "docx"
