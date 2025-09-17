@@ -249,7 +249,7 @@ resource "aws_lambda_function" "evaluations_alerts" {
 
 data "archive_file" "evaluations_alerts_zip" {
   type        = "zip"
-  source_dir  = "../../../../src/backend/bedrock_alerts"
+  source_dir  = "../../../../src/backend/bedrock_alerts/lambda_build"
   output_path = "${path.module}/evaluations_alerts.zip"
 }
 
