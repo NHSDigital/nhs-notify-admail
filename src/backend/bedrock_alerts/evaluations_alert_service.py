@@ -1,9 +1,6 @@
 import boto3
 import jsonlines
-import os
 import logging
-from email.mime.multipart import MIMEMultipart
-from email.mime.text import MIMEText
 from botocore.exceptions import ClientError
 import io
 
@@ -12,15 +9,14 @@ logger = logging.getLogger(__name__)
 
 
 class BedrockAlertsService:
-    def __init__(self, sender_email=None, ses_client=None, s3_client=None):
-        self.sender_email = sender_email or "christopher.bacon@hippodigital.co.uk"
-        self.ses = ses_client if ses_client is not None else boto3.client("ses")
+    def __init__(self, sns_client=None, s3_client=None):
+        self.sns = sns_client if sns_client is not None else boto3.client("sns")
         self.s3 = s3_client if s3_client is not None else boto3.client("s3")
         self.success_percentage = 0.0
 
     def find_results_file_in_s3(self, bucket, prefix):
         try:
-            print(f"Searching for files in bucket '{bucket}' with prefix '{prefix}'...")
+            logger.info(f"Searching for files in bucket '{bucket}' with prefix '{prefix}'...")
             paginator = self.s3.get_paginator('list_objects_v2')
             pages = paginator.paginate(Bucket=bucket, Prefix=prefix)
             for page in pages:
@@ -34,7 +30,7 @@ class BedrockAlertsService:
                                 with jsonlines.Reader(file_like_object) as reader:
                                     return [obj for obj in reader]
                             except Exception as e:
-                                print("No matching file found.")
+                                print(f"Error occurred while reading the file: {e}")
                                 return None
 
         except ClientError as e:
@@ -53,11 +49,11 @@ class BedrockAlertsService:
                         rating_records_count += 1
                         break
             except TypeError:
-                print(f"Warning: Skipping a record that is not in the expected format: {record}")
+                logger.warning(f"Skipping a record that is not in the expected format: {record}")
                 continue
 
         if rating_records_count == 0:
-            print("Warning: No 'Rating' metrics were found in the list.")
+            logger.warning("No 'Rating' metrics were found in the list.")
             return 0.0
 
         success_percentage = round((total_rating_score / rating_records_count) * 100)
@@ -65,28 +61,17 @@ class BedrockAlertsService:
         return success_percentage
 
 
-    def send_alert(self):
+    def send_alert(self, topic_arn=None):
         try:
-            subject = f"Bedrock Evaluation Job Rating Alert: {self.success_percentage}"
-            body = f"""
-            Alert Percentage: {self.success_percentage or 'N/A'}\n\n
-            This alert is below the threshold, please review bedrock model evaluations performance.
-            \n\nThis is an automated alert from Bedrock.\n"""
-            msg = MIMEMultipart()
-            msg["Subject"] = subject
-            msg["From"] = self.sender_email
-            msg["To"] = self.sender_email
-            msg.attach(MIMEText(body, "plain"))
+            subject = "Bedrock Model Evaluation Alert"
+            message = f"Alert Percentage: {self.success_percentage or 'N/A'}\n\nThis alert is below the threshold, please review bedrock model evaluations performance.\n\nThis is an automated alert from Bedrock."
+            response = self.sns.publish(TopicArn=topic_arn, Message=message, Subject=subject)
+            print(f"Alert sent successfully with response: {response}")
+            print("Message published")
 
-            response = self.ses.send_raw_email(
-                Source=self.sender_email,
-                Destinations=[self.sender_email],
-                RawMessage={"Data": msg.as_string()},
-            )
-            logger.info(f"Raw alert email sent successfully")
             return response
         except Exception as e:
             logger.error(
-                f"Failed to send raw alert email: {str(e)}"
+                f"Failed to send alert: {str(e)}"
             )
             raise

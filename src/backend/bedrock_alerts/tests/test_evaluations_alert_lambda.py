@@ -10,6 +10,7 @@ def mock_env_vars(monkeypatch):
     monkeypatch.setenv("env_sender_email", "test@example.com")
     monkeypatch.setenv("env_results_bucket", "my-test-bucket")
     monkeypatch.setenv("env_results_bucket_key", "my-test-key/")
+    monkeypatch.setenv("env_sns_topic_arn", "arn:aws:sns:eu-west-2:123456789012:MyTopic")
 
 @pytest.fixture
 def mock_bedrock_service(mocker):

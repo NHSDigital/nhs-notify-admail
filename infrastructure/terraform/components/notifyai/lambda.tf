@@ -240,9 +240,10 @@ resource "aws_lambda_function" "evaluations_alerts" {
   environment {
     variables = {
       env_lambda_name        = local.alerts_lambda_name
-      env_sender_email       = aws_ses_email_identity.sender_email.email
+
       env_results_bucket     = aws_s3_bucket.evaluation_programatic_results.bucket
       env_results_bucket_key = aws_s3_object.results_object.key
+      env_sns_topic_arn      = aws_sns_topic.admail_eval_alerts_topic.arn
     }
   }
 }
@@ -276,22 +277,19 @@ data "aws_iam_policy_document" "evaluations_lambda_alerts_policy_doc" {
       "bedrock:GetEvaluationJob",
       "bedrock:DescribeEvaluationJob",
       "bedrock:ListEvaluationJobs",
-      "ses:SendEmail",
-      "ses:SendRawEmail",
-      "ses:GetTemplate",
-      "ses:SendTemplatedEmail",
       "s3:GetObject",
       "logs:CreateLogGroup",
       "logs:CreateLogStream",
       "logs:PutLogEvents",
-      "s3:ListBucket"
+      "s3:ListBucket",
+      "sns:Publish"
     ]
     resources = [
       "arn:aws:s3:::${aws_s3_object.results_object.bucket}/${aws_s3_object.results_object.key}*",
       "arn:aws:bedrock:${var.region}:${var.aws_account_id}:evaluation-job/*",
       "arn:aws:logs:${var.region}:${var.aws_account_id}:log-group:/aws/lambda/${local.alerts_lambda_name}:*",
-      aws_ses_email_identity.sender_email.arn,
-      "arn:aws:s3:::${aws_s3_object.results_object.bucket}"
+      "arn:aws:s3:::${aws_s3_object.results_object.bucket}",
+      "arn:aws:sns:${var.region}:${var.aws_account_id}:${aws_sns_topic.admail_eval_alerts_topic.name}",
     ]
   }
 }

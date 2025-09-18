@@ -46,17 +46,16 @@ def s3_client(aws_credentials):
         yield boto3.client("s3", region_name="eu-west-2")
 
 @pytest.fixture
-def ses_client(aws_credentials):
-    """Yields a mock SES client."""
+def sns_client(aws_credentials):
+    """Yields a mock sns client."""
     with mock_aws():
-        client = boto3.client("ses", region_name="eu-west-2")
-        client.verify_email_identity(EmailAddress="test@example.com")
+        client = boto3.client("sns", region_name="eu-west-2")
         yield client
 
 @pytest.fixture
-def service(s3_client, ses_client):
+def service(s3_client, sns_client):
     """Yields a BedrockAlertsService instance with mocked clients."""
-    return BedrockAlertsService(sender_email="test@example.com", s3_client=s3_client, ses_client=ses_client)
+    return BedrockAlertsService(s3_client=s3_client, sns_client=sns_client)
 
 def test_find_results_file_in_s3(s3_client, service):
     """Tests that the service can correctly find and parse the results file from S3."""
@@ -103,12 +102,15 @@ def test_calculate_rating_percentage_no_ratings(service):
     percentage = service.calculate_rating_percentage_from_list(records_without_rating)
     assert percentage == 0.0
 
-def test_send_alert(service, ses_client):
-    """Tests that the send_alert method correctly calls the SES send_raw_email API."""
+def test_send_alert(service, sns_client):
+    """Tests that the send_alert method correctly calls the SNS publish API."""
+    sns, _ = sns_client.create_topic(Name="MyTopic")
     service.success_percentage = 42.0
-    response = service.send_alert()
+    response = service.send_alert('arn:aws:sns:eu-west-2:123456789012:MyTopic')
 
     assert response is not None
     assert response['ResponseMetadata']['HTTPStatusCode'] == 200
-    sent_messages = ses_client.get_send_statistics()['SendDataPoints']
-    assert len(sent_messages) == 1
+    assert 'MessageId' in response
+    # Clean up the created topic
+
+    sns_client.delete_topic(TopicArn='arn:aws:sns:eu-west-2:123456789012:MyTopic')
