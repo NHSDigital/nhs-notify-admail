@@ -82,14 +82,14 @@ export default function AIFeedback({ feedback, isLoading }) {
               <strong style={{ fontSize: "19px" }}>Description: </strong>
               <br />
               <span style={{ fontSize: "19px" }}>
-                {cleanedFeedback.description || ""}
+                {cleanedFeedback.description || cleanedFeedback.Description || ""}
               </span>
               <br />
               <br />
               <strong style={{ fontSize: "19px" }}>Rating:</strong>{" "}
               <span
                 className={
-                  getRatingClass(cleanedFeedback.rating) || "rating-default"
+                  getRatingClass(cleanedFeedback.rating || cleanedFeedback.Rating) || "rating-default"
                 }
               >
                 {cleanedFeedback.rating}
@@ -97,10 +97,10 @@ export default function AIFeedback({ feedback, isLoading }) {
               <br />
               <br />
               <strong style={{ fontSize: "19px" }}>Reason:</strong>
-              <ReactMarkdown>{cleanedFeedback.reason || ""}</ReactMarkdown>
+              <ReactMarkdown>{cleanedFeedback.reason || cleanedFeedback.Reason ||""}</ReactMarkdown>
               <br />
               <strong style={{ fontSize: "19px" }}>Advice:</strong>
-              <ReactMarkdown>{cleanedFeedback.advice || ""}</ReactMarkdown>
+              <ReactMarkdown>{cleanedFeedback.advice || cleanedFeedback.Advice ||""}</ReactMarkdown>
             </div>
           </div>
         )

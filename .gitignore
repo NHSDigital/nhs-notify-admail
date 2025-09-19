@@ -239,3 +239,6 @@ node_modules/
 
 # dotenv
 src/backend/app/.env
+src/backend/bedrock_alerts/lambda_build
+src/backend/bedrock_alerts/lambda_function.zip
+src/backend/bedrock_alerts/lambda_function.zip
