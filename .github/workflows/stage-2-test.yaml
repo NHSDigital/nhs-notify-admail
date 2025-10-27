@@ -71,7 +71,7 @@ jobs:
         run: |
           make test-coverage
       - name: "Save the result of code coverage"
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: code-coverage-report
           path: "coverage.xml"
