@@ -34,21 +34,11 @@ export default function FileUpload({ onFileUpload, handleLoading }) {
       const formData = new FormData();
       formData.append("file", file);
 
-      const response = await backendAPIClient.post(
-        `/convert`,
-        formData,
-      );
-      if (!response.data) {
-        throw new Error("Empty response from API");
-      }
-      if (response.status === 400 || response.status === 500) {
-        handleLoading(false);
-        throw new Error(response.data.message || "Error uploading file");
-      }
+      let fr = new FileReader()
+      fr.readAsDataURL(file);
+      fr.addEventListener('load', (_evt) => onFileUpload({ extracted_text: fr.result, file_name: file.name }));
 
-      const resolvedData = await Promise.resolve(response.data);
       setUploadStatus("Successfully Uploaded");
-      onFileUpload({ ...resolvedData, file_name: file.name });
       setTimeout(() => setUploadStatus(""), 2000);
     } catch (error) {
       console.error("Upload failed:", error);

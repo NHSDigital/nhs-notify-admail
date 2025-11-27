@@ -78,7 +78,7 @@ services:
       <<: *aws-environment
       env_model_id: "amazon.nova-pro-v1:0"
       env_temperature: "0.1"
-      env_max_tokens: "5000"
+      env_max_tokens: "10000"
       env_top_p: "0.5"
       env_logging_s3_bucket: "nhs-notifai-shared"
       env_logging_s3_key_prefix: "logs/"
