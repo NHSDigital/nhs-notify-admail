@@ -1,3 +1,4 @@
+import base64
 import pytest
 from unittest.mock import MagicMock, patch, mock_open
 from services.bedrock_service import BedrockService
@@ -114,7 +115,7 @@ def test_call_admail_bedrock_prompt_success(mock_open_file, bedrock_service):
 
         with patch.object(bedrock_service, "log_prompt_details_to_s3") as mock_log:
             result = bedrock_service.call_admail_bedrock_prompt(
-                "test letter", "test_file.json"
+                f"data:text/plain;base64,{base64.b64encode(b"test letter")}", "test_file.json"
             )
             assert result["statusCode"] == 200
             assert "description" in result["body"]

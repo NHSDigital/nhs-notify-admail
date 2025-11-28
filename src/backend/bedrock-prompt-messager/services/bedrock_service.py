@@ -13,6 +13,7 @@ CORS_HEADERS = {
     "Content-Type": "application/json",
 }
 
+DATA_URL_PATTERN = re.compile(r'data\:([^;]+);base64,(.*)')
 
 class BedrockService:
     def __init__(self):
@@ -28,14 +29,18 @@ class BedrockService:
         except FileNotFoundError:
             return {"statusCode": 400, "body": constants.ERROR_SYSTEM_PROMPT_NOT_FOUND}
 
-        pattern = re.compile(r'data\:([^;]+);base64,(.*)')
-        mime, b64_bytes = pattern.match(input_letter).groups()
+        try:
+            mime, b64_bytes = DATA_URL_PATTERN.match(input_letter).groups()
+        except AttributeError:
+            return {"statusCode": 400, "body": "Invalid data url passed to bedrock service"}
 
         format = None
         if mime == 'application/pdf':
             format = 'pdf'
         elif mime == 'application/vnd.openxmlformats-officedocument.wordprocessingml.document':
             format = 'docx'
+        elif mime == 'text/plain':
+            format = 'txt'
 
         if not format:
             return {"statusCode": 400, "body": f"Unknown document format for mime type: {mime}"}
