@@ -28,6 +28,7 @@ class BedrockAlertsService:
                             try:
                                 file_like_object = io.StringIO(file_content_string)
                                 with jsonlines.Reader(file_like_object) as reader:
+                                    logger.info(f"Using contents of {obj['Key']}...")
                                     return [obj for obj in reader]
                             except Exception as e:
                                 print(f"Error occurred while reading the file: {e}")
@@ -42,12 +43,10 @@ class BedrockAlertsService:
         rating_records_count = 0
         for record in records_list:
             try:
-                scores = record.get('automatedEvaluationResult', {}).get('scores', [])
-                for metric in scores:
-                    if metric.get('metricName') == 'Rating':
-                        total_rating_score += metric.get('result', 0.0)
-                        rating_records_count += 1
-                        break
+                rating = record.get('rating')
+                actual = record.get('actualClass')
+                total_rating_score += 1 if rating == actual else 0
+                rating_records_count += 1
             except TypeError:
                 logger.warning(f"Skipping a record that is not in the expected format: {record}")
                 continue
