@@ -76,7 +76,7 @@ services:
       - "${PWD}/src/backend/bedrock-prompt-messager:/var/task"
     environment:
       <<: *aws-environment
-      env_model_id: "amazon.nova-pro-v1:0"
+      env_model_id: "amazon.nova-lite-v1:0"
       env_temperature: "0.1"
       env_max_tokens: "10000"
       env_top_p: "0.5"
