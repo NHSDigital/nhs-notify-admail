@@ -11,7 +11,7 @@ export function useBackendAPIClient() {
       process.env.REACT_APP_BACKEND_API_BASE_URL;
     const baseURL = backendURL?.startsWith("http")
       ? backendURL
-      : `http://${backendURL}`;
+      : `https://${backendURL}`;
 
     const instance = axios.create({
       baseURL: baseURL,
