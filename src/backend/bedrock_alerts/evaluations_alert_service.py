@@ -39,14 +39,16 @@ class BedrockAlertsService:
             return None
 
     def calculate_rating_percentage_from_list(self, records_list: list) -> float:
+        print("*********", records_list)
         total_rating_score = 0
         rating_records_count = 0
         for record in records_list:
             try:
                 rating = record.get('rating')
                 actual = record.get('actualClass')
-                total_rating_score += 1 if rating == actual else 0
-                rating_records_count += 1
+                if rating and actual:
+                    total_rating_score += 1 if rating == actual else 0
+                    rating_records_count += 1
             except TypeError:
                 logger.warning(f"Skipping a record that is not in the expected format: {record}")
                 continue

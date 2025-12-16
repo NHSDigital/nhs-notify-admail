@@ -28,8 +28,7 @@ def lambda_handler(event, context):
                     'message': 'Alert sent successfully',
                 })
             }
-        else:
-            return {'statusCode': 204}
+
     except Exception as e:
         logger.error(f"Failed to send alert: {str(e)}")
         raise
