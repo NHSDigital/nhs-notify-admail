@@ -126,7 +126,7 @@ class BedrockEvaluator:
             output = io.BytesIO()
             jsonlines.Writer(output).write_all(responses)
             s3_out_uri = up.urlparse(output_s3_uri)
-            
+
             return self.s3_client.put_object(
                 Bucket=s3_out_uri.hostname,
                 Key=s3_out_uri.path[1:],

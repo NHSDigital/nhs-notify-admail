@@ -11,10 +11,10 @@ load_dotenv()
 
 """
 Letter converting tool to assist with the manual creation of the prompts.jsonl file.
-Requires each letter to be available in an S3 bucket.  The folder path in S3 must 
+Requires each letter to be available in an S3 bucket.  The folder path in S3 must
 contain the actual class for each document.
 
-For example: 
+For example:
 - s3://$BUCKET/Advertising Mail/Digitrial Letter L48 - NOTIFY.pdf => ADVERTISING
 - s3://$BUCKET/Business Mail/NHSBT_DSCMM2_Mailing_201023_Lee.pdf => BUSINESS
 """
@@ -24,8 +24,8 @@ DATA_PATH = os.getenv("DATA_PATH")
 MODEL = os.getenv("MODEL")
 PROMPT= os.getenv("PROMPT")
 
-assert INPUT_BUCKET 
-assert DATA_PATH 
+assert INPUT_BUCKET
+assert DATA_PATH
 assert MODEL
 assert PROMPT
 
@@ -56,11 +56,11 @@ for doc in documents:
         'actualClass': actual,
         'modelInput': {
             'system': prompt_string,
-            'messages': [{ 
-                'role': 'user', 
+            'messages': [{
+                'role': 'user',
                 'content': [
                     { 'text': "Analyze the following letter:" },
-                    { 'document': { 
+                    { 'document': {
                         'format': format,
                         'name': 'the_letter',
                         'source': {

@@ -47,7 +47,7 @@ class BedrockService:
             return {"statusCode": 400, "body": f"Unknown document format for mime type: {html.escape(str(mime))}"}
 
         user_prompt = "Analyze the following letter:"
-        
+
 
         guardrail_assessment = self.bedrock_runtime.apply_guardrail(
             guardrailIdentifier=self.config.guardrail,
@@ -57,11 +57,11 @@ class BedrockService:
         )
 
         messages = [
-            { 
-                'role': 'user', 
+            {
+                'role': 'user',
                 'content': [
                     { 'text': user_prompt },
-                    { 'document': { 
+                    { 'document': {
                         'format': format,
                         'name': 'the_letter',
                         'source': {
