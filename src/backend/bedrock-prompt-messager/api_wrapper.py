@@ -68,7 +68,7 @@ def call_llm():
 
     except Exception as e:
         logger.exception(f"Error in call_llm: {e}")
-        return {"error": str(e)}, 500
+        return {"error": "Internal server error. Please contact support if the issue persists."}, 500
 
 
 @app.route("/health", methods=["GET"])

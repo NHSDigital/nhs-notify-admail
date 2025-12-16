@@ -3,6 +3,7 @@ import base64
 import boto3
 import json
 import re
+import html
 from core.config import BedrockConfig
 from core import constants
 
@@ -13,7 +14,7 @@ CORS_HEADERS = {
     "Content-Type": "application/json",
 }
 
-DATA_URL_PATTERN = re.compile(r'data\:([^;]+);base64,(.*)')
+DATA_URL_PATTERN = re.compile(r'^data\:([^;]+);base64,(.*)')
 
 class BedrockService:
     def __init__(self):
@@ -30,7 +31,7 @@ class BedrockService:
             return {"statusCode": 400, "body": constants.ERROR_SYSTEM_PROMPT_NOT_FOUND}
 
         try:
-            mime, b64_bytes = DATA_URL_PATTERN.match(input_letter).groups()
+            mime, b64_bytes = DATA_URL_PATTERN.match(input_letter.strip()).groups()
         except AttributeError:
             return {"statusCode": 400, "body": "Invalid data url passed to bedrock service"}
 
@@ -43,7 +44,7 @@ class BedrockService:
             format = 'txt'
 
         if not format:
-            return {"statusCode": 400, "body": f"Unknown document format for mime type: {mime}"}
+            return {"statusCode": 400, "body": f"Unknown document format for mime type: {html.escape(str(mime))}"}
 
         user_prompt = "Analyze the following letter:"
         
