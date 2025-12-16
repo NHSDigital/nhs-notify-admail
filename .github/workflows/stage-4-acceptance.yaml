@@ -1,5 +1,8 @@
 name: "Acceptance stage"
 
+permissions:
+  contents: read
+
 on:
   workflow_call:
     inputs:
