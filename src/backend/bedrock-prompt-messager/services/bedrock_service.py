@@ -1,6 +1,9 @@
 from datetime import datetime
+import base64
 import boto3
 import json
+import re
+import html
 from core.config import BedrockConfig
 from core import constants
 
@@ -11,6 +14,7 @@ CORS_HEADERS = {
     "Content-Type": "application/json",
 }
 
+DATA_URL_PATTERN = re.compile(r'^data\:([^;]+);base64,(.*)')
 
 class BedrockService:
     def __init__(self):
@@ -26,9 +30,24 @@ class BedrockService:
         except FileNotFoundError:
             return {"statusCode": 400, "body": constants.ERROR_SYSTEM_PROMPT_NOT_FOUND}
 
-        user_prompt = f"Analyze the following letter:{input_letter}"
+        try:
+            mime, b64_bytes = DATA_URL_PATTERN.match(input_letter.strip()).groups()
+        except AttributeError:
+            return {"statusCode": 400, "body": "Invalid data url passed to bedrock service"}
 
-        messages = [{"role": "user", "content": [{"text": user_prompt}]}]
+        format = None
+        if mime == 'application/pdf':
+            format = 'pdf'
+        elif mime == 'application/vnd.openxmlformats-officedocument.wordprocessingml.document':
+            format = 'docx'
+        elif mime == 'text/plain':
+            format = 'txt'
+
+        if not format:
+            return {"statusCode": 400, "body": f"Unknown document format for mime type: {html.escape(str(mime))}"}
+
+        user_prompt = "Analyze the following letter:"
+
 
         guardrail_assessment = self.bedrock_runtime.apply_guardrail(
             guardrailIdentifier=self.config.guardrail,
@@ -36,6 +55,22 @@ class BedrockService:
             source="INPUT",
             content=[{"text": {"text": user_prompt}}],
         )
+
+        messages = [
+            {
+                'role': 'user',
+                'content': [
+                    { 'text': user_prompt },
+                    { 'document': {
+                        'format': format,
+                        'name': 'the_letter',
+                        'source': {
+                            'bytes': base64.b64decode(b64_bytes)
+                        }
+                    }}
+                ]
+            }
+        ]
 
         inference_config = {
             "temperature": self.config.temperature,

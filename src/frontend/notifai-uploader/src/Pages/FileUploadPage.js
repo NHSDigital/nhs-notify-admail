@@ -7,7 +7,6 @@ import axios from "axios";
 
 function FileUploadPage() {
   const [feedback, setFeedback] = useState({});
-  const [pages, setPages] = useState(0);
   const [letterType, setLetterType] = useState("");
   const [isLoading, setLoading] = useState(false);
   const EnvLambdaFunctionApiBaseUrl = window.env?.REACT_APP_API_GATEWAY || process.env.REACT_APP_API_GATEWAY;
@@ -41,9 +40,6 @@ function FileUploadPage() {
     setLoading(true);
     setFeedback({});
     setLetterType(file.file_type || "docx");
-    if (file.file_type !== "docx") {
-      setPages(file.pages);
-    }
     try {
       const promptResp = await getPromptResp(file.extracted_text, file.file_name);
       await sleep(1000);
@@ -62,7 +58,7 @@ function FileUploadPage() {
           <FileUpload onFileUpload={handleFileUpload} handleLoading={handleLoading} />
           <AIFeedback feedback={feedback} isLoading={isLoading} />
         </div>
-        <RoyalMailCalculator pages={pages} letterType={letterType} />
+        <RoyalMailCalculator pages={1} letterType={letterType} />
       </main>
     </div>
   );

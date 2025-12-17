@@ -30,6 +30,7 @@ export default function AIFeedback({ feedback, isLoading }) {
         obj[key] = obj[key]
           .replace(/\\n/g, "\n")
           .replace(/[\u2022\u2023\u25E6\u2043\u2219]/g, "-")
+          .replace(/\*{2}/g, "__")
           .replace(/\n[-*]\s*/g, "\n- ")
           .replace(/```|`|<|>|\|/g, "");
       }

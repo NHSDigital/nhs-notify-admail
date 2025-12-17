@@ -7,26 +7,10 @@ from moto import mock_aws
 from bedrock_alerts.evaluations_alert_service import BedrockAlertsService
 
 MOCK_RECORDS_LIST = [
-    {
-        "automatedEvaluationResult": {
-            "scores": [{"metricName": "Rating", "result": 1.0}]
-        }
-    },
-    {
-        "automatedEvaluationResult": {
-            "scores": [{"metricName": "Rating", "result": 0.0}]
-        }
-    },
-    {
-        "automatedEvaluationResult": {
-            "scores": [{"metricName": "Rating", "result": 1.0}]
-        }
-    },
-    {
-        "automatedEvaluationResult": {
-            "scores": [{"metricName": "SomeOtherMetric", "result": 0.5}]
-        }
-    },
+    { 'rating': 'BUSINESS', 'actualClass': 'BUSINESS'},
+    { 'rating': 'BUSINESS', 'actualClass': 'ADVERTISING'},
+    { 'rating': 'ADVERTISING', 'actualClass': 'BUSINESS'},
+    { 'rating': 'ADVERTISING', 'actualClass': 'ADVERTISING'}
 ]
 
 @pytest.fixture
@@ -80,7 +64,7 @@ def test_find_results_file_in_s3(s3_client, service):
 def test_calculate_rating_percentage_from_list(service):
     """Tests the rating calculation logic with valid data."""
     percentage = service.calculate_rating_percentage_from_list(MOCK_RECORDS_LIST)
-    assert percentage == 67.0
+    assert percentage == 50
 
 def test_calculate_rating_percentage_handles_empty_records(service):
     """Tests that the rating calculation logic handles empty and partial records gracefully."""

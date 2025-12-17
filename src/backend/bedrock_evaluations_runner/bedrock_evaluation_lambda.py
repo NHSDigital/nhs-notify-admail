@@ -12,9 +12,7 @@ logger = logging.getLogger(__name__)
 
 def lambda_handler(event, context):
     try:
-        evaluator_model = os.environ["env_evaluator_model_identifier"]
         generator_model = os.environ["env_generator_model_identifier"]
-        role_arn = os.environ["env_role_arn"]
         aws_region = os.environ["env_region"]
         input_s3_uri = os.environ["env_input_prompt_s3_uri"]
         output_s3_uri = os.environ["env_results_s3_uri"]
@@ -22,12 +20,10 @@ def lambda_handler(event, context):
 
         evaluator = BedrockEvaluator(
             region=aws_region,
-            role_arn=role_arn,
             resource_prefix=resource_prefix,
         )
 
         result = evaluator.run_evaluation_job(
-            evaluator_model=evaluator_model,
             generator_model=generator_model,
             input_s3_uri=input_s3_uri,
             output_s3_uri=output_s3_uri,
