@@ -39,7 +39,6 @@ class BedrockAlertsService:
             return None
 
     def calculate_rating_percentage_from_list(self, records_list: list) -> float:
-        print("*********", records_list)
         total_rating_score = 0
         rating_records_count = 0
         for record in records_list:

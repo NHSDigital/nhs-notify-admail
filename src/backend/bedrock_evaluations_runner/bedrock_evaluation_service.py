@@ -112,15 +112,11 @@ class BedrockEvaluator:
 
                 response_message = response["output"]["message"]
 
-                print("****************", self.bedrock_client)
-                print("****************", response_message)
-
                 response = next((
                     content
                     for content in response_message["content"]
                     if "toolUse" in content
                 ))
-                print("****************", response, response_message.get('toolUse', 'Not Found'))
                 response = response["toolUse"]["input"]
 
                 # Add the actual correct class to the response for later scoring
