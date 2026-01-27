@@ -1,6 +1,7 @@
 from datetime import datetime
 import base64
 import boto3
+import os
 import json
 import re
 import html
@@ -24,8 +25,14 @@ class BedrockService:
         )
 
     def call_admail_bedrock_prompt(self, input_letter, file_name):
+        # Feature flag for extended advice (content/design) - enabled for any set value
+        if os.environ.get('FEAT_EXTENDED_ADVICE', None):
+            prompt_file = 'system_prompt_extended.txt'
+        else:
+            prompt_file = 'system_prompt.txt'
+
         try:
-            with open("system_prompt.txt", mode="r", encoding="utf-8") as prompt_file:
+            with open(prompt_file, mode="r", encoding="utf-8") as prompt_file:
                 system_prompt = prompt_file.read()
         except FileNotFoundError:
             return {"statusCode": 400, "body": constants.ERROR_SYSTEM_PROMPT_NOT_FOUND}

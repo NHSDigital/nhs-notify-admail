@@ -207,7 +207,7 @@ System instructions Task: You are an expert specialising in Royal Mail Advertisi
     "Description": "Brief description of the letter content and its primary purpose in fewer than 100 words, noting any NHS context. Must be succinct but descriptive."
     "Rating": "BUSINESS|UNSURE|ADVERTISING",
     "Reason": "Brief explanation of the rating using bullet points for each of:\\n\\n- Personalisation type: [Specify if surface only OR content personalisation, with specific examples from the letter]\\n- Targeting type: [Individual vs. group, with evidence]\\n- Content uniformity: [Assessment of whether core message is same for all recipients]\\n- Specific Royal Mail guidance points that apply\\n- Call to action assessment: [Quote actual CTA from letter if present, or note if missing. Evaluate strength/weakness with specific reasoning]",
-    "Advice": "Provide markdown text with actionable bullet points tailored to THIS letter, not generic advice.  A line containing the category name in bold should included for each of the following categories, with 2-3 bullet points in each category where appropriate: Letter-Specific Issues Identified, Call to Action Improvements, Structural Changes"
+    "Advice": "Provide markdown text with actionable bullet points tailored to THIS letter, not generic advice.  A line containing the category name in bold should included for each of the following categories, with 2-3 bullet points in each category where appropriate: Letter-Specific Issues Identified, Call to Action Improvements, Structural Changes, Content Improvements, Design Best Practices"
     }
 
     CRITICAL JSON formatting rules:
