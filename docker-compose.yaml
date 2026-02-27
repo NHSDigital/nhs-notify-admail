@@ -16,10 +16,10 @@ services:
       - bedrock-prompt-messager
     environment:
       <<: *aws-environment
-      REACT_APP_BACKEND_API_BASE_URL: "http://localhost:8080"
-      REACT_APP_COGNITO_ID: "4kgkrqjc0770v6slu27pjuagb1"
-      REACT_APP_COGNITO_USER_POOL_ID: "eu-west-2_JuQWLuCTr"
-      REACT_APP_API_GATEWAY: "http://localhost:8081/call-llm"
+      REACT_APP_BACKEND_API_BASE_URL: ${REACT_APP_BACKEND_API_BASE_URL}
+      REACT_APP_COGNITO_ID: ${COGNITO_APP_CLIENT_ID}
+      REACT_APP_COGNITO_USER_POOL_ID: ${COGNITO_USER_POOL_ID}
+      REACT_APP_API_GATEWAY: ${REACT_APP_API_GATEWAY}
     healthcheck:
       test: ["CMD", "curl", "http://localhost:80/health"]
       interval: 30s
@@ -47,12 +47,12 @@ services:
       - "${PWD}/src/backend/app:/app"
     environment:
       <<: *aws-environment
-      COGNITO_REGION: "eu-west-2"
-      COGNITO_USER_POOL_ID: "eu-west-2_JuQWLuCTr"
-      COGNITO_APP_CLIENT_ID: "4kgkrqjc0770v6slu27pjuagb1"
-      S3_LLM_LOGS_BUCKET: "nhs-notifai-shared"
-      S3_LLM_LOGS_DIRECTORY: "logs/"
-      S3_LLM_LOGS_BUCKET_ACCOUNT_ID: "496395772806"
+      COGNITO_REGION: ${AWS_REGION}
+      COGNITO_USER_POOL_ID: ${COGNITO_USER_POOL_ID}
+      COGNITO_APP_CLIENT_ID: COGNITO_APP_CLIENT_ID
+      S3_LLM_LOGS_BUCKET: ${S3_LLM_LOGS_BUCKET}
+      S3_LLM_LOGS_DIRECTORY: ${S3_LLM_LOGS_DIRECTORY}
+      S3_LLM_LOGS_BUCKET_ACCOUNT_ID: ${S3_LLM_LOGS_BUCKET_ACCOUNT_ID}
     healthcheck:
       test:
         [
@@ -80,11 +80,12 @@ services:
       env_temperature: "0.1"
       env_max_tokens: "10000"
       env_top_p: "0.5"
-      env_logging_s3_bucket: "nhs-notifai-shared"
-      env_logging_s3_key_prefix: "logs/"
-      env_guardrail_arn: "arn:aws:bedrock:eu-west-2:496395772806:guardrail/7z5kf9qg62is"
-      env_guardrail_version: "1"
-      env_logging_s3_account_id: "496395772806"
+      env_logging_s3_bucket: ${S3_LLM_LOGS_BUCKET}
+      env_logging_s3_key_prefix: ${S3_LLM_LOGS_DIRECTORY}
+      env_guardrail_arn: ${GUARDRAIL_ARN}
+      env_guardrail_version: ${GUARDRAIL_VERSION}
+      env_logging_s3_account_id: ${S3_LLM_LOGS_BUCKET_ACCOUNT_ID}
+      # FEAT_EXTENDED_ADVICE: true
     healthcheck:
       test: ["CMD", "curl", "http://localhost:8080/health"]
       interval: 30s
