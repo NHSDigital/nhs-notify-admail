@@ -1,3 +1,4 @@
+import base64
 import pytest
 from unittest.mock import MagicMock, patch, mock_open
 from services.bedrock_service import BedrockService
@@ -114,8 +115,52 @@ def test_call_admail_bedrock_prompt_success(mock_open_file, bedrock_service):
 
         with patch.object(bedrock_service, "log_prompt_details_to_s3") as mock_log:
             result = bedrock_service.call_admail_bedrock_prompt(
-                "test letter", "test_file.json"
+                f"data:text/plain;base64,{base64.b64encode(b"test letter")}", "test_file.json"
             )
             assert result["statusCode"] == 200
             assert "description" in result["body"]
-            mock_log.assert_called_once()
+
+            result = bedrock_service.call_admail_bedrock_prompt(
+                f"data:application/pdf;base64,{base64.b64encode(b"test letter")}", "test_file.json"
+            )
+            assert result["statusCode"] == 200
+            assert "description" in result["body"]
+
+            result = bedrock_service.call_admail_bedrock_prompt(
+                f"data:application/vnd.openxmlformats-officedocument.wordprocessingml.document;base64,{base64.b64encode(b"test letter")}", "test_file.json"
+            )
+            assert result["statusCode"] == 200
+            assert "description" in result["body"]
+
+            mock_log.assert_called()
+
+@patch("builtins.open", new_callable=mock_open, read_data="system prompt")
+def test_call_admail_bedrock_prompt_invalid_mime(mock_open_file, bedrock_service):
+    with patch.object(
+        bedrock_service, "bedrock_runtime", MagicMock()
+    ) as mock_bedrock_runtime:
+        mock_bedrock_runtime.converse.return_value = {
+            "output": {
+                "message": {
+                    "content": [
+                        {
+                            "toolUse": {
+                                "input": {
+                                    "description": "desc",
+                                    "rating": constants.RATING_BUSINESS,
+                                    "reason": "reason",
+                                    "advice": "advice",
+                                }
+                            }
+                        }
+                    ]
+                }
+            }
+        }
+        mock_bedrock_runtime.apply_guardrail.return_value = {"output": {}}
+
+        with patch.object(bedrock_service, "log_prompt_details_to_s3") as mock_log:
+            result = bedrock_service.call_admail_bedrock_prompt(
+                f"data:fake/type;base64,{base64.b64encode(b"test letter")}", "test_file.json"
+            )
+            assert result["statusCode"] == 400

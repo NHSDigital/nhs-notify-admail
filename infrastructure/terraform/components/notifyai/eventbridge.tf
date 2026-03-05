@@ -12,6 +12,8 @@ module "eventbridge" {
       arn                 = aws_lambda_function.bedrock_evaluations.arn
       input               = jsonencode({ "job" : "cron-by-rate" })
       role_arn            = aws_iam_role.eventbridge_scheduler_role.arn
+
+      end_date = "2025-12-16T00:00:00Z"
     }
   }
 }

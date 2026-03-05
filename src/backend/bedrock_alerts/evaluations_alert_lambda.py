@@ -18,6 +18,7 @@ def lambda_handler(event, context):
     try:
         results = alerts.find_results_file_in_s3(bucket, bucket_key)
         rating_percentage = alerts.calculate_rating_percentage_from_list(results)
+        logger.info(f"Rating score was {rating_percentage}")
         if rating_percentage < 75.0:
             alerts.send_alert(sns_topic_arn)
             logger.info(f"Alert sent successfully rating below 75 percent")
@@ -27,8 +28,7 @@ def lambda_handler(event, context):
                     'message': 'Alert sent successfully',
                 })
             }
-        else:
-            return
+
     except Exception as e:
         logger.error(f"Failed to send alert: {str(e)}")
         raise

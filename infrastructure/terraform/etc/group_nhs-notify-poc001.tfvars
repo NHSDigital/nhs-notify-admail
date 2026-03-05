@@ -4,7 +4,7 @@ aws_account_id = "767397886959"
 region         = "eu-west-2"
 
 # Generics
-log_retention_in_days = 10
+log_retention_in_days = 14
 kms_deletion_window   = 15
 
 budget_amount          = 300

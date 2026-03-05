@@ -1,7 +1,7 @@
 # Stage 1: Build the React.js Application
 # Taken from : https://docs.docker.com/guides/reactjs/containerize/#overview
 ARG NODE_VERSION=22.14.0-alpine
-ARG NGINX_VERSION=alpine3.21
+ARG NGINX_VERSION=alpine3.23
 
 FROM node:${NODE_VERSION} AS builder
 
@@ -19,7 +19,9 @@ RUN npm run build
 
 FROM nginx:${NGINX_VERSION} AS runner
 
-COPY nginx.conf /etc/nginx/conf.d/nginx.conf
+RUN apk upgrade --no-cache
+
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 COPY --from=builder /app/build /usr/share/nginx/html
 
