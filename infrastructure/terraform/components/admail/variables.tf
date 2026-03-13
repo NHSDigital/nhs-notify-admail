@@ -35,12 +35,6 @@ variable "group" {
 # a default within its declaration in this file, because the variables
 # purpose is as an identifier unique to this component, rather
 # then to the environment from where all other variables come.
-variable "component" {
-  type        = string
-  description = "The variable encapsulating the name of this component"
-  default     = "examplecomponent"
-}
-
 variable "default_tags" {
   type        = map(string)
   description = "A map of default tags to apply to all taggable resources within the component"
@@ -67,4 +61,52 @@ variable "parent_acct_environment" {
   type        = string
   description = "Name of the environment responsible for the acct resources used, affects things like DNS zone. Useful for named dev environments"
   default     = "main"
+}
+
+###
+# Notify AI PoC variables
+###
+
+# General Config
+variable "first-run" {
+  description = "Doesn't create resources that are dependant on an external stimulus the first time, i.e. App Runner won't work first time, as it needs a docker container we upload after terraform, in the Github action"
+  type        = bool
+}
+
+
+# Prompt Config
+variable "prompt-model" {
+  type        = string
+  description = "Model name to use for the prompt"
+}
+
+variable "prompt-max-tokens-to-sample" {
+  type        = number
+  description = "Maximum number of tokens to sample for the prompt"
+}
+
+variable "prompt-temperature" {
+  type        = number
+  description = "Temperature setting for the prompt"
+}
+
+variable "prompt-top-p" {
+  type        = number
+  description = "Top-p setting for the prompt"
+}
+
+# Evaluation Config
+variable "evaluation-evaluator-model-identifier" {
+  type        = string
+  description = "Full identifier of the model to use for the evaluation evaluator"
+}
+
+variable "evaluation-inference-model-identifier" {
+  type        = string
+  description = "Full identifier of the model to use for the evaluation inferance"
+}
+
+variable "evaluation-schedule-days" {
+  type        = string
+  description = "The amount of days between automated evaluations being run NOTE: Set quite high for dev envrionments, to lower costs"
 }

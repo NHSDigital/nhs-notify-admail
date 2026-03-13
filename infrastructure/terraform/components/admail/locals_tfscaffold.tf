@@ -1,4 +1,5 @@
 locals {
+  component = "admail"
   terraform_state_bucket = format(
     "%s-tfscaffold-%s-%s",
     var.project,
@@ -11,7 +12,7 @@ locals {
       "%s-%s-%s",
       var.project,
       var.environment,
-      var.component,
+      local.component,
     ),
     "_",
     "",
@@ -25,7 +26,7 @@ locals {
       var.aws_account_id,
       var.region,
       var.environment,
-      var.component,
+      local.component,
     ),
     "_",
     "",
@@ -36,7 +37,7 @@ locals {
     {
       Project     = var.project
       Environment = var.environment
-      Component   = var.component
+      Component   = local.component
       Group       = var.group
       Name        = local.csi
     },
