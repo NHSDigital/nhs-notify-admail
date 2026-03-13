@@ -1,11 +1,11 @@
-output "notifai_frontend_ecr_repository_url" {
+output "frontend_ecr_repository_url" {
   description = "The URL of the Notifai frontend ECR repository"
-  value       = aws_ecr_repository.notifai-frontend.repository_url
+  value       = aws_ecr_repository.frontend.repository_url
 }
 
-output "notifai_backend_ecr_repository_url" {
+output "backend_ecr_repository_url" {
   description = "The URL of the Notifai backend ECR repository"
-  value       = aws_ecr_repository.notifai-backend.repository_url
+  value       = aws_ecr_repository.backend.repository_url
 }
 
 output "bedrock_role_arn" {
@@ -33,6 +33,6 @@ output "evaluation-inference-model-identifier" {
   value       = var.evaluation-inference-model-identifier
 }
 
-output "notifai-bedrock-guardrail-arn" {
+output "bedrock-guardrail-arn" {
   value = aws_bedrock_guardrail.notifai-bedrock-guardrail.guardrail_arn
 }

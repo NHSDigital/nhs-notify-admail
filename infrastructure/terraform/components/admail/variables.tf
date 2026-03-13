@@ -45,10 +45,10 @@ variable "default_tags" {
 # Variables specific to the component
 ##
 
-variable "log_retention_in_days" {
-  type        = number
-  description = "The retention period in days for the Cloudwatch Logs events to be retained, default of 0 is indefinite"
-  default     = 0
+variable "force_destroy" {
+  type        = bool
+  description = "Flag to force deletion of S3 buckets"
+  default     = false
 }
 
 variable "force_lambda_code_deploy" {
@@ -57,10 +57,34 @@ variable "force_lambda_code_deploy" {
   default     = false
 }
 
+variable "kms_deletion_window" {
+  type        = string
+  description = "When a kms key is deleted, how long should it wait in the pending deletion state?"
+  default     = "30"
+}
+
+variable "log_level" {
+  type        = string
+  description = "The log level to be used in lambda functions within the component. Any log with a lower severity than the configured value will not be logged: https://docs.python.org/3/library/logging.html#levels"
+  default     = "INFO"
+}
+
+variable "log_retention_in_days" {
+  type        = number
+  description = "The retention period in days for the Cloudwatch Logs events to be retained, default of 0 is indefinite"
+  default     = 0
+}
+
 variable "parent_acct_environment" {
   type        = string
   description = "Name of the environment responsible for the acct resources used, affects things like DNS zone. Useful for named dev environments"
   default     = "main"
+}
+
+variable "shared_infra_account_id" {
+  type        = string
+  description = "The AWS Account ID of the shared infrastructure account"
+  default     = "000000000000"
 }
 
 ###
@@ -72,7 +96,6 @@ variable "first-run" {
   description = "Doesn't create resources that are dependant on an external stimulus the first time, i.e. App Runner won't work first time, as it needs a docker container we upload after terraform, in the Github action"
   type        = bool
 }
-
 
 # Prompt Config
 variable "prompt-model" {
