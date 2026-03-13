@@ -1,0 +1,25 @@
+{
+  "//": "PLEASE UPDATE THE NAME APPROPRIATELY.",
+  "dependencies": {
+    "esbuild": "^0.25.0"
+  },
+  "devDependencies": {
+    "@tsconfig/node22": "^22.0.2",
+    "@types/aws-lambda": "^8.10.148",
+    "@types/jest": "^29.5.14",
+    "jest": "^29.7.0",
+    "jest-mock-extended": "^3.0.7",
+    "typescript": "^5.8.2"
+  },
+  "name": "nhs-notify-repository-template-example-lambda",
+  "private": true,
+  "scripts": {
+    "//": "For a standard zip based Lambda use './build.sh', For a Container based lambda use '../../scripts/lambda-container-build/docker.sh --base-image <base-image>'",
+    "lambda-build": "./build.sh",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "test:unit": "jest",
+    "typecheck": "tsc --noEmit"
+  },
+  "version": "0.0.1"
+}
