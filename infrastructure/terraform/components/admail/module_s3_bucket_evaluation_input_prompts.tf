@@ -31,9 +31,9 @@ module "s3bucket_evaluation_input_prompts" {
 
 resource "aws_s3_object" "prompts_object" {
   bucket = module.s3bucket_evaluation_input_prompts.id
-  key    = local.prompt-file-name
-  source = "${path.module}/resources/prompt-data/${local.prompt-file-name}"
-  etag   = filemd5("${path.module}/resources/prompt-data/${local.prompt-file-name}")
+  key    = local.prompt_file_name
+  source = "${path.module}/resources/prompt-data/${local.prompt_file_name}"
+  etag   = filemd5("${path.module}/resources/prompt-data/${local.prompt_file_name}")
 }
 
 resource "aws_s3_bucket_cors_configuration" "evaluation_input_prompts" {

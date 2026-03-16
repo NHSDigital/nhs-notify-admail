@@ -23,16 +23,16 @@ output "bedrock_evaluation_results_s3_uri" {
   value       = "s3://${aws_s3_object.results_object.bucket}/${aws_s3_object.results_object.key}"
 }
 
-output "evaluation-evaluator-model-identifier" {
+output "evaluation_evaluator_model_identifier" {
   description = "Identifier for the Bedrock evaluator model"
-  value       = var.evaluation-evaluator-model-identifier
+  value       = var.evaluation_evaluator_model_identifier
 }
 
-output "evaluation-inference-model-identifier" {
+output "evaluation_inference_model_identifier" {
   description = "Identifier for the Bedrock inference model"
-  value       = var.evaluation-inference-model-identifier
+  value       = var.evaluation_inference_model_identifier
 }
 
-output "bedrock-guardrail-arn" {
-  value = aws_bedrock_guardrail.notifai-bedrock-guardrail.guardrail_arn
+output "bedrock_guardrail_arn" {
+  value = aws_bedrock_guardrail.main.guardrail_arn
 }

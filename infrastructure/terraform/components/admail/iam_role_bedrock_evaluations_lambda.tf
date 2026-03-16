@@ -40,8 +40,8 @@ data "aws_iam_policy_document" "evaluations_lambda_policy_doc" {
     ]
     resources = [
       "arn:aws:logs:${var.region}:${var.aws_account_id}:log-group:/aws/lambda/${local.evaluations_lambda_name}:*",
-      "arn:aws:bedrock:${var.region}::foundation-model/${var.evaluation-evaluator-model-identifier}",
-      "arn:aws:bedrock:${var.region}::foundation-model/${var.evaluation-inference-model-identifier}"
+      "arn:aws:bedrock:${var.region}::foundation-model/${var.evaluation_evaluator_model_identifier}",
+      "arn:aws:bedrock:${var.region}::foundation-model/${var.evaluation_inference_model_identifier}"
     ]
   }
 

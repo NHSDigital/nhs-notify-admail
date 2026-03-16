@@ -36,13 +36,13 @@ module "bedrock_messager" {
 
   lambda_env_vars = {
     env_region                = var.region
-    env_model_id              = var.prompt-model
-    env_temperature           = var.prompt-temperature
-    env_max_tokens            = var.prompt-max-tokens-to-sample
-    env_top_p                 = var.prompt-top-p
+    env_model_id              = var.prompt_model
+    env_temperature           = var.prompt_temperature
+    env_max_tokens            = var.prompt_max_tokens_to_sample
+    env_top_p                 = var.prompt_top_p
     env_logging_s3_bucket     = module.s3bucket_lambda_prompt_logging.id
     env_logging_s3_key_prefix = local.s3_lambda_logging_key
-    env_guardrail_arn         = aws_bedrock_guardrail.notifai-bedrock-guardrail.guardrail_arn
+    env_guardrail_arn         = aws_bedrock_guardrail.main.guardrail_arn
     env_guardrail_version     = "DRAFT"
     env_logging_s3_account_id = var.aws_account_id
   }

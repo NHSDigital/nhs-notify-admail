@@ -14,8 +14,8 @@ locals {
 
   # S3 keys and file names
   s3_lambda_logging_key = "prompt-executions/"
-  prompt-file-name      = "prompts.jsonl"
+  prompt_file_name      = "prompts.jsonl"
 
   # API Gateway
-  api-gateway-llm-path-param = "call-llm"
+  api_gateway_llm_path_param = "call-llm"
 }

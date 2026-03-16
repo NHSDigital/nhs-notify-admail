@@ -91,45 +91,39 @@ variable "shared_infra_account_id" {
 # Notify AI PoC variables
 ###
 
-# General Config
-variable "first-run" {
-  description = "Doesn't create resources that are dependant on an external stimulus the first time, i.e. App Runner won't work first time, as it needs a docker container we upload after terraform, in the Github action"
-  type        = bool
-}
-
 # Prompt Config
-variable "prompt-model" {
+variable "prompt_model" {
   type        = string
   description = "Model name to use for the prompt"
 }
 
-variable "prompt-max-tokens-to-sample" {
+variable "prompt_max_tokens_to_sample" {
   type        = number
   description = "Maximum number of tokens to sample for the prompt"
 }
 
-variable "prompt-temperature" {
+variable "prompt_temperature" {
   type        = number
   description = "Temperature setting for the prompt"
 }
 
-variable "prompt-top-p" {
+variable "prompt_top_p" {
   type        = number
   description = "Top-p setting for the prompt"
 }
 
 # Evaluation Config
-variable "evaluation-evaluator-model-identifier" {
+variable "evaluation_evaluator_model_identifier" {
   type        = string
   description = "Full identifier of the model to use for the evaluation evaluator"
 }
 
-variable "evaluation-inference-model-identifier" {
+variable "evaluation_inference_model_identifier" {
   type        = string
   description = "Full identifier of the model to use for the evaluation inferance"
 }
 
-variable "evaluation-schedule-days" {
+variable "evaluation_schedule_days" {
   type        = string
   description = "The amount of days between automated evaluations being run NOTE: Set quite high for dev envrionments, to lower costs"
 }

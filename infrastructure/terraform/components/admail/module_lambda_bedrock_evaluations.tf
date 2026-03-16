@@ -35,8 +35,8 @@ module "bedrock_evaluations" {
   log_subscription_role_arn = local.acct.log_subscription_role_arn
 
   lambda_env_vars = {
-    env_evaluator_model_identifier = var.evaluation-evaluator-model-identifier
-    env_generator_model_identifier = var.evaluation-inference-model-identifier
+    env_evaluator_model_identifier = var.evaluation_evaluator_model_identifier
+    env_generator_model_identifier = var.evaluation_inference_model_identifier
     env_role_arn                   = aws_iam_role.iam_for_bedrock_evaluation.arn
     env_region                     = var.region
     env_input_prompt_s3_uri        = "s3://${module.s3bucket_evaluation_input_prompts.id}/${aws_s3_object.prompts_object.key}"

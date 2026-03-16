@@ -1,6 +1,6 @@
 # Note: This guardrail is not enforced, but its result is logged, inside the Bedrock Lambda Function
-resource "aws_bedrock_guardrail" "notifai-bedrock-guardrail" {
-  name                      = "${local.csi}-bedrock-guardrail"
+resource "aws_bedrock_guardrail" "main" {
+  name                      = local.csi
   blocked_input_messaging   = "This is not an acceptable input prompt and has been rejected."
   blocked_outputs_messaging = "The AI has returned an unacceptable output, the output has been rejected."
   description               = "Guardrail to protect and prevent misuse"
@@ -83,7 +83,7 @@ data "aws_iam_policy_document" "bedrock_guardrail_policy" {
       "bedrock:ApplyGuardrail"
     ]
     resources = [
-      aws_bedrock_guardrail.notifai-bedrock-guardrail.guardrail_arn
+      aws_bedrock_guardrail.main.guardrail_arn
     ]
   }
 }
