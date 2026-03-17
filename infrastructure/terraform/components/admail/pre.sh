@@ -32,13 +32,14 @@ echo "AWS_ACCOUNT_ID=$AWS_ACCOUNT_ID"
 # change to repo root
 pushd "$(git rev-parse --show-toplevel)" || exit 1
 
-# Load .env from repo root if present (provides GITHUB_TOKEN, GITHUB_ACTOR, etc. for docker.sh)
-if [ -f ".env" ]; then
-  echo "Loading .env from repo root"
-  set -a
-  # shellcheck source=/dev/null
-  source .env
-  set +a
+GIT_TAG="$(git describe --tags --exact-match 2>/dev/null || true)"
+if [ -n "${GIT_TAG}" ]; then
+  RELEASE_VERSION="${GIT_TAG#v}"
+  export TF_VAR_container_image_tag_suffix="release-${RELEASE_VERSION}-$(git rev-parse --short HEAD)"
+  echo "On tag: $GIT_TAG, image tag suffixes will be: release-${RELEASE_VERSION}-$(git rev-parse --short HEAD)"
+else
+  export TF_VAR_container_image_tag_suffix="sha-$(git rev-parse --short HEAD)"
+  echo "Not on a tag, image tag suffix will be: sha-$(git rev-parse --short HEAD)"
 fi
 
 run_or_fail npm ci

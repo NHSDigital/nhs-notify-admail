@@ -19,7 +19,7 @@ module "bedrock_messager" {
   }
 
   package_type           = "Image"
-  image_uri              = "${var.aws_account_id}.dkr.ecr.${var.region}.amazonaws.com/${var.project}-${var.parent_acct_environment}-acct-${local.component}:${var.project}-${var.environment}-${local.component}-example-lambda-${var.container_image_tag_suffix}"
+  image_uri              = "${local.ecr_repository_url}:${var.project}-${var.environment}-${local.component}-example-lambda-${var.container_image_tag_suffix}"
   image_repository_names = ["${var.project}-${var.parent_acct_environment}-acct-${local.component}"]
 
   handler_function_name = "handler"

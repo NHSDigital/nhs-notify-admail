@@ -41,10 +41,16 @@ resource "aws_iam_role_policy_attachment" "apprunner_s3_attach" {
 }
 
 data "aws_iam_policy_document" "apprunner_ecr" {
+  # GetAuthorizationToken is a service-level action and must target "*"
+  statement {
+    effect    = "Allow"
+    actions   = ["ecr:GetAuthorizationToken"]
+    resources = ["*"]
+  }
+
   statement {
     effect = "Allow"
     actions = [
-      "ecr:GetAuthorizationToken",
       "ecr:BatchCheckLayerAvailability",
       "ecr:GetDownloadUrlForLayer",
       "ecr:BatchGetImage",

@@ -1,11 +1,14 @@
 locals {
   aws_lambda_functions_dir_path = "../../../../lambdas"
-  root_domain_name              = "${var.environment}.${local.acct.route53_zone_names["admail"]}" # e.g. [main|dev|abxy0].admail.[dev|nonprod|prod].nhsnotify.national.nhs.uk
-  root_domain_id                = local.acct.route53_zone_ids["admail"]
-  root_domain_nameservers       = local.acct.route53_zone_nameservers["admail"]
+
+  root_domain_name        = "${var.environment}.${local.acct.route53_zone_names["admail"]}" # e.g. [main|dev|abxy0].admail.[dev|nonprod|prod].nhsnotify.national.nhs.uk
+  root_domain_id          = local.acct.route53_zone_ids["admail"]
+  root_domain_nameservers = local.acct.route53_zone_nameservers["admail"]
 
   log_destination_arn    = "arn:aws:logs:${var.region}:${var.shared_infra_account_id}:destination:nhs-${var.environment}-obs-firehose-logs"
   log_destination_arn_us = "arn:aws:logs:us-east-1:${var.shared_infra_account_id}:destination:nhs-${var.environment}-obs-us-east-1-firehose-logs"
+
+  ecr_repository_url = "${var.aws_account_id}.dkr.ecr.${var.region}.amazonaws.com/${var.project}-${var.parent_acct_environment}-acct-${local.component}"
 
   # S3 keys and file names
   s3_lambda_logging_key = "prompt-executions/"

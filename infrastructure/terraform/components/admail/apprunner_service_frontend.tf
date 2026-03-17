@@ -5,6 +5,7 @@ resource "aws_apprunner_service" "service_frontend" {
     authentication_configuration {
       access_role_arn = aws_iam_role.apprunner_ecr_role.arn
     }
+
     auto_deployments_enabled = true
     image_repository {
       image_configuration {
@@ -16,7 +17,8 @@ resource "aws_apprunner_service" "service_frontend" {
           REACT_APP_API_GATEWAY          = "${aws_api_gateway_stage.main.invoke_url}/${local.api_gateway_llm_path_param}"
         }
       }
-      image_identifier      = "${data.aws_ecr_repository.main.repository_url}:latest"
+
+      image_identifier      = "${local.ecr_repository_url}:${var.project}-${var.environment}-${local.component}-example-app-${var.container_image_tag_suffix}"
       image_repository_type = "ECR"
     }
   }

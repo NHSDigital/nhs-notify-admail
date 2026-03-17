@@ -1,14 +1,14 @@
 resource "aws_apprunner_service" "service_backend" {
-  service_name = "${local.csi}-be"
+  service_name = "${local.csi}-backend"
 
   source_configuration {
     authentication_configuration {
       access_role_arn = aws_iam_role.apprunner_ecr_role.arn
     }
+
     image_repository {
       image_configuration {
-        port          = "8080"
-        start_command = "fastapi run main.py --port 8080"
+        port = "8080"
         runtime_environment_variables = {
           COGNITO_REGION                = var.region
           COGNITO_USER_POOL_ID          = aws_cognito_user_pool.main.id
@@ -18,7 +18,8 @@ resource "aws_apprunner_service" "service_backend" {
           S3_LLM_LOGS_BUCKET_ACCOUNT_ID = var.aws_account_id
         }
       }
-      image_identifier      = "${data.aws_ecr_repository.main.repository_url}:latest"
+
+      image_identifier      = "${local.ecr_repository_url}:${var.project}-${var.environment}-${local.component}-example-app-${var.container_image_tag_suffix}"
       image_repository_type = "ECR"
     }
     auto_deployments_enabled = true
