@@ -10,7 +10,7 @@
   "name": "nhs-notify-admail-example-app",
   "private": true,
   "scripts": {
-    "lambda-build": "../../scripts/lambda-container-build/docker.sh --base-image node:22-alpine",
+    "build:container": "cd ../.. && make docker-build-and-push base_image=node:22-alpine dir=containers/example-app",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "test:unit": "jest",

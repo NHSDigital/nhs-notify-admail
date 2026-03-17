@@ -13,7 +13,7 @@
   "name": "nhs-notify-admail-example-lambda",
   "private": true,
   "scripts": {
-    "lambda-build": "../../scripts/lambda-container-build/docker.sh --base-image public.ecr.aws/lambda/nodejs:22-x86_64",
+    "build:container": "cd ../.. && make docker-build-and-push base_image=public.ecr.aws/lambda/nodejs:22 dir=lambdas/example-lambda",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "test:unit": "jest",
