@@ -1,11 +1,16 @@
-# This script is run before the Terraform apply command.
+!/bin/bash
+
+# This script is run before Terraform executable commands.
 # It ensures all Node.js dependencies are installed, generates any required dependencies,
 # and builds all Lambda functions in the workspace before Terraform provisions infrastructure.
-pre.sh runs in the same shell as terraform.sh, not in a subshell
-any variables set or changed, any change of directory will persist once this script exits and returns control to terraform.sh
-REGION=$1
-ENVIRONMENT=$2
-ACTION=$3
+# pre.sh runs in the same shell as terraform.sh, not in a subshell
+
+: "${PROJECT:?PROJECT is required}"
+: "${REGION:?REGION is required}"
+: "${COMPONENT:?COMPONENT is required}"
+: "${ENVIRONMENT:?ENVIRONMENT is required}"
+: "${AWS_ACCOUNT_ID:?AWS_ACCOUNT_ID is required}"
+: "${ACTION:?ACTION is required}"
 
 # Helper function for error handling
 run_or_fail() {
@@ -20,24 +25,24 @@ echo "Running app pre.sh"
 echo "REGION=$REGION"
 echo "ENVIRONMENT=$ENVIRONMENT"
 echo "ACTION=$ACTION"
+echo "PROJECT=$PROJECT"
+echo "COMPONENT=$COMPONENT"
+echo "AWS_ACCOUNT_ID=$AWS_ACCOUNT_ID"
 
-# Required logic for building and pushing Lambda container images to ECR before Terraform provisions infrastructure.
-GIT_TAG="$(git describe --tags --exact-match 2>/dev/null || true)"
-if [ -n "${GIT_TAG}" ]; then
-  RELEASE_VERSION="${GIT_TAG#v}"
-  export TF_VAR_container_image_tag_suffix="release-${RELEASE_VERSION}-$(git rev-parse --short HEAD)"
-  echo "On tag: $GIT_TAG, image tag suffixes will be: release-${RELEASE_VERSION}-$(git rev-parse --short HEAD)"
-else
-  export TF_VAR_container_image_tag_suffix="sha-$(git rev-parse --short HEAD)"
-  echo "Not on a tag, image tag suffix will be: sha-$(git rev-parse --short HEAD)"
+# change to repo root
+pushd "$(git rev-parse --show-toplevel)" || exit 1
+
+# Load .env from repo root if present (provides GITHUB_TOKEN, GITHUB_ACTOR, etc. for docker.sh)
+if [ -f ".env" ]; then
+  echo "Loading .env from repo root"
+  set -a
+  # shellcheck source=/dev/null
+  source .env
+  set +a
 fi
-
-# change to monorepo root
-cd $(git rev-parse --show-toplevel)
 
 run_or_fail npm ci
 run_or_fail npm run generate-dependencies --workspaces --if-present
 run_or_fail npm run lambda-build --workspaces --if-present
 
-# revert back to original directory
-cd -
+popd || exit 1 # return to working directory

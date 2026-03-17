@@ -51,8 +51,7 @@ data "aws_iam_policy_document" "apprunner_ecr" {
       "ecr:DescribeImages",
     ]
     resources = [
-      aws_ecr_repository.backend.arn,
-      aws_ecr_repository.frontend.arn,
+      data.aws_ecr_repository.main.arn,
     ]
   }
 }

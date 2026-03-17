@@ -1,7 +1,5 @@
-resource "aws_apprunner_service" "notifai_backend_service" {
-  count = var.first-run ? 0 : 1
-
-  service_name = "${local.csi}-backend"
+resource "aws_apprunner_service" "service_backend" {
+  service_name = "${local.csi}-be"
 
   source_configuration {
     authentication_configuration {
@@ -20,7 +18,7 @@ resource "aws_apprunner_service" "notifai_backend_service" {
           S3_LLM_LOGS_BUCKET_ACCOUNT_ID = var.aws_account_id
         }
       }
-      image_identifier      = "${aws_ecr_repository.backend.repository_url}:latest"
+      image_identifier      = "${data.aws_ecr_repository.main.repository_url}:latest"
       image_repository_type = "ECR"
     }
     auto_deployments_enabled = true

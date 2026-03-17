@@ -42,7 +42,7 @@ data "aws_iam_policy_document" "evaluations_lambda_alerts_policy_doc" {
     resources = [
       "arn:aws:s3:::${aws_s3_object.results_object.bucket}/${aws_s3_object.results_object.key}*",
       "arn:aws:bedrock:${var.region}:${var.aws_account_id}:evaluation-job/*",
-      "arn:aws:logs:${var.region}:${var.aws_account_id}:log-group:/aws/lambda/${local.alerts_lambda_name}:*",
+      "arn:aws:logs:${var.region}:${var.aws_account_id}:log-group:/aws/lambda/${module.bedrock_evaluations_alerts.function_name}:*",
       "arn:aws:s3:::${aws_s3_object.results_object.bucket}",
       "arn:aws:sns:${var.region}:${var.aws_account_id}:${aws_sns_topic.admail_eval_alerts_topic.name}",
     ]

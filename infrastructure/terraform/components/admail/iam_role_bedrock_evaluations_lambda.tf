@@ -39,7 +39,7 @@ data "aws_iam_policy_document" "evaluations_lambda_policy_doc" {
       "s3:PutObject",
     ]
     resources = [
-      "arn:aws:logs:${var.region}:${var.aws_account_id}:log-group:/aws/lambda/${local.evaluations_lambda_name}:*",
+      "arn:aws:logs:${var.region}:${var.aws_account_id}:log-group:/aws/lambda/${module.bedrock_evaluations.function_name}:*",
       "arn:aws:bedrock:${var.region}::foundation-model/${var.evaluation_evaluator_model_identifier}",
       "arn:aws:bedrock:${var.region}::foundation-model/${var.evaluation_inference_model_identifier}"
     ]

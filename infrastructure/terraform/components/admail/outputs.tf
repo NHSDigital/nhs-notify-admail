@@ -1,13 +1,3 @@
-output "frontend_ecr_repository_url" {
-  description = "The URL of the Notifai frontend ECR repository"
-  value       = aws_ecr_repository.frontend.repository_url
-}
-
-output "backend_ecr_repository_url" {
-  description = "The URL of the Notifai backend ECR repository"
-  value       = aws_ecr_repository.backend.repository_url
-}
-
 output "bedrock_role_arn" {
   description = "ARN of the IAM role for Bedrock automatic evaluation"
   value       = aws_iam_role.iam_for_bedrock_evaluation.arn

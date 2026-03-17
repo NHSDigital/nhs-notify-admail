@@ -54,7 +54,7 @@ data "aws_iam_policy_document" "bedrock_access" {
       "arn:aws:bedrock:${var.region}:${var.aws_account_id}:guardrail/*",
       "arn:aws:bedrock:${var.region}:${var.aws_account_id}:inference-profile/eu.amazon.nova-pro-v1:*",
       "arn:aws:bedrock:${var.region}::foundation-model/amazon.nova-pro-v1:0",
-      "arn:aws:logs:${var.region}:${var.aws_account_id}:log-group:/aws/lambda/${local.lambda_name}:*"
+      "arn:aws:logs:${var.region}:${var.aws_account_id}:log-group:/aws/lambda/${module.bedrock_messager.function_name}:*"
     ]
   }
 }

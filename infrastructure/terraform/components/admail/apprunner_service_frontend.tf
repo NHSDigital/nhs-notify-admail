@@ -1,6 +1,5 @@
-resource "aws_apprunner_service" "notifai_frontend_service" {
+resource "aws_apprunner_service" "service_frontend" {
   service_name = "${local.csi}-frontend"
-  count        = var.first-run ? 0 : 1
 
   source_configuration {
     authentication_configuration {
@@ -11,13 +10,13 @@ resource "aws_apprunner_service" "notifai_frontend_service" {
       image_configuration {
         port = "80"
         runtime_environment_variables = {
-          REACT_APP_BACKEND_API_BASE_URL = "${aws_apprunner_service.notifai_backend_service[0].service_url}"
+          REACT_APP_BACKEND_API_BASE_URL = "${aws_apprunner_service.service_backend.service_url}"
           REACT_APP_COGNITO_ID           = aws_cognito_user_pool_client.main.id
           REACT_APP_COGNITO_USER_POOL_ID = aws_cognito_user_pool_client.main.user_pool_id
-          REACT_APP_API_GATEWAY          = "${aws_api_gateway_stage.main.invoke_url}/${local.api-gateway-llm-path-param}"
+          REACT_APP_API_GATEWAY          = "${aws_api_gateway_stage.main.invoke_url}/${local.api_gateway_llm_path_param}"
         }
       }
-      image_identifier      = "${aws_ecr_repository.frontend.repository_url}:latest"
+      image_identifier      = "${data.aws_ecr_repository.main.repository_url}:latest"
       image_repository_type = "ECR"
     }
   }

@@ -29,9 +29,9 @@ if [[ -z "$BASE_IMAGE" ]]; then
 fi
 
 CSI="${PROJECT}-${ENVIRONMENT}-${COMPONENT}"
-ECR_REPO="${ECR_REPO:-nhs-notify-main-acct}"
-GHCR_LOGIN_TOKEN="${GITHUB_TOKEN}"
-GHCR_LOGIN_USER="${GITHUB_ACTOR}"
+ECR_REPO="${ECR_REPO:-nhs-main-acct-admail}"
+# GHCR_LOGIN_TOKEN="${GITHUB_TOKEN}"
+# GHCR_LOGIN_USER="${GITHUB_ACTOR}"
 LAMBDA_NAME="${LAMBDA_NAME:-$(basename "$PWD")}"
 
 ## Set image tag suffix based on git metadata.
@@ -74,8 +74,8 @@ echo "COMPONENT: ${COMPONENT:-<unset>}"
 echo "CSI: ${CSI:-<unset>}"
 echo "ECR_REPO: ${ECR_REPO:-<unset>}"
 echo "ENVIRONMENT: ${ENVIRONMENT:-<unset>}"
-echo "GHCR_LOGIN_TOKEN: ${GHCR_LOGIN_TOKEN:-<unset>}"
-echo "GHCR_LOGIN_USER: ${GHCR_LOGIN_USER:-<unset>}"
+# echo "GHCR_LOGIN_TOKEN: ${GHCR_LOGIN_TOKEN:-<unset>}"
+# echo "GHCR_LOGIN_USER: ${GHCR_LOGIN_USER:-<unset>}"
 echo "IMAGE_TAG_SUFFIX: ${IMAGE_TAG_SUFFIX:-<unset>}"
 echo "LAMBDA_NAME: ${LAMBDA_NAME:-<unset>}"
 
@@ -83,15 +83,15 @@ echo "LAMBDA_NAME: ${LAMBDA_NAME:-<unset>}"
 aws ecr get-login-password --region "${AWS_REGION}" | docker login --username AWS --password-stdin "${AWS_ACCOUNT_ID}".dkr.ecr."${AWS_REGION}".amazonaws.com
 
 # Authenticate to GitHub Container Registry for base images.
-if [ -n "${GHCR_LOGIN_USER:-}" ] && [ -n "${GHCR_LOGIN_TOKEN:-}" ]; then
-  echo "Attempting GHCR login as ${GHCR_LOGIN_USER}..."
-  if echo "${GHCR_LOGIN_TOKEN}" | docker login ghcr.io --username "${GHCR_LOGIN_USER}" --password-stdin; then
-    echo "GHCR login successful."
-  else
-    echo "GHCR login failed!" >&2
-    exit 1
-  fi
-fi
+# if [ -n "${GHCR_LOGIN_USER:-}" ] && [ -n "${GHCR_LOGIN_TOKEN:-}" ]; then
+#   echo "Attempting GHCR login as ${GHCR_LOGIN_USER}..."
+#   if echo "${GHCR_LOGIN_TOKEN}" | docker login ghcr.io --username "${GHCR_LOGIN_USER}" --password-stdin; then
+#     echo "GHCR login successful."
+#   else
+#     echo "GHCR login failed!" >&2
+#     exit 1
+#   fi
+# fi
 
 # Namespace tag by CSI and lambda name to avoid cross-environment collisions.
 IMAGE_TAG="${CSI}-${LAMBDA_NAME}"
