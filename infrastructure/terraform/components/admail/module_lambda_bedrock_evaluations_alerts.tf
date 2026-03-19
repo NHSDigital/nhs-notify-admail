@@ -22,15 +22,15 @@ module "bedrock_evaluations_alerts" {
     body = data.aws_iam_policy_document.evaluations_lambda_alerts_policy_doc.json
   }
 
-  package_type           = "Image"
-  image_uri              = "${local.ecr_repository_url}:${var.project}-${var.environment}-${local.component}-example-lambda-${var.container_image_tag_suffix}"
-  image_repository_names = ["${var.project}-${var.parent_acct_environment}-acct-${local.component}"]
-
-  handler_function_name = "handler"
-  runtime               = "nodejs22.x"
-  memory                = 512
-  timeout               = 30
-  log_level             = var.log_level
+  function_s3_bucket      = local.acct.s3_buckets["lambda_function_artefacts"]["id"]
+  function_code_base_path = local.aws_lambda_functions_dir_path
+  function_code_dir       = "example-lambda/dist"
+  function_include_common = true
+  handler_function_name   = "handler"
+  runtime                 = "nodejs22.x"
+  memory                  = 512
+  timeout                 = 30
+  log_level               = var.log_level
 
   force_lambda_code_deploy = var.force_lambda_code_deploy
   enable_lambda_insights   = false
