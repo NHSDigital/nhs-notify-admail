@@ -37,24 +37,12 @@
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_bedrock_evaluations"></a> [bedrock\_evaluations](#module\_bedrock\_evaluations) | https://github.com/NHSDigital/nhs-notify-shared-modules/releases/download/3.0.6/terraform-lambda.zip | n/a |
-| <a name="module_bedrock_evaluations_alerts"></a> [bedrock\_evaluations\_alerts](#module\_bedrock\_evaluations\_alerts) | https://github.com/NHSDigital/nhs-notify-shared-modules/releases/download/3.0.6/terraform-lambda.zip | n/a |
 | <a name="module_bedrock_messager"></a> [bedrock\_messager](#module\_bedrock\_messager) | https://github.com/NHSDigital/nhs-notify-shared-modules/releases/download/3.0.6/terraform-lambda.zip | n/a |
-| <a name="module_eventbridge"></a> [eventbridge](#module\_eventbridge) | terraform-aws-modules/eventbridge/aws | ~> 4.3 |
 | <a name="module_kms"></a> [kms](#module\_kms) | https://github.com/NHSDigital/nhs-notify-shared-modules/releases/download/3.0.6/terraform-kms.zip | n/a |
-| <a name="module_s3bucket_evaluation_input_prompts"></a> [s3bucket\_evaluation\_input\_prompts](#module\_s3bucket\_evaluation\_input\_prompts) | https://github.com/NHSDigital/nhs-notify-shared-modules/releases/download/3.0.6/terraform-s3bucket.zip | n/a |
-| <a name="module_s3bucket_evaluation_results"></a> [s3bucket\_evaluation\_results](#module\_s3bucket\_evaluation\_results) | https://github.com/NHSDigital/nhs-notify-shared-modules/releases/download/3.0.6/terraform-s3bucket.zip | n/a |
 | <a name="module_s3bucket_lambda_prompt_logging"></a> [s3bucket\_lambda\_prompt\_logging](#module\_s3bucket\_lambda\_prompt\_logging) | https://github.com/NHSDigital/nhs-notify-shared-modules/releases/download/3.0.6/terraform-s3bucket.zip | n/a |
 ## Outputs
 
-| Name | Description |
-|------|-------------|
-| <a name="output_bedrock_evaluation_prompt_dataset_s3_uri"></a> [bedrock\_evaluation\_prompt\_dataset\_s3\_uri](#output\_bedrock\_evaluation\_prompt\_dataset\_s3\_uri) | S3 URI for the Bedrock evaluation prompt dataset |
-| <a name="output_bedrock_evaluation_results_s3_uri"></a> [bedrock\_evaluation\_results\_s3\_uri](#output\_bedrock\_evaluation\_results\_s3\_uri) | S3 URI for the Bedrock evaluation results |
-| <a name="output_bedrock_guardrail_arn"></a> [bedrock\_guardrail\_arn](#output\_bedrock\_guardrail\_arn) | n/a |
-| <a name="output_bedrock_role_arn"></a> [bedrock\_role\_arn](#output\_bedrock\_role\_arn) | ARN of the IAM role for Bedrock automatic evaluation |
-| <a name="output_evaluation_evaluator_model_identifier"></a> [evaluation\_evaluator\_model\_identifier](#output\_evaluation\_evaluator\_model\_identifier) | Identifier for the Bedrock evaluator model |
-| <a name="output_evaluation_inference_model_identifier"></a> [evaluation\_inference\_model\_identifier](#output\_evaluation\_inference\_model\_identifier) | Identifier for the Bedrock inference model |
+No outputs.
 <!-- vale on -->
 <!-- markdownlint-enable -->
 <!-- END_TF_DOCS -->
