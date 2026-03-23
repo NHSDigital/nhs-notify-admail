@@ -6,7 +6,7 @@
     "@tsconfig/node22": "^22.0.2",
     "@types/jest": "^29.5.14",
     "@typescript-eslint/eslint-plugin": "^8.32.1",
-    "@typescript-eslint/parser": "^8.27.0",
+    "@typescript-eslint/parser": "^8.57.1",
     "esbuild": "^0.25.11",
     "eslint": "^9.39.1",
     "eslint-config-airbnb-extended": "^3.0.1",
