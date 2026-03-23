@@ -1,0 +1,40 @@
+name: Github Release Created
+
+on:
+  release:
+    types: ["published"] # Inherits all input defaults
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  deploy-main:
+    name: Deploy changes to main in nonprod AWS Account
+    runs-on: ubuntu-latest
+
+    permissions:
+      id-token: write
+      contents: read
+
+    strategy:
+      max-parallel: 1
+      matrix:
+        component: [admail]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5.0.0
+
+      - name: Updating Main Environment
+        env:
+          APP_PEM_FILE: ${{ secrets.APP_PEM_FILE }}
+          APP_CLIENT_ID: ${{ secrets.APP_CLIENT_ID }}
+        run: |
+          bash .github/scripts/dispatch_internal_repo_workflow.sh \
+            --releaseVersion "${{ github.event.release.tag_name }}" \
+            --targetWorkflow "dispatch-deploy-static-notify-admail-env.yaml" \
+            --targetEnvironment "main" \
+            --targetAccountGroup "nhs-notify-admail-nonprod" \
+            --targetComponent "${{ matrix.component }}" \
+            --terraformAction "apply"
