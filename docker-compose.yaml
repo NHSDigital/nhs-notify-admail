@@ -1,0 +1,98 @@
+x-aws-environment: &aws-environment
+  AWS_DEFAULT_REGION: eu-west-2
+  AWS_REGION: eu-west-2
+  AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+  AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+  AWS_SESSION_TOKEN: ${AWS_SESSION_TOKEN}
+
+services:
+  frontend:
+    build:
+      context: containers/frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+      - bedrock-prompt-messager
+    environment:
+      <<: *aws-environment
+      REACT_APP_BACKEND_API_BASE_URL: "http://localhost:8080"
+      REACT_APP_COGNITO_ID: ${COGNITO_APP_CLIENT_ID}
+      REACT_APP_COGNITO_USER_POOL_ID: ${COGNITO_USER_POOL_ID}
+      REACT_APP_API_GATEWAY: "http://localhost:8081/call-llm"
+    healthcheck:
+      test: ["CMD", "curl", "http://localhost:80/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+  backend:
+    build:
+      context: containers/backend
+    ports:
+      - "8080:8080"
+    entrypoint:
+      [
+        "fastapi",
+        "dev",
+        "/app/main.py",
+        "--port",
+        "8080",
+        "--host",
+        "0.0.0.0",
+        "--reload",
+      ]
+    volumes:
+      - "${PWD}/containers/backend:/app"
+    environment:
+      <<: *aws-environment
+      COGNITO_REGION: ${AWS_REGION}
+      COGNITO_USER_POOL_ID: ${COGNITO_USER_POOL_ID}
+      COGNITO_APP_CLIENT_ID: ${COGNITO_APP_CLIENT_ID}
+      S3_LLM_LOGS_BUCKET: ${S3_LLM_LOGS_BUCKET}
+      S3_LLM_LOGS_DIRECTORY: ${S3_LLM_LOGS_DIRECTORY}
+      S3_LLM_LOGS_BUCKET_ACCOUNT_ID: ${S3_LLM_LOGS_BUCKET_ACCOUNT_ID}
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "python3",
+          "-c",
+          "import urllib.request; urllib.request.urlopen('http://localhost:8080/health')",
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+  bedrock-prompt-messager:
+    build:
+      context: lambdas/bedrock-prompt-messager
+      dockerfile: docker/dev.Dockerfile
+    ports:
+      - "8081:8080"
+    volumes:
+      - "${PWD}/lambdas/bedrock-prompt-messager:/app"
+      - bedrock_prompt_messager_node_modules:/app/node_modules
+    environment:
+      <<: *aws-environment
+      env_model_id: "amazon.nova-lite-v1:0"
+      env_temperature: "0.1"
+      env_max_tokens: "10000"
+      env_top_p: "0.5"
+      env_logging_s3_bucket: ${S3_LLM_LOGS_BUCKET}
+      env_logging_s3_key_prefix: ${S3_LLM_LOGS_DIRECTORY}
+      env_guardrail_arn: ${GUARDRAIL_ARN}
+      env_guardrail_version: ${GUARDRAIL_VERSION}
+      env_logging_s3_account_id: ${S3_LLM_LOGS_BUCKET_ACCOUNT_ID}
+      # FEAT_EXTENDED_ADVICE: true
+    healthcheck:
+      test: ["CMD", "curl", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+volumes:
+  bedrock_prompt_messager_node_modules:

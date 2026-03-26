@@ -10,15 +10,15 @@
     "jest-mock-extended": "^4.0.0",
     "typescript": "^5.8.2"
   },
-  "name": "nhs-notify-admail-example-lambda",
+  "name": "nhs-notify-admail-bedrock-prompt-messager",
   "private": true,
-  "unused-scripts": {
-    "build:container": "cd ../.. && make docker-build-and-push base_image=public.ecr.aws/lambda/nodejs:22 dir=lambdas/example-lambda"
-  },
   "scripts": {
     "build:archive": "rm -rf dist && npx esbuild --bundle --minify --sourcemap --target=es2020 --platform=node --loader:.node=file --entry-names=[name] --outdir=dist src/index.ts",
+    "build:container": "npm run build:archive && DOCKER_IMAGE=bedrock-prompt-messager make -C ../.. docker-build base_image=public.ecr.aws/lambda/nodejs:22 dir=lambdas/bedrock-prompt-messager",
+    "build:local-server": "npx esbuild --bundle --sourcemap --target=es2020 --platform=node --entry-names=[name] --outdir=dist src/local-server.ts",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
+    "start:local": "npm run build:local-server && node dist/local-server.js",
     "test:unit": "jest",
     "typecheck": "tsc --noEmit"
   },

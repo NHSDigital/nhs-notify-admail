@@ -60,7 +60,8 @@
     "typecheck": "npm run typecheck --workspaces"
   },
   "workspaces": [
-    "containers/example-app",
-    "lambdas/example-lambda"
+    "containers/frontend",
+    "containers/backend",
+    "lambdas/bedrock-prompt-messager"
   ]
 }
