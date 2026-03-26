@@ -1,4 +1,4 @@
-name: Repository Template Sync
+name: NHS Notify Admail Sync
 
 on:
   schedule:
