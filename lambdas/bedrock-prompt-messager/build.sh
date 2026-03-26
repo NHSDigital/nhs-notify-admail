@@ -11,6 +11,7 @@ npx esbuild \
     --target=es2020 \
     --platform=node \
     --loader:.node=file \
+    --loader:.txt=text \
     --entry-names=[name] \
     --outdir=dist \
     src/index.ts ## Update this to include your lambda's entry point

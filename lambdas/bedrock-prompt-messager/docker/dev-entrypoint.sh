@@ -8,6 +8,7 @@ npx esbuild \
   --sourcemap \
   --target=es2020 \
   --platform=node \
+  --loader:.txt=text \
   --entry-names=[name] \
   --outdir=dist \
   src/local-server.ts \

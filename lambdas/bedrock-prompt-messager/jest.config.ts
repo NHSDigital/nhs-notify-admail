@@ -24,10 +24,16 @@ export const baseJestConfig: Config = {
     },
   },
 
-  coveragePathIgnorePatterns: ['/__tests__/'],
+  coveragePathIgnorePatterns: ['/__tests__/', '/__mocks__/'],
   transform: { '^.+\\.ts$': 'ts-jest' },
   testPathIgnorePatterns: ['.build'],
   testMatch: ['**/?(*.)+(spec|test).[jt]s?(x)'],
+
+  // Map .txt imports to a simple string mock so Jest does not need esbuild's
+  // text loader.  The real content is inlined by esbuild at bundle time.
+  moduleNameMapper: {
+    '\\.txt$': '<rootDir>/src/__mocks__/textFile.ts',
+  },
 
   // Use this configuration option to add custom reporters to Jest
   reporters: [
@@ -46,7 +52,7 @@ export const baseJestConfig: Config = {
   testEnvironment: 'jsdom',
 };
 
-const utilsJestConfig = {
+const utilsJestConfig: Config = {
   ...baseJestConfig,
 
   testEnvironment: 'node',
