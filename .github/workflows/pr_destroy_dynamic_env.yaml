@@ -34,4 +34,4 @@ jobs:
             --targetAccountGroup "nhs-notify-admail-dev" \
             --terraformAction "destroy" \
             --overrideProjectName "nhs" \
-            --overrideRoleName "nhs-main-acct-admail-github-deploy" \
+            --overrideRoleName "nhs-main-acct-admail-github-deploy"
