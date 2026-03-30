@@ -1,0 +1,37 @@
+## This workflow is DISABLED.
+## To enable, rename from .disabled to .yaml and replace any references as per the comments.
+name: PR Destroy Environment
+
+on:
+  pull_request:
+    types: [closed]
+    branches:
+      - '*'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  create-dynamic-environment:
+    name: Destroy Dynamic Environment
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v6
+      - name: Trigger dynamic environment destroy
+        env:
+          APP_PEM_FILE: ${{ secrets.APP_PEM_FILE }}
+          APP_CLIENT_ID: ${{ secrets.APP_CLIENT_ID }}
+        shell: bash
+        run: |
+          .github/scripts/dispatch_internal_repo_workflow.sh \
+            --infraRepoName "$(echo ${{ github.repository }} | cut -d'/' -f2)" \
+            --releaseVersion "${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}" \
+            --targetWorkflow "dispatch-deploy-dynamic-env.yaml" \
+            --targetEnvironment "pr${{ github.event.number }}" \
+            --targetComponent "admail" \
+            --targetAccountGroup "nhs-notify-admail-dev" \
+            --terraformAction "destroy" \
+            --overrideProjectName "nhs" \
+            --overrideRoleName "nhs-main-acct-admail-github-deploy" \
