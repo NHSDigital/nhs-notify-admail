@@ -38,8 +38,7 @@ jobs:
       #skip_trivy_package: ${{ steps.skip_trivy.outputs.skip_trivy_package }}
     steps:
       - name: "Checkout code"
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
-      - name: "Set CI/CD variables"
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6      - name: "Set CI/CD variables"
         id: variables
         run: |
           datetime=$(date -u +'%Y-%m-%dT%H:%M:%S%z')
@@ -160,7 +159,7 @@ jobs:
       APP_CLIENT_ID: ${{ secrets.APP_CLIENT_ID }}
       APP_PEM_FILE: ${{ secrets.APP_PEM_FILE }}
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+      - uses: actions/checkout@v6
       - name: Trigger dynamic environment creation
         shell: bash
         run: |
