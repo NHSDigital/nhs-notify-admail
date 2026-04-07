@@ -62,6 +62,7 @@
   "workspaces": [
     "containers/frontend",
     "containers/backend",
-    "lambdas/bedrock-prompt-messager"
+    "lambdas/bedrock-prompt-messager",
+    "tests/playwright"
   ]
 }
