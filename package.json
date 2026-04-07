@@ -38,7 +38,7 @@
     "typescript": "^5.8.3",
     "typescript-eslint": "^8.35.1"
   },
-  "name": "nhs-notify-repository-template",
+  "name": "nhs-notify-admail",
   "overrides": {
     "fast-xml-parser": "^5.3.6",
     "minimatch": "^10.2.4",

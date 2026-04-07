@@ -12,7 +12,8 @@ Keep anything language or tool-specific in nested `AGENTS.md` files (for example
 At a glance, the main areas are:
 
 - `infrastructure/terraform/` – Terraform components, and shared modules for AWS accounts and environments.
-- `lambdas/` – TypeScript lambda projects (each with their own `package.json`, Jest config, etc.). Root level packages.json defines workspaces and scripts. Tests for the lambda are stored in `lambdas/{name}/src/__test`.
+- `containers/` – TypeScript containerised projects (each with their own `package.json`, Jest config, etc.). Root level packages.json defines workspaces and scripts. Tests for the lambda are stored in `containers/{name}/src/__tests__`.
+- `lambdas/` – TypeScript lambda projects (each with their own `package.json`, Jest config, etc.). Root level packages.json defines workspaces and scripts. Tests for the lambda are stored in `lambdas/{name}/src/__tests__`.
 - `src/` and `utils/` – Shared code and utilities (for example `utils/logger`).
 - `docs/` – Documentation site, ADRs, RFCS, and other long‑form docs.
 - `.github/workflows/` and `.github/actions/` – GitHub Actions workflows and composite actions.
@@ -25,7 +26,7 @@ Agents should look for a nested `AGENTS.md` in or near these areas before making
 
 The root `package.json` is the orchestration manifestgit co for this repo. It does not ship application code; it wires up shared dev tooling and delegates to workspace-level projects.
 
-- Workspaces: Declares the set of npm workspaces (e.g. under `lambdas/`, `utils/`, `tests/`, `scripts/`). Agents should add a new workspace path here when introducing a new npm project.
+- Workspaces: Declares the set of npm workspaces (e.g. under `containers/`, `lambdas/`, `utils/`, `tests/`, `scripts/`). Agents should add a new workspace path here when introducing a new npm project.
 - Scripts: Provides top-level commands that fan out across workspaces using `--workspaces` (lint, typecheck, unit tests) and project-specific runners (e.g. `build:container`).
 - Dev tool dependencies: Centralises Jest, TypeScript, ESLint configurations and plugins to keep versions consistent across workspaces. Workspace projects should rely on these unless a local override is strictly needed.
 - Overrides/resolutions: Pins transitive dependencies (e.g. Jest/react-is) to avoid ecosystem conflicts. Agents must not remove overrides without verifying tests across all workspaces.

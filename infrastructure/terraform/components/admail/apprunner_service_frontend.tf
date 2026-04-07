@@ -18,7 +18,7 @@ resource "aws_apprunner_service" "service_frontend" {
         }
       }
 
-      image_identifier      = "${local.ecr_repository_url}:${var.project}-${var.environment}-${local.component}-example-app-${var.container_image_tag_suffix}"
+      image_identifier      = "${local.ecr_repository_url}:${var.project}-${var.environment}-${local.component}-frontend-${var.container_image_tag_suffix}"
       image_repository_type = "ECR"
     }
   }
