@@ -18,7 +18,7 @@ Any code files or example documentation that is not used in the new repository s
 
 ## Table of Contents
 
-- [NHS Notify Admail](#nhs-notify-nhs-notify-admail)
+- [NHS Notify Admail](#nhs-notify-admail)
   - [Table of Contents](#table-of-contents)
   - [Documentation](#documentation)
   - [Setup](#setup)

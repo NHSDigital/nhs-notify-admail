@@ -1,7 +1,10 @@
 {
-  "extends": "@tsconfig/node22/tsconfig.json",
   "compilerOptions": {
-    "isolatedModules": true,
+    "isolatedModules": true
   },
-  "include": ["src/**/*", "jest.config.ts"],
+  "extends": "@tsconfig/node22/tsconfig.json",
+  "include": [
+    "src/**/*",
+    "jest.config.ts"
+  ]
 }
