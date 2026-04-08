@@ -1,4 +1,3 @@
-
 import { render, screen, fireEvent } from "@testing-library/react";
 import RoyalMailCalculator from "../../components/Costingtool";
 
@@ -15,12 +14,16 @@ describe("RoyalMailCalculator", () => {
 
   test("displays PDF page info when letterType is pdf", () => {
     render(<RoyalMailCalculator pages={3} letterType="pdf" />);
-    expect(screen.getByText(/Your uploaded PDF letter has 3 pages/i)).toBeInTheDocument();
+    expect(
+      screen.getByText(/Your uploaded PDF letter has 3 pages/i),
+    ).toBeInTheDocument();
   });
 
   test("displays docx info when letterType is docx", () => {
     render(<RoyalMailCalculator pages={2} letterType="docx" />);
-    expect(screen.getByText(/Please check your uploaded docx for page numbers/i)).toBeInTheDocument();
+    expect(
+      screen.getByText(/Please check your uploaded docx for page numbers/i),
+    ).toBeInTheDocument();
   });
 
   test("updates number of pages via input", () => {
@@ -62,8 +65,12 @@ describe("RoyalMailCalculator", () => {
 
   test("calculates costs correctly for 1 page, 1 letter, business class", () => {
     render(<RoyalMailCalculator pages={1} letterType="pdf" />);
-    fireEvent.change(screen.getByLabelText(/Number of pages/i), { target: { value: "1" } });
-    fireEvent.change(screen.getByLabelText(/Number of letters/i), { target: { value: "1" } });
+    fireEvent.change(screen.getByLabelText(/Number of pages/i), {
+      target: { value: "1" },
+    });
+    fireEvent.change(screen.getByLabelText(/Number of letters/i), {
+      target: { value: "1" },
+    });
     // Advertising: 1 * 0.47 = 0.47
     // Business: 1 * 0.67 = 0.67
     // Savings: 0.67 - 0.47 = 0.20
@@ -74,8 +81,10 @@ describe("RoyalMailCalculator", () => {
 
   test("calculates costs correctly for 5 pages, 2,000,000 letters, first class", () => {
     render(<RoyalMailCalculator pages={5} letterType="pdf" />);
-    // fireEvent.change(screen.getByLabelText(/Number of pages/i), { target: { value: "5" } });
-    fireEvent.change(screen.getByLabelText(/Number of letters/i), { target: { value: "2000000" } });
+
+    fireEvent.change(screen.getByLabelText(/Number of letters/i), {
+      target: { value: "2000000" },
+    });
     fireEvent.click(screen.getByRole("checkbox"));
     // Advertising: 2000000 * 0.63 = 1,260,000
     // First Class: 2000000 * 1.96 = 3,920,000
@@ -123,11 +132,17 @@ describe("RoyalMailCalculator", () => {
 
   test("savings never displays a negative value", () => {
     render(<RoyalMailCalculator pages={1} letterType="pdf" />);
-    fireEvent.change(screen.getByLabelText(/Number of pages/i), { target: { value: "1" } });
-    fireEvent.change(screen.getByLabelText(/Number of letters/i), { target: { value: "1" } });
+    fireEvent.change(screen.getByLabelText(/Number of pages/i), {
+      target: { value: "1" },
+    });
+    fireEvent.change(screen.getByLabelText(/Number of letters/i), {
+      target: { value: "1" },
+    });
     expect(screen.getByText("-£0.20")).toBeInTheDocument();
     // Now set advertising higher than business artificially
-    fireEvent.change(screen.getByLabelText(/Number of pages/i), { target: { value: "5" } });
+    fireEvent.change(screen.getByLabelText(/Number of pages/i), {
+      target: { value: "5" },
+    });
     fireEvent.click(screen.getByRole("checkbox"));
     // Should still be non-negative
     expect(screen.getByText(/-£[0-9,.]+/)).toBeInTheDocument();

@@ -32,13 +32,16 @@ export function AuthProvider({ children }) {
       if (idToken && accessToken && userEmail) {
         setUser({
           email: userEmail,
-          idToken: idToken,
-          accessToken: accessToken,
-          refreshToken: refreshToken,
+          idToken,
+          accessToken,
+          refreshToken,
         });
       }
-    } catch (error) {
-      console.error("Failed to initialize auth from session storage", error);
+    } catch (initError) {
+      console.error(
+        "Failed to initialize auth from session storage",
+        initError,
+      );
       setUser(null);
     } finally {
       setIsAuthReady(true);
@@ -70,7 +73,7 @@ export function AuthProvider({ children }) {
         ...prev,
         idToken: newIdToken,
         accessToken: newAccessToken,
-        refreshToken: refreshToken,
+        refreshToken,
       }));
       setError(null);
       return newIdToken;
@@ -142,7 +145,7 @@ export function AuthProvider({ children }) {
         const command = new GlobalSignOutCommand({
           AccessToken: accessToken,
         });
-        const response = await cognitoClient.send(command);
+        await cognitoClient.send(command);
       }
       sessionStorage.removeItem("idToken");
       sessionStorage.removeItem("userEmail");

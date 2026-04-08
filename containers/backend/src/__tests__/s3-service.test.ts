@@ -1,5 +1,5 @@
 // ---------------------------------------------------------------------------
-// Set env vars before module imports so the s3Service module-level constants
+// Set env vars before module imports so the s3-service module-level constants
 // are populated when the module is first loaded by Jest.
 // ---------------------------------------------------------------------------
 process.env.S3_LLM_LOGS_BUCKET = "test-bucket";
@@ -22,7 +22,7 @@ import {
   paginateListObjectsV2,
 } from "@aws-sdk/client-s3";
 // eslint-disable-next-line import-x/first
-import { fetchS3FileHistory, getS3FileContent, s3Client } from "../s3Service";
+import { fetchS3FileHistory, getS3FileContent, s3Client } from "src/s3-service";
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -43,7 +43,7 @@ describe("fetchS3FileHistory", () => {
   });
 
   it("returns files sorted newest-first, skipping directory-marker keys", async () => {
-    mockPaginate.mockImplementation(async function* () {
+    mockPaginate.mockImplementation(async function* mockMultiPagePaginator() {
       yield {
         Contents: [
           { Key: "test-dir/", LastModified: new Date("2023-01-01T10:00:00Z") },
@@ -73,7 +73,7 @@ describe("fetchS3FileHistory", () => {
   });
 
   it("returns an empty array when there are no objects", async () => {
-    mockPaginate.mockImplementation(async function* () {
+    mockPaginate.mockImplementation(async function* mockEmptyPaginator() {
       yield { Contents: [] };
     });
 
@@ -83,7 +83,7 @@ describe("fetchS3FileHistory", () => {
   });
 
   it("handles pages with no Contents key", async () => {
-    mockPaginate.mockImplementation(async function* () {
+    mockPaginate.mockImplementation(async function* mockNoContentsPaginator() {
       yield {};
     });
 
@@ -93,11 +93,14 @@ describe("fetchS3FileHistory", () => {
   });
 
   it("wraps paginator errors in a descriptive Error and re-throws", async () => {
-    mockPaginate.mockImplementation(async function* () {
-      throw Object.assign(new Error("AccessDenied"), {
-        Code: "AccessDenied",
-      });
-    });
+    mockPaginate.mockImplementation(
+      // eslint-disable-next-line require-yield, sonarjs/generator-without-yield
+      async function* mockAccessDeniedPaginator() {
+        throw Object.assign(new Error("AccessDenied"), {
+          Code: "AccessDenied",
+        });
+      },
+    );
 
     await expect(fetchS3FileHistory()).rejects.toThrow(
       "Error fetching S3 file history",
@@ -106,10 +109,13 @@ describe("fetchS3FileHistory", () => {
 
   it("wraps non-Error paginator rejections using String() and re-throws", async () => {
     // Exercises the `String(error)` branch when the thrown value is not an Error instance
-    mockPaginate.mockImplementation(async function* () {
-      // eslint-disable-next-line @typescript-eslint/only-throw-error
-      throw "S3 string rejection";
-    });
+    mockPaginate.mockImplementation(
+      // eslint-disable-next-line require-yield, sonarjs/generator-without-yield
+      async function* mockStringRejectionPaginator() {
+        // eslint-disable-next-line @typescript-eslint/only-throw-error
+        throw "S3 string rejection";
+      },
+    );
 
     await expect(fetchS3FileHistory()).rejects.toThrow(
       "Error fetching S3 file history: S3 string rejection",
@@ -117,7 +123,7 @@ describe("fetchS3FileHistory", () => {
   });
 
   it("passes the correct bucket params to the paginator", async () => {
-    mockPaginate.mockImplementation(async function* () {
+    mockPaginate.mockImplementation(async function* mockParamCheckPaginator() {
       yield { Contents: [] };
     });
 

@@ -4,16 +4,16 @@ import type {
   APIGatewayProxyResult,
   Context,
 } from "aws-lambda";
-import { handler } from "./index";
+import { handler } from ".";
 
-const PORT = parseInt(process.env.PORT ?? "8080", 10);
+const PORT = Number.parseInt(process.env.PORT ?? "8080", 10);
 
 async function readBody(req: http.IncomingMessage): Promise<string> {
   const chunks: Buffer[] = [];
   for await (const chunk of req) {
     chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(String(chunk)));
   }
-  return Buffer.concat(chunks).toString("utf-8");
+  return Buffer.concat(chunks).toString("utf8");
 }
 
 function buildEvent(
@@ -28,6 +28,7 @@ function buildEvent(
 
   const headers: Record<string, string> = {};
   for (const [key, value] of Object.entries(req.headers)) {
+    // eslint-disable-next-line security/detect-object-injection
     headers[key] = Array.isArray(value) ? value[0] : (value ?? "");
   }
 
@@ -52,6 +53,7 @@ function buildEvent(
       resourcePath: url.pathname,
       resourceId: "local",
       stage: "local",
+      // eslint-disable-next-line sonarjs/pseudo-random
       requestId: `local-${Date.now()}-${Math.random().toString(36).slice(2)}`,
       requestTimeEpoch: Date.now(),
       authorizer: null,
@@ -83,6 +85,7 @@ function buildContext(): Context {
     functionVersion: "$LATEST",
     invokedFunctionArn: "arn:aws:lambda:local:000000000000:function:local-dev",
     memoryLimitInMB: "128",
+    // eslint-disable-next-line sonarjs/pseudo-random
     awsRequestId: `local-${Date.now()}-${Math.random().toString(36).slice(2)}`,
     logGroupName: "/aws/lambda/local-dev",
     logStreamName: "local",
@@ -105,6 +108,7 @@ const server = http.createServer(async (req, res) => {
 
   // CORS preflight — browsers send this before the real request
   if (req.method === "OPTIONS") {
+    // eslint-disable-next-line sonarjs/cors
     res.writeHead(204, CORS_HEADERS);
     res.end();
     return;
@@ -112,6 +116,7 @@ const server = http.createServer(async (req, res) => {
 
   // Health check — consumed by the Docker Compose healthcheck
   if (url.pathname === "/health") {
+    // eslint-disable-next-line sonarjs/cors
     res.writeHead(200, { "Content-Type": "application/json", ...CORS_HEADERS });
     res.end(JSON.stringify({ status: "ok" }));
     return;
@@ -132,34 +137,43 @@ const server = http.createServer(async (req, res) => {
       return;
     }
 
-    const { statusCode = 200, headers = {}, body: responseBody = "" } = result;
+    const { body: responseBody = "", headers = {}, statusCode = 200 } = result;
+    // eslint-disable-next-line sonarjs/cors
     res.writeHead(statusCode, {
       "Content-Type": "application/json",
       ...CORS_HEADERS,
       ...headers,
     });
     res.end(responseBody);
-  } catch (err) {
-    console.error("Handler error:", err);
+  } catch (error) {
+    // eslint-disable-next-line no-console
+    console.error("Handler error:", error);
+    // eslint-disable-next-line sonarjs/cors
     res.writeHead(500, { "Content-Type": "application/json", ...CORS_HEADERS });
     res.end(JSON.stringify({ error: "Internal Server Error" }));
   }
 });
 
 server.listen(PORT, () => {
+  // eslint-disable-next-line no-console
   console.log(
     `Local API Gateway emulator listening on http://localhost:${PORT}`,
   );
 });
 
 function shutdown(signal: string): void {
+  // eslint-disable-next-line no-console
   console.log(`Received ${signal}. Shutting down gracefully…`);
   server.close((err) => {
     if (err) {
+      // eslint-disable-next-line no-console
       console.error("Error during shutdown:", err);
+      // eslint-disable-next-line unicorn/no-process-exit
       process.exit(1);
     }
+    // eslint-disable-next-line no-console
     console.log("Server closed. Exiting.");
+    // eslint-disable-next-line unicorn/no-process-exit
     process.exit(0);
   });
 }

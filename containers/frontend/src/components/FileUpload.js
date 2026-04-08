@@ -1,16 +1,12 @@
 import { useState } from "react";
 import "./FileUpload.css";
-import { useBackendAPIClient } from "../api/BackendAPIClient";
 
-const SUPPORTED_EXTENSIONS = [
-  'docx', 'md', 'txt', 'odt', 'pdf'
-];
+const SUPPORTED_EXTENSIONS = ["docx", "md", "txt", "odt", "pdf"];
 
-export default function FileUpload({ onFileUpload, handleLoading }) {
+export default function FileUpload({ handleLoading, onFileUpload }) {
   const [uploadStatus, setUploadStatus] = useState("");
-  const backendAPIClient = useBackendAPIClient();
 
-  const acceptString = SUPPORTED_EXTENSIONS.map(ext => `.${ext}`).join(',');
+  const acceptString = SUPPORTED_EXTENSIONS.map((ext) => `.${ext}`).join(",");
 
   const handleFileChange = async (event) => {
     const file = event.target.files[0];
@@ -20,7 +16,7 @@ export default function FileUpload({ onFileUpload, handleLoading }) {
       return;
     }
 
-    const fileExtension = file.name.split('.').pop().toLowerCase();
+    const fileExtension = file.name.split(".").pop().toLowerCase();
     if (!SUPPORTED_EXTENSIONS.includes(fileExtension)) {
       setUploadStatus(`Error: .${fileExtension} files are not supported.`);
       setTimeout(() => setUploadStatus(""), 4000);
@@ -34,9 +30,11 @@ export default function FileUpload({ onFileUpload, handleLoading }) {
       const formData = new FormData();
       formData.append("file", file);
 
-      let fr = new FileReader()
+      const fr = new FileReader();
       fr.readAsDataURL(file);
-      fr.addEventListener('load', (_evt) => onFileUpload({ extracted_text: fr.result, file_name: file.name }));
+      fr.addEventListener("load", (_evt) =>
+        onFileUpload({ extracted_text: fr.result, file_name: file.name }),
+      );
 
       setUploadStatus("Successfully Uploaded");
       setTimeout(() => setUploadStatus(""), 2000);

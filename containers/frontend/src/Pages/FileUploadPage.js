@@ -9,24 +9,27 @@ function FileUploadPage() {
   const [feedback, setFeedback] = useState({});
   const [letterType, setLetterType] = useState("");
   const [isLoading, setLoading] = useState(false);
-  const EnvLambdaFunctionApiBaseUrl = window.env?.REACT_APP_API_GATEWAY || process.env.REACT_APP_API_GATEWAY;
+  const EnvLambdaFunctionApiBaseUrl =
+    window.env?.REACT_APP_API_GATEWAY || process.env.REACT_APP_API_GATEWAY;
   const { user } = useAuth();
 
   const getPromptResp = async (fileContent, fileName) => {
     try {
       const response = await axios.post(
         `${EnvLambdaFunctionApiBaseUrl}`,
-        { input_text: fileContent, file_name: fileName},
+        { input_text: fileContent, file_name: fileName },
         {
           headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
             Authorization: `Bearer ${user.idToken}`,
           },
-        }
+        },
       );
       return response.data;
-    } catch (err) {
-      throw new Error("Error calling Lambda or session expired. Please log in again.");
+    } catch {
+      throw new Error(
+        "Error calling Lambda or session expired. Please log in again.",
+      );
     }
   };
 
@@ -34,14 +37,20 @@ function FileUploadPage() {
     setLoading(loading);
   };
 
-  const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+  const sleep = (ms) =>
+    new Promise((resolve) => {
+      setTimeout(resolve, ms);
+    });
 
   const handleFileUpload = async (file) => {
     setLoading(true);
     setFeedback({});
     setLetterType(file.file_type || "docx");
     try {
-      const promptResp = await getPromptResp(file.extracted_text, file.file_name);
+      const promptResp = await getPromptResp(
+        file.extracted_text,
+        file.file_name,
+      );
       await sleep(1000);
       setFeedback(promptResp);
     } catch (error) {
@@ -55,7 +64,10 @@ function FileUploadPage() {
     <div>
       <main className="container">
         <div className="two-column-content">
-          <FileUpload onFileUpload={handleFileUpload} handleLoading={handleLoading} />
+          <FileUpload
+            onFileUpload={handleFileUpload}
+            handleLoading={handleLoading}
+          />
           <AIFeedback feedback={feedback} isLoading={isLoading} />
         </div>
         <RoyalMailCalculator pages={1} letterType={letterType} />

@@ -3,7 +3,7 @@ import axios from "axios";
 import { useAuth } from "../components/AuthContext.js";
 
 export function useBackendAPIClient() {
-  const { user, refreshSession } = useAuth();
+  const { refreshSession, user } = useAuth();
 
   const backendAPIClient = useMemo(() => {
     const backendURL =
@@ -14,7 +14,7 @@ export function useBackendAPIClient() {
       : `https://${backendURL}`;
 
     const instance = axios.create({
-      baseURL: baseURL,
+      baseURL,
     });
 
     let isRefreshing = false;

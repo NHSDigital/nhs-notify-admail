@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { withAuth } from "../components/AuthContext";
-import { useBackendAPIClient } from '../api/BackendAPIClient';
+import { useBackendAPIClient } from "../api/BackendAPIClient";
 import AIFeedback from "../components/AIfeedback";
 
 const ITEMS_PER_PAGE = 10;
 
-function History({ user }) {
+function History() {
   const backendAPIClient = useBackendAPIClient();
   const [allFiles, setAllFiles] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
@@ -15,12 +15,11 @@ function History({ user }) {
   const fetchAllFiles = useCallback(async () => {
     setLoading(true);
     try {
-      const response = await backendAPIClient.get('/s3/history');
+      const response = await backendAPIClient.get("/s3/history");
       const files = response.data;
       setAllFiles(files);
-
     } catch (error) {
-      console.error('Error fetching files:', error);
+      console.error("Error fetching files:", error);
     } finally {
       setLoading(false);
     }
@@ -34,7 +33,7 @@ function History({ user }) {
     setLoading(true);
     setFeedback(null);
     try {
-      const response = await backendAPIClient.get('/s3/download', {
+      const response = await backendAPIClient.get("/s3/download", {
         params: {
           file_name: fileName,
         },
@@ -47,7 +46,7 @@ function History({ user }) {
         setFeedback(bodyData);
       }
     } catch (error) {
-      console.error('Error fetching file content:', error);
+      console.error("Error fetching file content:", error);
     } finally {
       setLoading(false);
     }
@@ -70,7 +69,7 @@ function History({ user }) {
         className={currentPage === i ? "active" : ""}
       >
         {i}
-      </button>
+      </button>,
     );
   }
 
@@ -88,21 +87,31 @@ function History({ user }) {
             </thead>
             <tbody>
               {isLoading && allFiles.length === 0 ? (
-                <tr><td colSpan="3" className="text-center">Loading files...</td></tr>
+                <tr>
+                  <td colSpan="3" className="text-center">
+                    Loading files...
+                  </td>
+                </tr>
               ) : currentFiles.length > 0 ? (
                 currentFiles.map((file, index) => (
                   <tr key={index}>
-                    <td>
-                      {file.name.split('|~')[1] || ''}
-                    </td>
+                    <td>{file.name.split("|~")[1] || ""}</td>
                     <td>{file.last_modified}</td>
                     <td>
-                      <button onClick={() => fetchAndShowFileContent(file.name)}>View Details</button>
+                      <button
+                        onClick={() => fetchAndShowFileContent(file.name)}
+                      >
+                        View Details
+                      </button>
                     </td>
                   </tr>
                 ))
               ) : (
-                <tr><td colSpan="3" className="text-center">No assessment files found.</td></tr>
+                <tr>
+                  <td colSpan="3" className="text-center">
+                    No assessment files found.
+                  </td>
+                </tr>
               )}
             </tbody>
           </table>

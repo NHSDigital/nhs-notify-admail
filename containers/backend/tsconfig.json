@@ -1,6 +1,12 @@
 {
   "compilerOptions": {
-    "isolatedModules": true
+    "baseUrl": ".",
+    "isolatedModules": true,
+    "paths": {
+      "src/*": [
+        "src/*"
+      ]
+    }
   },
   "extends": "@tsconfig/node22/tsconfig.json",
   "include": [

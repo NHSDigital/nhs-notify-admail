@@ -5,8 +5,8 @@ import {
   CognitoAuthenticator,
   createAuthMiddleware,
   createNotFoundHandler,
-} from "./auth";
-import s3Router from "./s3Router";
+} from "src/auth";
+import router from "src/s3-router";
 
 // ---------------------------------------------------------------------------
 // CORS – mirrors FastAPI allow_origin_regex in main.py
@@ -51,7 +51,7 @@ export function createApp(
   });
 
   // S3 routes
-  app.use("/s3", s3Router);
+  app.use("/s3", router);
 
   // 404 catch-all – re-validates auth to prevent API surface mapping
   app.use(createNotFoundHandler(authenticator));
@@ -62,9 +62,10 @@ export function createApp(
 // ---------------------------------------------------------------------------
 // startServer – creates the app and binds it to a port
 // ---------------------------------------------------------------------------
-export function startServer(port: number = Number(process.env.PORT ?? 8080)) {
+export function startServer(port = Number(process.env.PORT ?? 8080)) {
   const app = createApp();
   const server = app.listen(port, () => {
+    // eslint-disable-next-line no-console
     console.log(`Backend server listening on port ${port}`);
   });
   return server;

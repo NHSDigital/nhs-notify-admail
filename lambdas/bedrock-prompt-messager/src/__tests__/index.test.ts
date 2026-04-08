@@ -1,7 +1,11 @@
-import type { APIGatewayProxyEvent, APIGatewayProxyResult, Context } from 'aws-lambda';
-import { mockDeep } from 'jest-mock-extended';
+import type {
+  APIGatewayProxyEvent,
+  APIGatewayProxyResult,
+  Context,
+} from "aws-lambda";
+import { mockDeep } from "jest-mock-extended";
 
-import { ERROR_MESSAGES } from '../constants';
+import { ERROR_MESSAGES } from "src/constants";
 
 // ---------------------------------------------------------------------------
 // Mock bedrockService before importing the handler so that the module-level
@@ -13,7 +17,7 @@ const mockCallAdmailBedrockPrompt = jest.fn<
   [string, string | undefined]
 >();
 
-jest.mock('../bedrockService', () => ({
+jest.mock("../bedrock-service", () => ({
   createBedrockService: () => ({
     callAdmailBedrockPrompt: mockCallAdmailBedrockPrompt,
   }),
@@ -21,28 +25,26 @@ jest.mock('../bedrockService', () => ({
 
 // Import after the mock is in place.
 // eslint-disable-next-line import-x/first
-import { handler } from '../index';
+import { handler } from "..";
 
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
 
-function makeEvent(
-  body: string | null = null,
-): APIGatewayProxyEvent {
+function makeEvent(body: string | null = null): APIGatewayProxyEvent {
   return {
     body,
     headers: {},
     multiValueHeaders: {},
-    httpMethod: 'POST',
+    httpMethod: "POST",
     isBase64Encoded: false,
-    path: '/',
+    path: "/",
     pathParameters: null,
     queryStringParameters: null,
     multiValueQueryStringParameters: null,
     stageVariables: null,
-    resource: '/',
-    requestContext: {} as APIGatewayProxyEvent['requestContext'],
+    resource: "/",
+    requestContext: {} as APIGatewayProxyEvent["requestContext"],
   };
 }
 
@@ -50,15 +52,15 @@ const context = mockDeep<Context>();
 const callback = jest.fn();
 
 // ---------------------------------------------------------------------------
-describe('Lambda handler', () => {
+describe("Lambda handler", () => {
   beforeEach(() => {
     mockCallAdmailBedrockPrompt.mockReset();
   });
 
   // -------------------------------------------------------------------------
-  describe('request validation', () => {
-    it('returns 400 with INVALID_JSON when the body cannot be parsed as JSON', async () => {
-      const result = await handler(makeEvent('not-json'), context, callback);
+  describe("request validation", () => {
+    it("returns 400 with INVALID_JSON when the body cannot be parsed as JSON", async () => {
+      const result = await handler(makeEvent("not-json"), context, callback);
 
       expect(result).toMatchObject({
         statusCode: 400,
@@ -67,7 +69,7 @@ describe('Lambda handler', () => {
       expect(mockCallAdmailBedrockPrompt).not.toHaveBeenCalled();
     });
 
-    it('returns 400 with NO_INPUT_TEXT when the event has no body', async () => {
+    it("returns 400 with NO_INPUT_TEXT when the event has no body", async () => {
       const result = await handler(makeEvent(null), context, callback);
 
       expect(result).toMatchObject({
@@ -77,8 +79,8 @@ describe('Lambda handler', () => {
       expect(mockCallAdmailBedrockPrompt).not.toHaveBeenCalled();
     });
 
-    it('returns 400 with NO_INPUT_TEXT when body is an empty JSON object', async () => {
-      const result = await handler(makeEvent('{}'), context, callback);
+    it("returns 400 with NO_INPUT_TEXT when body is an empty JSON object", async () => {
+      const result = await handler(makeEvent("{}"), context, callback);
 
       expect(result).toMatchObject({
         statusCode: 400,
@@ -87,9 +89,9 @@ describe('Lambda handler', () => {
       expect(mockCallAdmailBedrockPrompt).not.toHaveBeenCalled();
     });
 
-    it('returns 400 with NO_INPUT_TEXT when input_text is an empty string', async () => {
+    it("returns 400 with NO_INPUT_TEXT when input_text is an empty string", async () => {
       const result = await handler(
-        makeEvent(JSON.stringify({ input_text: '' })),
+        makeEvent(JSON.stringify({ input_text: "" })),
         context,
         callback,
       );
@@ -101,7 +103,7 @@ describe('Lambda handler', () => {
       expect(mockCallAdmailBedrockPrompt).not.toHaveBeenCalled();
     });
 
-    it('returns 400 with NO_INPUT_TEXT when input_text is not a string', async () => {
+    it("returns 400 with NO_INPUT_TEXT when input_text is not a string", async () => {
       const result = await handler(
         makeEvent(JSON.stringify({ input_text: 42 })),
         context,
@@ -117,83 +119,93 @@ describe('Lambda handler', () => {
   });
 
   // -------------------------------------------------------------------------
-  describe('successful invocation', () => {
+  describe("successful invocation", () => {
     const serviceResponse: APIGatewayProxyResult = {
       statusCode: 200,
-      body: JSON.stringify({ description: 'A test letter', rating: 'BUSINESS' }),
+      body: JSON.stringify({
+        description: "A test letter",
+        rating: "BUSINESS",
+      }),
     };
 
-    it('calls the service with input_text and returns its response', async () => {
+    it("calls the service with input_text and returns its response", async () => {
       mockCallAdmailBedrockPrompt.mockResolvedValueOnce(serviceResponse);
 
       const result = await handler(
-        makeEvent(JSON.stringify({ input_text: 'test letter content' })),
+        makeEvent(JSON.stringify({ input_text: "test letter content" })),
         context,
         callback,
       );
 
       expect(result).toEqual(serviceResponse);
       expect(mockCallAdmailBedrockPrompt).toHaveBeenCalledWith(
-        'test letter content',
+        "test letter content",
         undefined,
       );
     });
 
-    it('passes file_name to the service when it is provided in the body', async () => {
+    it("passes file_name to the service when it is provided in the body", async () => {
       mockCallAdmailBedrockPrompt.mockResolvedValueOnce(serviceResponse);
 
       await handler(
         makeEvent(
-          JSON.stringify({ input_text: 'test letter content', file_name: 'letter.pdf' }),
+          JSON.stringify({
+            input_text: "test letter content",
+            file_name: "letter.pdf",
+          }),
         ),
         context,
         callback,
       );
 
       expect(mockCallAdmailBedrockPrompt).toHaveBeenCalledWith(
-        'test letter content',
-        'letter.pdf',
+        "test letter content",
+        "letter.pdf",
       );
     });
 
-    it('passes undefined for file_name when the field is absent from the body', async () => {
+    it("passes undefined for file_name when the field is absent from the body", async () => {
       mockCallAdmailBedrockPrompt.mockResolvedValueOnce(serviceResponse);
 
       await handler(
-        makeEvent(JSON.stringify({ input_text: 'test letter content' })),
+        makeEvent(JSON.stringify({ input_text: "test letter content" })),
         context,
         callback,
       );
 
       expect(mockCallAdmailBedrockPrompt).toHaveBeenCalledWith(
-        'test letter content',
+        "test letter content",
         undefined,
       );
     });
 
-    it('passes undefined for file_name when the field is not a string', async () => {
+    it("passes undefined for file_name when the field is not a string", async () => {
       mockCallAdmailBedrockPrompt.mockResolvedValueOnce(serviceResponse);
 
       await handler(
-        makeEvent(JSON.stringify({ input_text: 'test letter content', file_name: 99 })),
+        makeEvent(
+          JSON.stringify({ input_text: "test letter content", file_name: 99 }),
+        ),
         context,
         callback,
       );
 
       expect(mockCallAdmailBedrockPrompt).toHaveBeenCalledWith(
-        'test letter content',
+        "test letter content",
         undefined,
       );
     });
   });
 
   // -------------------------------------------------------------------------
-  describe('error handling', () => {
-    it('returns 500 with INTERNAL_SERVER when the service throws an unexpected error', async () => {
-      mockCallAdmailBedrockPrompt.mockRejectedValueOnce(new Error('Bedrock unavailable'));
+  describe("error handling", () => {
+    it("returns 500 with INTERNAL_SERVER when the service throws an unexpected error", async () => {
+      mockCallAdmailBedrockPrompt.mockRejectedValueOnce(
+        new Error("Bedrock unavailable"),
+      );
 
       const result = await handler(
-        makeEvent(JSON.stringify({ input_text: 'test letter content' })),
+        makeEvent(JSON.stringify({ input_text: "test letter content" })),
         context,
         callback,
       );

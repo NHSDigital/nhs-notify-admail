@@ -3,6 +3,9 @@ import type { Config } from "jest";
 const config: Config = {
   preset: "ts-jest",
 
+  // Resolve absolute imports rooted at the project directory (e.g. "src/auth")
+  modulePaths: ["<rootDir>"],
+
   // Automatically clear mock calls, instances, contexts and results before every test
   clearMocks: true,
 

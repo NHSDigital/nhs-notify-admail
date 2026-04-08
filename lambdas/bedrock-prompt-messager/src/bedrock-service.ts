@@ -6,28 +6,28 @@ import {
   type ConverseCommandOutput,
   DocumentFormat,
   type ToolConfiguration,
-} from '@aws-sdk/client-bedrock-runtime';
-import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
-import type { APIGatewayProxyResult } from 'aws-lambda';
+} from "@aws-sdk/client-bedrock-runtime";
+import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
+import type { APIGatewayProxyResult } from "aws-lambda";
 
-import type { BedrockConfig } from './config';
+import type { BedrockConfig } from "src/config";
 import {
   CORS_HEADERS,
   ERROR_MESSAGES,
   Rating,
   TOOL_DESCRIPTION,
   TOOL_NAME,
-} from './constants';
-import systemPromptExtended from './system_prompt_extended.txt';
-import systemPrompt from './system_prompt.txt';
+} from "src/constants";
+import systemPromptExtended from "src/system_prompt_extended.txt";
+import systemPrompt from "src/system_prompt.txt";
 
 const DATA_URL_PATTERN = /^data:([^;]+);base64,([\S\s]+)$/;
 
 const MIME_TO_FORMAT: Partial<Record<string, DocumentFormat>> = {
-  'application/pdf': DocumentFormat.PDF,
-  'application/vnd.openxmlformats-officedocument.wordprocessingml.document':
+  "application/pdf": DocumentFormat.PDF,
+  "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
     DocumentFormat.DOCX,
-  'text/plain': DocumentFormat.TXT,
+  "text/plain": DocumentFormat.TXT,
 };
 
 export interface LogPromptDetailsInput {
@@ -37,9 +37,10 @@ export interface LogPromptDetailsInput {
   fileName: string | undefined;
 }
 
+const pad = (n: number): string => String(n).padStart(2, "0");
+
 /** Formats a Date as DD-MM-YYYY_HH:MM:SS to match the Python logging key format. */
 function formatDateTimeForKey(date: Date): string {
-  const pad = (n: number): string => String(n).padStart(2, '0');
   return (
     `${pad(date.getDate())}-${pad(date.getMonth() + 1)}-${date.getFullYear()}` +
     `_${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`
@@ -55,7 +56,7 @@ export class BedrockService {
 
   async callAdmailBedrockPrompt(
     inputLetter: string,
-    fileName: string | undefined,
+    fileName?: string,
   ): Promise<APIGatewayProxyResult> {
     const prompt = process.env.FEAT_EXTENDED_ADVICE
       ? systemPromptExtended
@@ -67,6 +68,7 @@ export class BedrockService {
     }
 
     const [, mime, b64] = match;
+    // eslint-disable-next-line security/detect-object-injection
     const format = MIME_TO_FORMAT[mime];
     if (!format) {
       return {
@@ -75,13 +77,13 @@ export class BedrockService {
       };
     }
 
-    const userPrompt = 'Analyze the following letter:';
+    const userPrompt = "Analyze the following letter:";
 
     const guardrailResponse = await this.bedrockClient.send(
       new ApplyGuardrailCommand({
         guardrailIdentifier: this.config.guardrail,
         guardrailVersion: this.config.guardrailVersion,
-        source: 'INPUT',
+        source: "INPUT",
         content: [{ text: { text: userPrompt } }],
       }),
     );
@@ -92,14 +94,14 @@ export class BedrockService {
         system: [{ text: prompt }],
         messages: [
           {
-            role: 'user',
+            role: "user",
             content: [
               { text: userPrompt },
               {
                 document: {
                   format,
-                  name: 'the_letter',
-                  source: { bytes: Buffer.from(b64, 'base64') },
+                  name: "the_letter",
+                  source: { bytes: Buffer.from(b64, "base64") },
                 },
               },
             ],
@@ -110,11 +112,12 @@ export class BedrockService {
           topP: this.config.topP,
           maxTokens: this.config.maxTokens,
         },
-        toolConfig: this.getAdmailToolConfig(),
+        toolConfig: BedrockService.getAdmailToolConfig(),
       }),
     );
 
-    const formattedBody = this.formatConverseResponse(converseResponse);
+    const formattedBody =
+      BedrockService.formatConverseResponse(converseResponse);
     const apiGatewayResponse: APIGatewayProxyResult = {
       statusCode: 200,
       body: formattedBody,
@@ -131,12 +134,12 @@ export class BedrockService {
     return apiGatewayResponse;
   }
 
-  formatConverseResponse(response: ConverseCommandOutput): string {
+  static formatConverseResponse(response: ConverseCommandOutput): string {
     const content = response.output?.message?.content ?? [];
 
     const toolUseBlock = content.find(
       (block): block is ContentBlock.ToolUseMember =>
-        'toolUse' in block && block.toolUse !== undefined,
+        "toolUse" in block && block.toolUse !== undefined,
     );
 
     if (toolUseBlock) {
@@ -144,14 +147,14 @@ export class BedrockService {
     }
 
     const textBlock = content[0];
-    if (textBlock && 'text' in textBlock) {
-      return textBlock.text ?? '';
+    if (textBlock && "text" in textBlock) {
+      return textBlock.text ?? "";
     }
 
-    return '';
+    return "";
   }
 
-  getAdmailToolConfig(): ToolConfiguration {
+  static getAdmailToolConfig(): ToolConfiguration {
     return {
       tools: [
         {
@@ -160,31 +163,31 @@ export class BedrockService {
             description: TOOL_DESCRIPTION,
             inputSchema: {
               json: {
-                type: 'object',
+                type: "object",
                 properties: {
                   description: {
-                    type: 'string',
+                    type: "string",
                     description:
-                      'Brief description of the letter or mailing content.',
+                      "Brief description of the letter or mailing content.",
                   },
                   rating: {
-                    type: 'string',
+                    type: "string",
                     description:
-                      'The eligibility rating for AdMail, as defined by ourselves, use with our prompt',
+                      "The eligibility rating for AdMail, as defined by ourselves, use with our prompt",
                     enum: [Rating.BUSINESS, Rating.UNSURE, Rating.ADVERTISING],
                   },
                   reason: {
-                    type: 'string',
+                    type: "string",
                     description:
-                      'Bullet pointed explaination of letter eligibility for Admail',
+                      "Bullet pointed explaination of letter eligibility for Admail",
                   },
                   advice: {
-                    type: 'string',
+                    type: "string",
                     description:
-                      'Actionable bullet points to convert the letter to Admail, if applicable.',
+                      "Actionable bullet points to convert the letter to Admail, if applicable.",
                   },
                 },
-                required: ['description', 'rating', 'reason', 'advice'],
+                required: ["description", "rating", "reason", "advice"],
               },
             },
           },
@@ -195,18 +198,16 @@ export class BedrockService {
   }
 
   async logPromptDetailsToS3({
+    fileName,
+    guardrailAssessment,
     promptInput,
     promptOutput,
-    guardrailAssessment,
-    fileName,
   }: LogPromptDetailsInput): Promise<void> {
-    const {
-      loggingS3Bucket,
-      loggingS3KeyPrefix,
-      loggingS3AccountId,
-    } = this.config;
+    const { loggingS3AccountId, loggingS3Bucket, loggingS3KeyPrefix } =
+      this.config;
 
     if (!loggingS3Bucket || !loggingS3KeyPrefix || !loggingS3AccountId) {
+      // eslint-disable-next-line no-console
       console.warn(ERROR_MESSAGES.S3_LOGGING_NOT_CONFIGURED);
       return;
     }
@@ -233,12 +234,13 @@ export class BedrockService {
           Bucket: loggingS3Bucket,
           Key: s3Key,
           Body: JSON.stringify(logData, null, 4),
-          ContentType: 'application/json',
+          ContentType: "application/json",
           ExpectedBucketOwner: loggingS3AccountId,
         }),
       );
     } catch (error) {
-      console.error('Error logging to S3:', error);
+      // eslint-disable-next-line no-console
+      console.error("Error logging to S3:", error);
     }
   }
 }
@@ -246,7 +248,8 @@ export class BedrockService {
 export function createBedrockService(): BedrockService {
   // Imported lazily so the module can be imported in tests without
   // triggering real AWS client construction at module load time.
-  const { loadConfig } = require('./config') as typeof import('./config');
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const { loadConfig } = require("./config") as typeof import("./config");
   const config = loadConfig();
   return new BedrockService(
     config,

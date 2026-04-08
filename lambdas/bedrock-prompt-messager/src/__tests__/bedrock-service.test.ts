@@ -9,11 +9,11 @@ import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
 
 import {
   BedrockService,
-  createBedrockService,
   type LogPromptDetailsInput,
-} from "../bedrockService";
-import type { BedrockConfig } from "../config";
-import { ERROR_MESSAGES, Rating, TOOL_NAME } from "../constants";
+  createBedrockService,
+} from "src/bedrock-service";
+import type { BedrockConfig } from "src/config";
+import { ERROR_MESSAGES, Rating, TOOL_NAME } from "src/constants";
 
 // ---------------------------------------------------------------------------
 // Module mocks (hoisted before imports by Jest)
@@ -139,10 +139,7 @@ describe("BedrockService", () => {
   // -------------------------------------------------------------------------
   describe("callAdmailBedrockPrompt", () => {
     it("returns 400 when the input is not a valid data URL", async () => {
-      const result = await service.callAdmailBedrockPrompt(
-        "not-a-data-url",
-        undefined,
-      );
+      const result = await service.callAdmailBedrockPrompt("not-a-data-url");
 
       expect(result.statusCode).toBe(400);
       expect(result.body).toBe(ERROR_MESSAGES.INVALID_DATA_URL);
@@ -242,7 +239,6 @@ describe("BedrockService", () => {
 
       const result = await service.callAdmailBedrockPrompt(
         `data:text/plain;base64,${b64Content}`,
-        undefined,
       );
 
       expect(result.statusCode).toBe(200);
@@ -292,7 +288,7 @@ describe("BedrockService", () => {
   // -------------------------------------------------------------------------
   describe("formatConverseResponse", () => {
     it("extracts and JSON-stringifies the tool input when a toolUse block is present", () => {
-      const result = service.formatConverseResponse(
+      const result = BedrockService.formatConverseResponse(
         TOOL_USE_RESPONSE as unknown as ConverseCommandOutput,
       );
 
@@ -303,7 +299,7 @@ describe("BedrockService", () => {
     });
 
     it("returns the text value from the first content block when no toolUse is present", () => {
-      const result = service.formatConverseResponse(
+      const result = BedrockService.formatConverseResponse(
         TEXT_RESPONSE as unknown as ConverseCommandOutput,
       );
 
@@ -311,7 +307,7 @@ describe("BedrockService", () => {
     });
 
     it("returns an empty string when the content array is empty", () => {
-      const result = service.formatConverseResponse({
+      const result = BedrockService.formatConverseResponse({
         output: { message: { role: "assistant", content: [] } },
         $metadata: {},
       } as unknown as ConverseCommandOutput);
@@ -320,7 +316,7 @@ describe("BedrockService", () => {
     });
 
     it("returns an empty string when the first text block has an undefined text value", () => {
-      const result = service.formatConverseResponse({
+      const result = BedrockService.formatConverseResponse({
         output: {
           message: { role: "assistant", content: [{ text: undefined }] },
         },
@@ -331,7 +327,7 @@ describe("BedrockService", () => {
     });
 
     it("returns an empty string when output is missing", () => {
-      const result = service.formatConverseResponse({
+      const result = BedrockService.formatConverseResponse({
         $metadata: {},
       } as unknown as ConverseCommandOutput);
 
@@ -344,7 +340,7 @@ describe("BedrockService", () => {
   // getAdmailToolConfig returns.  The AWS SDK types the inputSchema.json as the
   // opaque DocumentType union, so we cast through unknown to our own shape.
   interface TestToolConfig {
-    tools: Array<{
+    tools: {
       toolSpec: {
         name: string;
         description: string;
@@ -359,13 +355,14 @@ describe("BedrockService", () => {
           };
         };
       };
-    }>;
+    }[];
     toolChoice: { tool: { name: string } };
   }
 
   describe("getAdmailToolConfig", () => {
     it("returns a tool config with the correct tool name and required fields", () => {
-      const config = service.getAdmailToolConfig() as unknown as TestToolConfig;
+      const config =
+        BedrockService.getAdmailToolConfig() as unknown as TestToolConfig;
 
       expect(config.tools).toHaveLength(1);
       expect(config.tools[0].toolSpec.name).toBe(TOOL_NAME);
@@ -376,7 +373,8 @@ describe("BedrockService", () => {
     });
 
     it("includes all three rating enum values in the schema", () => {
-      const config = service.getAdmailToolConfig() as unknown as TestToolConfig;
+      const config =
+        BedrockService.getAdmailToolConfig() as unknown as TestToolConfig;
       const { enum: ratingEnum } =
         config.tools[0].toolSpec.inputSchema.json.properties.rating;
 

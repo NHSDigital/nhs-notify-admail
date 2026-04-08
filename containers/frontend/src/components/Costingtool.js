@@ -2,19 +2,17 @@ import React, { useState, useEffect } from "react";
 import { Info } from "lucide-react";
 import "./Costingtool.css";
 
-export default function RoyalMailCalculator({ pages, letterType }) {
+export default function RoyalMailCalculator({ letterType, pages }) {
   const [items, setItems] = useState(450000);
   const [firstClass, setFirstClass] = useState(false);
   const [letterPages, setLetterPages] = useState(pages || 2);
   const [letter, setLetter] = useState("");
 
-
-
   useEffect(() => {
-  if (pages != null) {
-    setLetterPages(Math.max(1, Math.min(5, Number(pages) || 1)));
-  }
-  setLetter(letterType);
+    if (pages != null) {
+      setLetterPages(Math.max(1, Math.min(5, Number(pages) || 1)));
+    }
+    setLetter(letterType);
   }, [pages, letterType]);
 
   // Simplified rate calculations (example rates - would need actual Royal Mail rates)
@@ -36,11 +34,11 @@ export default function RoyalMailCalculator({ pages, letterType }) {
       5: { "1st Class": 1.96, Business: 0.85 },
     };
 
-    let mailClass = firstClass === true ? "1st Class" : "Business";
+    const mailClass = firstClass === true ? "1st Class" : "Business";
 
     const advertisingCost = items * advertisingRates[letterPages];
     const businessCost = items * businessRates[letterPages][mailClass];
-    let savingsCost = businessCost - advertisingCost;
+    const savingsCost = businessCost - advertisingCost;
 
     return {
       advertising: advertisingCost,
@@ -59,10 +57,6 @@ export default function RoyalMailCalculator({ pages, letterType }) {
     }).format(amount);
   };
 
-  const formatNumber = (num) => {
-    return new Intl.NumberFormat("en-GB").format(num);
-  };
-
   return (
     <div className="container">
       {/* Input Parameters Section */}
@@ -74,13 +68,16 @@ export default function RoyalMailCalculator({ pages, letterType }) {
         </p>
         <h2 className="title">Input Parameters</h2>
         {letter === "pdf" && <p>Your uploaded PDF letter has {pages} pages</p>}
-        {letter === "docx" && <p>note: Please check your uploaded docx for page numbers</p>}
+        {letter === "docx" && (
+          <p>note: Please check your uploaded docx for page numbers</p>
+        )}
         {/* Pages per letter */}
         <div className="parameterGroup">
           <div className="parameterHeader">
-            <label htmlFor="Number-of-pages" className="label">Number of pages</label>
+            <label htmlFor="Number-of-pages" className="label">
+              Number of pages
+            </label>
             <input
-
               id="Number-of-pages"
               type="number"
               min="1"
@@ -91,7 +88,9 @@ export default function RoyalMailCalculator({ pages, letterType }) {
                 if (val === "") {
                   setLetterPages(1);
                 } else {
-                  setLetterPages(Math.max(1, Math.min(5, parseInt(val, 10))) || 1);
+                  setLetterPages(
+                    Math.max(1, Math.min(5, Number.parseInt(val, 10))) || 1,
+                  );
                 }
               }}
               className="value editableValue"
@@ -104,7 +103,9 @@ export default function RoyalMailCalculator({ pages, letterType }) {
               max="5"
               step="1"
               value={letterPages}
-              onChange={(e) => setLetterPages(parseInt(e.target.value, 10))}
+              onChange={(e) =>
+                setLetterPages(Number.parseInt(e.target.value, 10))
+              }
               className="slider"
               style={{
                 background: `linear-gradient(to right, #ef4444 0%, #ef4444 ${
@@ -124,7 +125,9 @@ export default function RoyalMailCalculator({ pages, letterType }) {
         {/* Number of letters */}
         <div className="parameterGroup">
           <div className="parameterHeader">
-            <label htmlFor="Number-of-letters" className="label">Number of letters</label>
+            <label htmlFor="Number-of-letters" className="label">
+              Number of letters
+            </label>
             <input
               id="Number-of-letters"
               type="number"
@@ -137,7 +140,9 @@ export default function RoyalMailCalculator({ pages, letterType }) {
                 if (val === "") {
                   setItems(1);
                 } else {
-                  setItems(Math.max(1, Math.min(2000000, parseInt(val, 10))));
+                  setItems(
+                    Math.max(1, Math.min(2000000, Number.parseInt(val, 10))),
+                  );
                 }
               }}
               className="value editableValue"
@@ -150,7 +155,7 @@ export default function RoyalMailCalculator({ pages, letterType }) {
               max="2000000"
               step="1000"
               value={items}
-              onChange={(e) => setItems(parseInt(e.target.value))}
+              onChange={(e) => setItems(Number.parseInt(e.target.value, 10))}
               className="slider"
               style={{
                 background: `linear-gradient(to right, #ef4444 0%, #ef4444 ${

@@ -19,7 +19,7 @@ jest.mock("jose", () => ({
   jwtVerify: jest.fn(),
 }));
 
-jest.mock("../s3Service", () => ({
+jest.mock("../s3-service", () => ({
   fetchS3FileHistory: jest.fn(),
   getS3FileContent: jest.fn(),
   s3Client: {},
@@ -31,13 +31,15 @@ import { mockDeep } from "jest-mock-extended";
 import request from "supertest";
 
 // eslint-disable-next-line import-x/first
-import { AuthError, CognitoAuthenticator } from "../auth";
+import { AuthError, CognitoAuthenticator } from "src/auth";
 // eslint-disable-next-line import-x/first
-import { ERROR_NOT_FOUND } from "../constants";
+import { ERROR_NOT_FOUND } from "src/constants";
 // eslint-disable-next-line import-x/first
-import { fetchS3FileHistory, getS3FileContent } from "../s3Service";
+import { fetchS3FileHistory, getS3FileContent } from "src/s3-service";
 // eslint-disable-next-line import-x/first
-import { createApp } from "../server";
+import { createApp } from "src/server";
+// eslint-disable-next-line import-x/first
+import http from "node:http";
 
 // ---------------------------------------------------------------------------
 // Typed references to the mocked S3 service functions
@@ -522,24 +524,23 @@ describe("s3Router non-Error rejections", () => {
 
 // ===========================================================================
 describe("startServer", () => {
-  it("starts a server on the given port and responds to requests", (done) => {
-    // Import after mocks are in place — jose and s3Service are already mocked above
+  it("starts a server on the given port and responds to requests", async () => {
     const { startServer } =
       jest.requireActual<typeof import("../server")>("../server");
 
     // Use port 0 to let the OS pick a free port
     const server = startServer(0);
 
-    server.on("listening", () => {
-      const address = server.address() as { port: number };
+    await new Promise<void>((resolve, reject) => {
+      server.on("listening", () => {
+        const address = server.address() as { port: number };
 
-      require("http").get(
-        `http://localhost:${address.port}/health`,
-        (res: import("http").IncomingMessage) => {
+        http.get(`http://localhost:${address.port}/health`, (res) => {
           expect(res.statusCode).toBe(200);
-          server.close(done);
-        },
-      );
+          server.close((err) => (err ? reject(err) : resolve()));
+        });
+      });
+      server.on("error", reject);
     });
   });
 });
@@ -580,7 +581,7 @@ describe("mapValidationError — non-Error JOSE object", () => {
 
 // ===========================================================================
 describe("startServer — default port branch", () => {
-  it("starts without arguments, using process.env.PORT when set", (done) => {
+  it("starts without arguments, using process.env.PORT when set", async () => {
     const saved = process.env.PORT;
     process.env.PORT = "0"; // port 0 = OS-assigned free port
 
@@ -588,8 +589,12 @@ describe("startServer — default port branch", () => {
       jest.requireActual<typeof import("../server")>("../server");
     const server = start();
 
-    server.on("listening", () => {
-      server.close(done);
+    await new Promise<void>((resolve, reject) => {
+      server.on("listening", () => {
+        expect(server.listening).toBe(true);
+        server.close((err) => (err ? reject(err) : resolve()));
+      });
+      server.on("error", reject);
     });
 
     process.env.PORT = saved;
