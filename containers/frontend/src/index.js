@@ -1,9 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-// import './index.css';
 import App from "./App.js";
 import reportWebVitals from "./reportWebVitals.js";
-import "nhsuk-frontend/dist/nhsuk.css";
 import { AuthProvider } from "./components/AuthContext.js";
 
 const root = ReactDOM.createRoot(document.querySelector("#root"));
