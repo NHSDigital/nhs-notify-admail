@@ -44,6 +44,8 @@
   "name": "nhs-notify-admail-frontend",
   "private": true,
   "scripts": {
+    "build:archive": "react-scripts build",
+    "build:container": "cd ../.. && make docker-build-and-push base_image=node:22-alpine dir=containers/frontend",
     "build": "react-scripts build",
     "eject": "react-scripts eject",
     "lint": "../../node_modules/.bin/eslint .",
