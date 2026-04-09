@@ -8,7 +8,7 @@ npx esbuild \
     --bundle \
     --minify \
     --sourcemap \
-    --target=es2020 \
+    --target=es2022 \
     --platform=node \
     --loader:.node=file \
     --loader:.txt=text \

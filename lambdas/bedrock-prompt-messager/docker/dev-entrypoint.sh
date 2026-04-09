@@ -6,7 +6,7 @@ echo "Starting esbuild in watch mode..."
 npx esbuild \
   --bundle \
   --sourcemap \
-  --target=es2020 \
+  --target=es2022 \
   --platform=node \
   --loader:.txt=text \
   --entry-names=[name] \
