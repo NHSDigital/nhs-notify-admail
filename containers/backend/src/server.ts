@@ -13,7 +13,7 @@ import router from "src/s3-router";
 // App Runner service URLs, localhost (any port), and 127.0.0.1
 // ---------------------------------------------------------------------------
 const ALLOWED_ORIGIN =
-  /^https:\/\/[a-z0-9]+\.[a-z0-9-]+\.awsapprunner\.com$|localhost|127\.0\.0\.1/;
+  /^(https:\/\/[a-z0-9]+\.[a-z0-9-]+\.awsapprunner\.com|http:\/\/localhost:\d+|http:\/\/127\.0\.0\.1:\d+)$/;
 
 // ---------------------------------------------------------------------------
 // createApp – builds and returns the Express application.
