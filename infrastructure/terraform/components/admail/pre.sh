@@ -62,12 +62,33 @@ export TF_VAR_container_image_tag_suffix="${CONTAINER_IMAGE_SUFFIX}"
 run_or_fail npm ci
 run_or_fail npm run generate-dependencies --workspaces --if-present
 run_or_fail npm run build:archive --workspaces --if-present
-run_or_fail env \
-  CONTAINER_IMAGE_PREFIX="${CONTAINER_IMAGE_PREFIX}" \
-  CONTAINER_IMAGE_SUFFIX="${CONTAINER_IMAGE_SUFFIX}" \
-  AWS_ACCOUNT_ID="${AWS_ACCOUNT_ID}" \
-  AWS_REGION="${REGION}" \
-  PUBLISH_CONTAINER_IMAGE="${PUBLISH_CONTAINER_IMAGE}" \
-  npm run build:container --workspaces --if-present
+
+FRONTEND_HOSTING_MODE="${TF_VAR_frontend_hosting_mode:-amplify}"
+
+if [ "${FRONTEND_HOSTING_MODE}" = "apprunner" ]; then
+  run_or_fail env \
+    CONTAINER_IMAGE_PREFIX="${CONTAINER_IMAGE_PREFIX}" \
+    CONTAINER_IMAGE_SUFFIX="${CONTAINER_IMAGE_SUFFIX}" \
+    AWS_ACCOUNT_ID="${AWS_ACCOUNT_ID}" \
+    AWS_REGION="${REGION}" \
+    PUBLISH_CONTAINER_IMAGE="${PUBLISH_CONTAINER_IMAGE}" \
+    npm run build:container --workspaces --if-present
+else
+  run_or_fail env \
+    CONTAINER_IMAGE_PREFIX="${CONTAINER_IMAGE_PREFIX}" \
+    CONTAINER_IMAGE_SUFFIX="${CONTAINER_IMAGE_SUFFIX}" \
+    AWS_ACCOUNT_ID="${AWS_ACCOUNT_ID}" \
+    AWS_REGION="${REGION}" \
+    PUBLISH_CONTAINER_IMAGE="${PUBLISH_CONTAINER_IMAGE}" \
+    npm run build:container --workspace nhs-notify-admail-backend --if-present
+
+  run_or_fail env \
+    CONTAINER_IMAGE_PREFIX="${CONTAINER_IMAGE_PREFIX}" \
+    CONTAINER_IMAGE_SUFFIX="${CONTAINER_IMAGE_SUFFIX}" \
+    AWS_ACCOUNT_ID="${AWS_ACCOUNT_ID}" \
+    AWS_REGION="${REGION}" \
+    PUBLISH_CONTAINER_IMAGE="${PUBLISH_CONTAINER_IMAGE}" \
+    npm run build:container --workspace nhs-notify-admail-bedrock-prompt-messager --if-present
+fi
 
 popd || exit 1 # Return to working directory

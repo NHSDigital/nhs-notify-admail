@@ -1,4 +1,6 @@
 resource "aws_apprunner_service" "service_frontend" {
+  count = var.frontend_hosting_mode == "apprunner" ? 1 : 0
+
   service_name = "${local.csi}-frontend"
 
   source_configuration {

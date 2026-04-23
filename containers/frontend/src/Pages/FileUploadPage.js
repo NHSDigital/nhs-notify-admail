@@ -9,8 +9,7 @@ function FileUploadPage() {
   const [feedback, setFeedback] = useState({});
   const [letterType, setLetterType] = useState("");
   const [isLoading, setLoading] = useState(false);
-  const EnvLambdaFunctionApiBaseUrl =
-    window.env?.REACT_APP_API_GATEWAY || process.env.REACT_APP_API_GATEWAY;
+  const EnvLambdaFunctionApiBaseUrl = process.env.REACT_APP_API_GATEWAY;
   const { user } = useAuth();
 
   const getPromptResp = async (fileContent, fileName) => {

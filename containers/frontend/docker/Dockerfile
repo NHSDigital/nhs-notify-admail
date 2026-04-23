@@ -25,13 +25,6 @@ COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 COPY --from=builder /app/build /usr/share/nginx/html
 
-COPY entrypoint.sh /entrypoint.sh
-
-RUN chmod +x /entrypoint.sh
-
 EXPOSE 80
 
-ENTRYPOINT ["/entrypoint.sh"]
-
-# Below is now in entrypoint.sh could be moved back here if needed
-# CMD ["nginx", "-g", "daemon off;"]
+CMD ["nginx", "-g", "daemon off;"]

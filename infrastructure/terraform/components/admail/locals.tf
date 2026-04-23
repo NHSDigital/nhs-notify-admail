@@ -15,4 +15,6 @@ locals {
 
   # API Gateway
   api_gateway_llm_path_param = "call-llm"
+
+  amplify_branch_name = var.environment == "main" ? "main" : (var.branch_name != "" ? var.branch_name : var.environment)
 }

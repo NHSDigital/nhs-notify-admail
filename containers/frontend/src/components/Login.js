@@ -32,10 +32,7 @@ export default function Login() {
             }}
           >
             <img
-              src={
-                window.env?.PUBLIC_URL ||
-                `${process.env.PUBLIC_URL}/nhs-england-white.svg`
-              }
+              src={`${process.env.PUBLIC_URL}/nhs-england-white.svg`}
               alt="NHS logo"
               className="nhsuk-login-logo"
             />

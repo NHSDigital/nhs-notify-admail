@@ -15,14 +15,19 @@
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
 | <a name="input_aws_account_id"></a> [aws\_account\_id](#input\_aws\_account\_id) | The AWS Account ID (numeric) | `string` | n/a | yes |
+| <a name="input_branch_name"></a> [branch\_name](#input\_branch\_name) | Source control branch name used for Amplify branch mapping (for example feature branches in PR preview environments). | `string` | `""` | no |
 | <a name="input_container_image_tag_suffix"></a> [container\_image\_tag\_suffix](#input\_container\_image\_tag\_suffix) | Suffix used for container/image based Lambda image tags | `string` | `"latest"` | no |
 | <a name="input_default_tags"></a> [default\_tags](#input\_default\_tags) | A map of default tags to apply to all taggable resources within the component | `map(string)` | `{}` | no |
+| <a name="input_enable_amplify_domain_association"></a> [enable\_amplify\_domain\_association](#input\_enable\_amplify\_domain\_association) | Whether to create an Amplify domain association for the admail hosted zone. | `bool` | `false` | no |
 | <a name="input_environment"></a> [environment](#input\_environment) | The name of the tfscaffold environment | `string` | n/a | yes |
 | <a name="input_evaluation_evaluator_model_identifier"></a> [evaluation\_evaluator\_model\_identifier](#input\_evaluation\_evaluator\_model\_identifier) | Full identifier of the model to use for the evaluation evaluator | `string` | n/a | yes |
 | <a name="input_evaluation_inference_model_identifier"></a> [evaluation\_inference\_model\_identifier](#input\_evaluation\_inference\_model\_identifier) | Full identifier of the model to use for the evaluation inferance | `string` | n/a | yes |
 | <a name="input_evaluation_schedule_days"></a> [evaluation\_schedule\_days](#input\_evaluation\_schedule\_days) | The amount of days between automated evaluations being run NOTE: Set quite high for dev envrionments, to lower costs | `string` | n/a | yes |
 | <a name="input_force_destroy"></a> [force\_destroy](#input\_force\_destroy) | Flag to force deletion of S3 buckets | `bool` | `false` | no |
 | <a name="input_force_lambda_code_deploy"></a> [force\_lambda\_code\_deploy](#input\_force\_lambda\_code\_deploy) | If the lambda package in s3 has the same commit id tag as the terraform build branch, the lambda will not update automatically. Set to True if making changes to Lambda code from on the same commit for example during development | `bool` | `false` | no |
+| <a name="input_frontend_hosting_mode"></a> [frontend\_hosting\_mode](#input\_frontend\_hosting\_mode) | Frontend hosting mode. Use 'amplify' for Amplify Hosting or 'apprunner' for legacy App Runner hosting. | `string` | `"amplify"` | no |
+| <a name="input_frontend_repository"></a> [frontend\_repository](#input\_frontend\_repository) | Git repository URL connected to Amplify for frontend builds (for example https://github.com/NHSDigital/nhs-notify-admail). | `string` | `""` | no |
+| <a name="input_frontend_repository_access_token"></a> [frontend\_repository\_access\_token](#input\_frontend\_repository\_access\_token) | Access token used by Amplify to connect to the frontend repository. | `string` | `""` | no |
 | <a name="input_group"></a> [group](#input\_group) | The group variables are being inherited from (often synonmous with account short-name) | `string` | n/a | yes |
 | <a name="input_kms_deletion_window"></a> [kms\_deletion\_window](#input\_kms\_deletion\_window) | When a kms key is deleted, how long should it wait in the pending deletion state? | `string` | `"30"` | no |
 | <a name="input_log_level"></a> [log\_level](#input\_log\_level) | The log level to be used in lambda functions within the component. Any log with a lower severity than the configured value will not be logged: https://docs.python.org/3/library/logging.html#levels | `string` | `"INFO"` | no |

@@ -19,10 +19,7 @@ export default function Header() {
         }}
       >
         <img
-          src={
-            window.env?.PUBLIC_URL ||
-            `${process.env.PUBLIC_URL}/nhs-england-white.svg`
-          }
+          src={`${process.env.PUBLIC_URL}/nhs-england-white.svg`}
           alt="NHS logo"
           className="nhsuk-header-logo"
           style={{ height: "80px", marginRight: "10px" }}

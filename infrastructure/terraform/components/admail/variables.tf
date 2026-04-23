@@ -134,3 +134,39 @@ variable "container_image_tag_suffix" {
   description = "Suffix used for container/image based Lambda image tags"
   default     = "latest"
 }
+
+variable "frontend_hosting_mode" {
+  type        = string
+  description = "Frontend hosting mode. Use 'amplify' for Amplify Hosting or 'apprunner' for legacy App Runner hosting."
+  default     = "amplify"
+
+  validation {
+    condition     = contains(["amplify", "apprunner"], var.frontend_hosting_mode)
+    error_message = "frontend_hosting_mode must be either 'amplify' or 'apprunner'."
+  }
+}
+
+variable "branch_name" {
+  type        = string
+  description = "Source control branch name used for Amplify branch mapping (for example feature branches in PR preview environments)."
+  default     = ""
+}
+
+variable "frontend_repository" {
+  type        = string
+  description = "Git repository URL connected to Amplify for frontend builds (for example https://github.com/NHSDigital/nhs-notify-admail)."
+  default     = ""
+}
+
+variable "frontend_repository_access_token" {
+  type        = string
+  description = "Access token used by Amplify to connect to the frontend repository."
+  default     = ""
+  sensitive   = true
+}
+
+variable "enable_amplify_domain_association" {
+  type        = bool
+  description = "Whether to create an Amplify domain association for the admail hosted zone."
+  default     = false
+}
