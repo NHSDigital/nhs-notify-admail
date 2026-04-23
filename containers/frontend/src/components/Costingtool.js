@@ -89,7 +89,7 @@ export default function RoyalMailCalculator({ letterType, pages }) {
                   setLetterPages(1);
                 } else {
                   setLetterPages(
-                    Math.max(1, Math.min(5, Number.parseInt(val, 10))) || 1,
+                    Math.max(1, Math.min(5, Number.parseInt(val, 10))),
                   );
                 }
               }}
@@ -175,7 +175,7 @@ export default function RoyalMailCalculator({ letterType, pages }) {
       <div className="checkboxContainer">
         <input
           type="checkbox"
-          id="1st Class"
+          id="firstClass"
           checked={firstClass}
           onChange={(e) => setFirstClass(e.target.checked)}
           className="checkbox"

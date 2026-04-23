@@ -23,7 +23,7 @@
 .file-upload input[type="file"]::file-selector-button {
   width: 150px;
   height: 44px;
-  background-color: #007F3B;
+  background-color: #007f3b;
   border: 1px solid #d8dde0;
   border-radius: 4px;
   color: #f9fafb;
@@ -33,12 +33,11 @@
   font-weight: 700;
   padding: 10px 20px;
   cursor: pointer;
-  box-shadow: 0 2px 4px rgba(#00411D);
-  transition: background-color 0.2s, box-shadow 0.2s;
+  box-shadow: 0 2px 4px #00411d;
+  transition:
+    background-color 0.2s,
+    box-shadow 0.2s;
 }
-
-
-
 
 .file-upload input[type="file"]:focus {
   outline: none;

@@ -4,7 +4,7 @@
   "private": true,
   "dependencies": {
     "@playwright/test": "^1.58.2",
-    "@types/node": "^25.5.0"
+    "@types/node": "^22.0.0"
   },
   "scripts": {
     "lint": "eslint .",

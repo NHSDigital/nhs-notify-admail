@@ -19,6 +19,7 @@ export const CORS_HEADERS: Record<string, string> = {
 };
 
 export const ERROR_MESSAGES = {
+  GUARDRAIL_NOT_CONFIGURED: "AWS Bedrock Guardrail configuration not set.",
   SYSTEM_PROMPT_NOT_FOUND: "Error: System prompt file not found.",
   S3_LOGGING_NOT_CONFIGURED:
     "S3 logging environment variables not set. Skipping log.",

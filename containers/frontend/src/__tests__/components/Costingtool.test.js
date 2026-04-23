@@ -130,6 +130,39 @@ describe("RoyalMailCalculator", () => {
     expect(input).toHaveValue(2000000);
   });
 
+  test("handles empty string input for pages and letters", () => {
+    render(<RoyalMailCalculator />);
+    const pagesInput = screen.getByLabelText(/Number of pages/i);
+    fireEvent.change(pagesInput, { target: { value: "" } });
+    expect(pagesInput).toHaveValue(1);
+
+    const lettersInput = screen.getByLabelText(/Number of letters/i);
+    fireEvent.change(lettersInput, { target: { value: "" } });
+    expect(lettersInput).toHaveValue(1);
+  });
+
+  test("handles invalid pages prop", () => {
+    render(<RoyalMailCalculator pages={Number.NaN} />);
+    expect(screen.getByLabelText(/Number of pages/i)).toHaveValue(1);
+  });
+
+  test("handles invalid string input for pages", () => {
+    render(<RoyalMailCalculator />);
+    const pagesInput = screen.getByLabelText(/Number of pages/i);
+    fireEvent.change(pagesInput, { target: { value: "abc" } });
+    expect(pagesInput).toHaveValue(1);
+
+    const lettersInput = screen.getByLabelText(/Number of letters/i);
+    fireEvent.change(lettersInput, { target: { value: "abc" } });
+  });
+
+  test("handles NaN gracefully", () => {
+    render(<RoyalMailCalculator pages={Number.NaN} />);
+    const pagesInput = screen.getByLabelText(/Number of pages/i);
+    fireEvent.change(pagesInput, { target: { value: "NaN" } });
+    expect(pagesInput).toHaveValue(1);
+  });
+
   test("savings never displays a negative value", () => {
     render(<RoyalMailCalculator pages={1} letterType="pdf" />);
     fireEvent.change(screen.getByLabelText(/Number of pages/i), {

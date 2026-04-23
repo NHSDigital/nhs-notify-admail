@@ -64,7 +64,11 @@ export class BedrockService {
 
     const match = DATA_URL_PATTERN.exec(inputLetter.trim());
     if (!match) {
-      return { statusCode: 400, body: ERROR_MESSAGES.INVALID_DATA_URL };
+      return {
+        statusCode: 400,
+        body: JSON.stringify({ error: ERROR_MESSAGES.INVALID_DATA_URL }),
+        headers: CORS_HEADERS,
+      };
     }
 
     const [, mime, b64] = match;
@@ -73,11 +77,22 @@ export class BedrockService {
     if (!format) {
       return {
         statusCode: 400,
-        body: ERROR_MESSAGES.UNKNOWN_MIME_TYPE(mime),
+        body: JSON.stringify({ error: ERROR_MESSAGES.UNKNOWN_MIME_TYPE(mime) }),
+        headers: CORS_HEADERS,
       };
     }
 
     const userPrompt = "Analyze the following letter:";
+
+    if (!this.config.guardrail || !this.config.guardrailVersion) {
+      return {
+        statusCode: 500,
+        body: JSON.stringify({
+          error: ERROR_MESSAGES.GUARDRAIL_NOT_CONFIGURED,
+        }),
+        headers: CORS_HEADERS,
+      };
+    }
 
     const guardrailResponse = await this.bedrockClient.send(
       new ApplyGuardrailCommand({
@@ -179,7 +194,7 @@ export class BedrockService {
                   reason: {
                     type: "string",
                     description:
-                      "Bullet pointed explaination of letter eligibility for Admail",
+                      "Bullet pointed explanation of letter eligibility for Admail",
                   },
                   advice: {
                     type: "string",

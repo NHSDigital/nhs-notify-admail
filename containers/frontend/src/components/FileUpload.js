@@ -27,9 +27,6 @@ export default function FileUpload({ handleLoading, onFileUpload }) {
     setUploadStatus("Uploading...");
     handleLoading(true);
     try {
-      const formData = new FormData();
-      formData.append("file", file);
-
       const fr = new FileReader();
       fr.readAsDataURL(file);
       fr.addEventListener("load", (_evt) =>

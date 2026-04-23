@@ -153,7 +153,6 @@ export function AuthProvider({ children }) {
       sessionStorage.removeItem("refreshToken");
       setUser(null);
       setError(null);
-      return <Login />;
     } catch (err) {
       setError(err.message || "Failed to sign out");
     }

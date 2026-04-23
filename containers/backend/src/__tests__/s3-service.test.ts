@@ -197,4 +197,12 @@ describe("getS3FileContent", () => {
       "Error fetching S3 file content",
     );
   });
+
+  it("wraps non-Error rejections using String() and re-throws", async () => {
+    mockSend.mockRejectedValueOnce("S3 string rejection");
+
+    await expect(getS3FileContent("weird.json")).rejects.toThrow(
+      "Error fetching S3 file content: S3 string rejection",
+    );
+  });
 });

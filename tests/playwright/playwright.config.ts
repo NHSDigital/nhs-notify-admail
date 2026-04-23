@@ -5,7 +5,7 @@ import path from "node:path";
  * See https://playwright.dev/docs/test-configuration.
  */
 export default defineConfig({
-  testDir: path.resolve(__dirname, "../"),
+  testDir: path.resolve(__dirname),
   /* Run tests in files in parallel */
   fullyParallel: true,
   /* Fail the build on CI if you accidentally left test.only in the source code. */

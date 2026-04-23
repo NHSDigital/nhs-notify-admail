@@ -604,4 +604,32 @@ describe("startServer — default port branch", () => {
 
     process.env.PORT = saved;
   });
+
+  it("uses default port 8080 when process.env.PORT is not set", async () => {
+    const saved = process.env.PORT;
+    delete process.env.PORT;
+
+    const { startServer: start } =
+      jest.requireActual<typeof import("../server")>("../server");
+
+    const server = start();
+
+    await new Promise<void>((resolve, reject) => {
+      server.on("listening", () => {
+        expect(server.listening).toBe(true);
+        server.close((err) => (err ? reject(err) : resolve()));
+      });
+      server.on("error", (err: NodeJS.ErrnoException) => {
+        if (err.code === "EADDRINUSE") {
+          resolve();
+        } else {
+          reject(err);
+        }
+      });
+    });
+
+    if (saved !== undefined) {
+      process.env.PORT = saved;
+    }
+  });
 });

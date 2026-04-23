@@ -142,7 +142,9 @@ describe("BedrockService", () => {
       const result = await service.callAdmailBedrockPrompt("not-a-data-url");
 
       expect(result.statusCode).toBe(400);
-      expect(result.body).toBe(ERROR_MESSAGES.INVALID_DATA_URL);
+      expect(result.body).toBe(
+        JSON.stringify({ error: ERROR_MESSAGES.INVALID_DATA_URL }),
+      );
       expect(bedrockSend).not.toHaveBeenCalled();
     });
 
@@ -155,6 +157,23 @@ describe("BedrockService", () => {
       expect(result.statusCode).toBe(400);
       expect(result.body).toContain("image/png");
       expect(bedrockSend).not.toHaveBeenCalled();
+    });
+
+    it("returns 500 when guardrail configuration is missing", async () => {
+      const noGuardrailService = new BedrockService(
+        bedrockClient as unknown as BedrockRuntimeClient,
+        s3Client as unknown as S3Client,
+        { ...makeConfig(), guardrail: "" },
+      );
+
+      const result = await noGuardrailService.callAdmailBedrockPrompt(
+        `data:text/plain;base64,${b64Content}`,
+      );
+
+      expect(result.statusCode).toBe(500);
+      expect(result.body).toBe(
+        JSON.stringify({ error: ERROR_MESSAGES.GUARDRAIL_NOT_CONFIGURED }),
+      );
     });
 
     it("processes a text/plain data URL and returns 200 with tool-use output", async () => {

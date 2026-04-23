@@ -24,7 +24,7 @@ Agents should look for a nested `AGENTS.md` in or near these areas before making
 
 ## Root package.json – role and usage
 
-The root `package.json` is the orchestration manifestgit co for this repo. It does not ship application code; it wires up shared dev tooling and delegates to workspace-level projects.
+The root `package.json` is the orchestration manifest for this repo. It does not ship application code; it wires up shared dev tooling and delegates to workspace-level projects.
 
 - Workspaces: Declares the set of npm workspaces (e.g. under `containers/`, `lambdas/`, `utils/`, `tests/`, `scripts/`). Agents should add a new workspace path here when introducing a new npm project.
 - Scripts: Provides top-level commands that fan out across workspaces using `--workspaces` (lint, typecheck, unit tests) and project-specific runners (e.g. `build:container`).
