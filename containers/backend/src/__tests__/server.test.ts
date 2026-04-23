@@ -60,6 +60,11 @@ const app = createApp(mockAuth);
 // ---------------------------------------------------------------------------
 const BEARER = { Authorization: "Bearer test-token" };
 
+beforeAll(() => {
+  jest.spyOn(console, "log").mockImplementation(() => {});
+  jest.spyOn(console, "warn").mockImplementation(() => {});
+});
+
 function validAuthSetup() {
   mockAuth.validateToken.mockResolvedValue({
     sub: "123",

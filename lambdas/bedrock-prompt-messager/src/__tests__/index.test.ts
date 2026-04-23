@@ -31,6 +31,15 @@ import { handler } from "..";
 // Helpers
 // ---------------------------------------------------------------------------
 
+beforeEach(() => {
+  jest.spyOn(console, "info").mockImplementation(() => {});
+  jest.spyOn(console, "error").mockImplementation(() => {});
+});
+
+afterEach(() => {
+  jest.restoreAllMocks();
+});
+
 function makeEvent(body: string | null = null): APIGatewayProxyEvent {
   return {
     body,

@@ -6,6 +6,9 @@ process.env.S3_LLM_LOGS_BUCKET = "test-bucket";
 process.env.S3_LLM_LOGS_DIRECTORY = "test-dir/";
 process.env.S3_LLM_LOGS_BUCKET_ACCOUNT_ID = "123456789012";
 
+jest.spyOn(console, "info").mockImplementation(() => {});
+jest.spyOn(console, "error").mockImplementation(() => {});
+
 // ---------------------------------------------------------------------------
 // Module mocks
 // ---------------------------------------------------------------------------
