@@ -1,5 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
+import "nhsuk-frontend/dist/nhsuk.css";
 import App from "./App.js";
 import reportWebVitals from "./reportWebVitals.js";
 import { AuthProvider } from "./components/AuthContext.js";

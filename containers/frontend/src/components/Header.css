@@ -15,15 +15,4 @@ header h1 {
   margin: 0;
 }
 
-.nhsuk-header-logo {
-  width: 220px;
-  max-width: 90vw;
-  max-height: 115px;
-  padding:5px;
-  height: auto;
-  display: block;
-}
-
-.nhsuk-header__navigation-link{
-  text-decoration: underline !important;
-}
+/* Removed fake .nhsuk-header-logo to rely on design system */
