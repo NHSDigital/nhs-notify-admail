@@ -77,13 +77,17 @@ export class CognitoAuthenticator {
   private readonly jwks: ReturnType<typeof createRemoteJWKSet>;
 
   constructor() {
-    this.region = process.env.COGNITO_REGION ?? "eu-west-2";
-
     const userPoolId = process.env.COGNITO_USER_POOL_ID;
     if (!userPoolId) {
       throw new Error("COGNITO_USER_POOL_ID environment variable not set");
     }
     this.userPoolId = userPoolId;
+
+    this.region =
+      userPoolId.split("_")[0] ||
+      process.env.AWS_REGION ||
+      process.env.COGNITO_REGION ||
+      "eu-west-2";
 
     this.appClientId = process.env.COGNITO_APP_CLIENT_ID;
     if (!this.appClientId) {

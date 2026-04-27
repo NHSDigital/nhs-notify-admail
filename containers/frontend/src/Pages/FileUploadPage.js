@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import FileUpload from "../components/FileUpload";
 import AIFeedback from "../components/AIfeedback";
 import RoyalMailCalculator from "../components/Costingtool";
-import { withAuth, useAuth } from "../components/AuthContext";
+import { useAuth } from "../components/AuthContext";
 import axios from "axios";
 
 function FileUploadPage() {
@@ -76,4 +76,4 @@ function FileUploadPage() {
   );
 }
 
-export default withAuth(FileUploadPage);
+export default FileUploadPage;

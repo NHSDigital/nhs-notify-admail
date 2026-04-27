@@ -1,9 +1,22 @@
-import { useEffect, useMemo } from "react";
+import { useMemo } from "react";
 import axios from "axios";
 import { useAuth } from "../components/AuthContext.js";
 
+let isRefreshing = false;
+let failedQueue = [];
+const processQueue = (error, token = null) => {
+  failedQueue.forEach((prom) => {
+    if (token) {
+      prom.resolve(token);
+    } else {
+      prom.reject(error);
+    }
+  });
+  failedQueue = [];
+};
+
 export function useBackendAPIClient() {
-  const { refreshSession, user } = useAuth();
+  const { refreshSession } = useAuth();
 
   const backendAPIClient = useMemo(() => {
     const backendURL =
@@ -16,19 +29,6 @@ export function useBackendAPIClient() {
     const instance = axios.create({
       baseURL,
     });
-
-    let isRefreshing = false;
-    let failedQueue = [];
-    const processQueue = (error, token = null) => {
-      failedQueue.forEach((prom) => {
-        if (token) {
-          prom.resolve(token);
-        } else {
-          prom.reject(error);
-        }
-      });
-      failedQueue = [];
-    };
 
     instance.interceptors.response.use(
       (response) => response,
@@ -51,9 +51,9 @@ export function useBackendAPIClient() {
           isRefreshing = true;
 
           try {
-            const newAccessToken = await refreshSession();
-            processQueue(null, newAccessToken);
-            originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
+            const newIdToken = await refreshSession();
+            processQueue(null, newIdToken);
+            originalRequest.headers.Authorization = `Bearer ${newIdToken}`;
             return instance(originalRequest);
           } catch (refreshError) {
             console.error("Token refresh failed:", refreshError);
@@ -73,22 +73,19 @@ export function useBackendAPIClient() {
       },
     );
 
-    return instance;
-  }, [refreshSession]);
-
-  useEffect(() => {
-    const requestInterceptor = backendAPIClient.interceptors.request.use(
+    instance.interceptors.request.use(
       (config) => {
-        if (user?.idToken) {
-          config.headers.Authorization = `Bearer ${user.idToken}`;
+        const idToken = sessionStorage.getItem("idToken");
+        if (idToken) {
+          config.headers.Authorization = `Bearer ${idToken}`;
         }
         return config;
       },
       (error) => Promise.reject(error),
     );
-    return () => {
-      backendAPIClient.interceptors.request.eject(requestInterceptor);
-    };
-  }, [user, backendAPIClient]);
+
+    return instance;
+  }, [refreshSession]);
+
   return backendAPIClient;
 }

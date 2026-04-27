@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { withAuth } from "../components/AuthContext";
 import { useBackendAPIClient } from "../api/BackendAPIClient";
 import AIFeedback from "../components/AIfeedback";
 
@@ -141,4 +140,4 @@ function History() {
   );
 }
 
-export default withAuth(History);
+export default History;

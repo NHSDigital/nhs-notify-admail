@@ -331,8 +331,7 @@ export default defineConfig([
       // --- Imports ---
       // Small utility modules may intentionally have a single named export
       "import-x/prefer-default-export": 0,
-      // TODO: CCM-12345 — fix circular dependency between BackendAPIClient and AuthContext
-      "import-x/no-cycle": 0,
+      "import-x/no-cycle": 2,
 
       // --- Code style / patterns ---
       // axios interceptors must mutate config — no clean alternative

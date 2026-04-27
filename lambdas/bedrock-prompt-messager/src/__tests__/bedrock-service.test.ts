@@ -161,9 +161,9 @@ describe("BedrockService", () => {
 
     it("returns 500 when guardrail configuration is missing", async () => {
       const noGuardrailService = new BedrockService(
+        { ...makeConfig(), guardrail: "" },
         bedrockClient as unknown as BedrockRuntimeClient,
         s3Client as unknown as S3Client,
-        { ...makeConfig(), guardrail: "" },
       );
 
       const result = await noGuardrailService.callAdmailBedrockPrompt(

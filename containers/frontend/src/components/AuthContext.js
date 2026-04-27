@@ -1,5 +1,10 @@
-import { createContext, useContext, useState, useEffect } from "react";
-import Login from "./Login.js";
+import {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useCallback,
+} from "react";
 import {
   CognitoIdentityProviderClient,
   InitiateAuthCommand,
@@ -48,7 +53,7 @@ export function AuthProvider({ children }) {
     }
   }, []);
 
-  const refreshSession = async () => {
+  const refreshSession = useCallback(async () => {
     try {
       const refreshToken = sessionStorage.getItem("refreshToken");
       if (!refreshToken) throw new Error("No refresh token available");
@@ -86,9 +91,9 @@ export function AuthProvider({ children }) {
       sessionStorage.removeItem("userEmail");
       throw err;
     }
-  };
+  }, []);
 
-  const login = async (username, password) => {
+  const login = useCallback(async (username, password) => {
     let loginResponse = null;
     try {
       setError(null);
@@ -136,7 +141,7 @@ export function AuthProvider({ children }) {
       setError(err.message || "Failed to sign in");
       return false;
     }
-  };
+  }, []);
 
   const logout = async () => {
     try {
@@ -169,16 +174,4 @@ export function AuthProvider({ children }) {
 
 export function useAuth() {
   return useContext(AuthContext);
-}
-
-export function withAuth(Component) {
-  return function AuthenticatedComponent(props) {
-    const { user } = useAuth();
-
-    if (!user) {
-      return <Login />;
-    }
-
-    return <Component {...props} user={user} />;
-  };
 }
