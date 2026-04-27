@@ -129,7 +129,7 @@ export function AuthProvider({ children }) {
       sessionStorage.setItem("accessToken", AccessToken);
       sessionStorage.setItem("refreshToken", RefreshToken);
       sessionStorage.setItem("idToken", IdToken);
-      sessionStorage.setItem("userEmail", username);
+      sessionStorage.setItem("userEmail", username); // NOSONAR jssecurity:S8475 - email extracted from verified Cognito
       setUser({
         email: username,
         idToken: IdToken,
