@@ -28,13 +28,16 @@
 | <a name="input_log_level"></a> [log\_level](#input\_log\_level) | The log level to be used in lambda functions within the component. Any log with a lower severity than the configured value will not be logged: https://docs.python.org/3/library/logging.html#levels | `string` | `"INFO"` | no |
 | <a name="input_log_retention_in_days"></a> [log\_retention\_in\_days](#input\_log\_retention\_in\_days) | The retention period in days for the Cloudwatch Logs events to be retained, default of 0 is indefinite | `number` | `0` | no |
 | <a name="input_parent_acct_environment"></a> [parent\_acct\_environment](#input\_parent\_acct\_environment) | Name of the environment responsible for the acct resources used, affects things like DNS zone. Useful for named dev environments | `string` | `"main"` | no |
+| <a name="input_private_subnet_ids"></a> [private\_subnet\_ids](#input\_private\_subnet\_ids) | List of private subnet IDs for ECS Fargate tasks | `list(string)` | n/a | yes |
 | <a name="input_project"></a> [project](#input\_project) | The name of the tfscaffold project | `string` | n/a | yes |
 | <a name="input_prompt_max_tokens_to_sample"></a> [prompt\_max\_tokens\_to\_sample](#input\_prompt\_max\_tokens\_to\_sample) | Maximum number of tokens to sample for the prompt | `number` | n/a | yes |
 | <a name="input_prompt_model"></a> [prompt\_model](#input\_prompt\_model) | Model name to use for the prompt | `string` | n/a | yes |
 | <a name="input_prompt_temperature"></a> [prompt\_temperature](#input\_prompt\_temperature) | Temperature setting for the prompt | `number` | n/a | yes |
 | <a name="input_prompt_top_p"></a> [prompt\_top\_p](#input\_prompt\_top\_p) | Top-p setting for the prompt | `number` | n/a | yes |
+| <a name="input_public_subnet_ids"></a> [public\_subnet\_ids](#input\_public\_subnet\_ids) | List of public subnet IDs for Application Load Balancers | `list(string)` | n/a | yes |
 | <a name="input_region"></a> [region](#input\_region) | The AWS Region | `string` | n/a | yes |
 | <a name="input_shared_infra_account_id"></a> [shared\_infra\_account\_id](#input\_shared\_infra\_account\_id) | The AWS Account ID of the shared infrastructure account | `string` | `"000000000000"` | no |
+| <a name="input_vpc_id"></a> [vpc\_id](#input\_vpc\_id) | The ID of the VPC to deploy ECS services and Application Load Balancers into | `string` | n/a | yes |
 ## Modules
 
 | Name | Source | Version |

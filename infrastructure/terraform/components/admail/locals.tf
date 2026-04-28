@@ -15,4 +15,8 @@ locals {
 
   # API Gateway
   api_gateway_llm_path_param = "call-llm"
+
+  # AWS ALB and target group names are limited to 32 characters.
+  # Truncate csi to 23 characters to accommodate the longest suffix "-frontend" (9 characters).
+  ecs_name_prefix = length(local.csi) > 23 ? substr(local.csi, 0, 23) : local.csi
 }
