@@ -20,7 +20,7 @@ function NhsLogo() {
   );
 }
 
-function MfaSetupForm({ secretCode, error, submitting, onSubmit }) {
+function MfaSetupForm({ error, onSubmit, secretCode, submitting }) {
   const [totpCode, setTotpCode] = useState("");
 
   const handleSubmit = (e) => {
@@ -68,7 +68,9 @@ function MfaSetupForm({ secretCode, error, submitting, onSubmit }) {
                 autoComplete="one-time-code"
                 maxLength={6}
                 value={totpCode}
-                onChange={(e) => setTotpCode(e.target.value.replace(/\D/g, ""))}
+                onChange={(e) =>
+                  setTotpCode(e.target.value.replaceAll(/\D/g, ""))
+                }
               />
             </div>
             {error && <span className="nhsuk-error-message">{error}</span>}
@@ -86,7 +88,7 @@ function MfaSetupForm({ secretCode, error, submitting, onSubmit }) {
   );
 }
 
-function MfaChallengeForm({ error, submitting, onSubmit }) {
+function MfaChallengeForm({ error, onSubmit, submitting }) {
   const [totpCode, setTotpCode] = useState("");
 
   const handleSubmit = (e) => {
@@ -120,7 +122,9 @@ function MfaChallengeForm({ error, submitting, onSubmit }) {
                 autoComplete="one-time-code"
                 maxLength={6}
                 value={totpCode}
-                onChange={(e) => setTotpCode(e.target.value.replace(/\D/g, ""))}
+                onChange={(e) =>
+                  setTotpCode(e.target.value.replaceAll(/\D/g, ""))
+                }
               />
             </div>
             {error && <span className="nhsuk-error-message">{error}</span>}

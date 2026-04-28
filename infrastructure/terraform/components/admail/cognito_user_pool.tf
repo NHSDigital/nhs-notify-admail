@@ -2,7 +2,7 @@ resource "aws_cognito_user_pool" "main" {
   name = "${local.csi}-cognito-user-pool"
 
   password_policy {
-    minimum_length    = 8
+    minimum_length    = 16
     require_lowercase = true
     require_numbers   = true
     require_symbols   = true
