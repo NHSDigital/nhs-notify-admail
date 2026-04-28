@@ -8,6 +8,16 @@ resource "aws_cognito_user_pool" "main" {
     require_symbols   = true
     require_uppercase = true
   }
+
+  # Enforce MFA for all users using TOTP (authenticator app).
+  # SMS MFA is intentionally omitted: it requires SNS configuration and a
+  # phone-number attribute, and is considered less secure than TOTP.
+  mfa_configuration = "ON"
+
+  software_token_mfa_configuration {
+    enabled = true
+  }
+
   username_attributes      = ["email"]
   auto_verified_attributes = ["email"]
 }
