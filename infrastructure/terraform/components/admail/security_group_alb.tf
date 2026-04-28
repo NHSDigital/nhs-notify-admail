@@ -1,7 +1,7 @@
 resource "aws_security_group" "alb" {
   name        = "${local.csi}-alb"
   description = "Security group for the Application Load Balancer"
-  vpc_id      = var.vpc_id
+  vpc_id      = local.vpc_id
 
   ingress {
     description = "Allow HTTP from anywhere"

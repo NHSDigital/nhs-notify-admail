@@ -134,18 +134,3 @@ variable "container_image_tag_suffix" {
   description = "Suffix used for container/image based Lambda image tags"
   default     = "latest"
 }
-
-variable "vpc_id" {
-  type        = string
-  description = "The ID of the VPC to deploy ECS services and Application Load Balancers into"
-}
-
-variable "public_subnet_ids" {
-  type        = list(string)
-  description = "List of public subnet IDs for Application Load Balancers"
-}
-
-variable "private_subnet_ids" {
-  type        = list(string)
-  description = "List of private subnet IDs for ECS Fargate tasks"
-}

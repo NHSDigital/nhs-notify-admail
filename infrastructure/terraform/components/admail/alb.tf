@@ -3,14 +3,14 @@ resource "aws_lb" "main" {
   internal           = false
   load_balancer_type = "application"
   security_groups    = [aws_security_group.alb.id]
-  subnets            = var.public_subnet_ids
+  subnets            = local.public_subnet_ids
 }
 
 resource "aws_lb_target_group" "backend" {
   name        = "${local.ecs_name_prefix}-backend"
   port        = 8080
   protocol    = "HTTP"
-  vpc_id      = var.vpc_id
+  vpc_id      = local.vpc_id
   target_type = "ip"
 
   health_check {
@@ -28,7 +28,7 @@ resource "aws_lb_target_group" "frontend" {
   name        = "${local.ecs_name_prefix}-frontend"
   port        = 80
   protocol    = "HTTP"
-  vpc_id      = var.vpc_id
+  vpc_id      = local.vpc_id
   target_type = "ip"
 
   health_check {
