@@ -44,37 +44,3 @@ jobs:
         uses: ./.github/actions/build-docs
         with:
           version: "${{ inputs.version }}"
-  artefact-1:
-    name: "Artefact 1"
-    runs-on: ubuntu-latest
-    timeout-minutes: 3
-    steps:
-      - name: "Checkout code"
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
-      - name: "Build artefact 1"
-        run: |
-          echo "Building artefact 1 ..."
-      - name: "Check artefact 1"
-        run: |
-          echo "Checking artefact 1 ..."
-      - name: "Upload artefact 1"
-        run: |
-          echo "Uploading artefact 1 ..."
-          # Use either action/cache or action/upload-artifact
-  artefact-n:
-    name: "Artefact n"
-    runs-on: ubuntu-latest
-    timeout-minutes: 3
-    steps:
-      - name: "Checkout code"
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
-      - name: "Build artefact n"
-        run: |
-          echo "Building artefact n ..."
-      - name: "Check artefact n"
-        run: |
-          echo "Checking artefact n ..."
-      - name: "Upload artefact n"
-        run: |
-          echo "Uploading artefact n ..."
-          # Use either action/cache or action/upload-artifact
