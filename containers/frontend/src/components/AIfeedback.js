@@ -81,7 +81,7 @@ export default function AIFeedback({ feedback, isLoading }) {
       );
     }
     if (feedbackObj === null) {
-      return <p className="no-feedback">No file uploaded yet.</p>;
+      return <p className="no-feedback">No file chosen yet.</p>;
     }
     if (feedbackObj === undefined) {
       return <p className="no-feedback">Undefined response</p>;

@@ -29,11 +29,11 @@ beforeEach(() => {
 // Tests
 // ---------------------------------------------------------------------------
 describe("Login — default username/password form", () => {
-  test("renders the Notify AI Login heading with username and password fields", () => {
+  test("renders the Notify Admail Login heading with username and password fields", () => {
     render(<Login />);
 
     expect(
-      screen.getByRole("heading", { name: /Notify AI Login/i }),
+      screen.getByRole("heading", { name: /Notify Admail Login/i }),
     ).toBeInTheDocument();
     expect(screen.getByLabelText(/Username/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/Password/i)).toBeInTheDocument();
@@ -84,7 +84,7 @@ describe("Login — SOFTWARE_TOKEN_MFA challenge form", () => {
     render(<Login />);
 
     expect(
-      screen.queryByRole("heading", { name: /Notify AI Login/i }),
+      screen.queryByRole("heading", { name: /Notify Admail Login/i }),
     ).not.toBeInTheDocument();
     expect(
       screen.queryByRole("heading", {
@@ -167,7 +167,7 @@ describe("Login — MFA_SETUP form", () => {
     render(<Login />);
 
     expect(
-      screen.queryByRole("heading", { name: /Notify AI Login/i }),
+      screen.queryByRole("heading", { name: /Notify Admail Login/i }),
     ).not.toBeInTheDocument();
     expect(
       screen.queryByRole("heading", { name: /^Two-factor authentication$/i }),

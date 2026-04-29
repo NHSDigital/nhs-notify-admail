@@ -28,7 +28,7 @@ export default function Header() {
           style={{ height: "80px", marginRight: "10px" }}
         />
         <h1 style={{ margin: 0, color: "#ffffff", fontSize: "24px" }}>
-          Notify AI
+          Notify Admail
         </h1>
       </div>
       <div
@@ -71,7 +71,7 @@ export default function Header() {
                 className="nhsuk-header__navigation-link"
                 style={{ color: "#ffffff", textDecoration: "none" }}
               >
-                Admail Eligibility Checker
+                Eligibility Checker
               </Link>
             </li>
             <li
@@ -83,7 +83,7 @@ export default function Header() {
                 className="nhsuk-header__navigation-link"
                 style={{ color: "#ffffff", textDecoration: "none" }}
               >
-                Admail Eligibility History
+                Eligibility History
               </Link>
             </li>
           </ul>

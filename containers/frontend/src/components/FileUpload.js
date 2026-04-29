@@ -46,7 +46,7 @@ export default function FileUpload({ handleLoading, onFileUpload }) {
   return (
     <div className="file-upload">
       <h2 style={{ fontWeight: "bold", fontSize: "24px", color: "#000" }}>
-        Admail Eligibility Checker
+        Eligibility Checker
       </h2>
       <p>
         Upload your template to have the letter content assessed. This service
