@@ -65,7 +65,9 @@ function History() {
       <button
         key={i}
         onClick={() => handlePageChange(i)}
-        className={currentPage === i ? "active" : ""}
+        className={`nhsuk-pagination-btn${currentPage === i ? " active" : ""}`}
+        aria-label={`Page ${i}`}
+        aria-current={currentPage === i ? "page" : undefined}
       >
         {i}
       </button>,
@@ -76,64 +78,68 @@ function History() {
     <div>
       <main className="container">
         <div className="two-column-content">
-          <table>
-            <thead>
-              <tr>
-                <th>File Name</th>
-                <th>Date Uploaded</th>
-                <th>Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              {isLoading && allFiles.length === 0 ? (
+          <div className="history-table-column">
+            <table>
+              <thead>
                 <tr>
-                  <td colSpan="3" className="text-center">
-                    Loading files...
-                  </td>
+                  <th>File Name</th>
+                  <th>Date Uploaded</th>
+                  <th>Action</th>
                 </tr>
-              ) : currentFiles.length > 0 ? (
-                currentFiles.map((file, index) => (
-                  <tr key={index}>
-                    <td>{file.name.split("|~")[1] || ""}</td>
-                    <td>{file.last_modified}</td>
-                    <td>
-                      <button
-                        onClick={() => fetchAndShowFileContent(file.name)}
-                      >
-                        View Details
-                      </button>
+              </thead>
+              <tbody>
+                {isLoading && allFiles.length === 0 ? (
+                  <tr>
+                    <td colSpan="3" className="text-center">
+                      Loading files...
                     </td>
                   </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan="3" className="text-center">
-                    No assessment files found.
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
+                ) : currentFiles.length > 0 ? (
+                  currentFiles.map((file, index) => (
+                    <tr key={index}>
+                      <td>{file.name.split("|~")[1] || ""}</td>
+                      <td>{file.last_modified}</td>
+                      <td>
+                        <button
+                          onClick={() => fetchAndShowFileContent(file.name)}
+                        >
+                          View Details
+                        </button>
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan="3" className="text-center">
+                      No assessment files found.
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+            {totalPages > 1 && (
+              <nav className="nhsuk-pagination-nav" aria-label="Pagination">
+                <button
+                  className="nhsuk-pagination-btn"
+                  onClick={() => handlePageChange(currentPage - 1)}
+                  disabled={currentPage === 1}
+                  aria-label="Previous page"
+                >
+                  &lsaquo; Previous
+                </button>
+                {paginationButtons}
+                <button
+                  className="nhsuk-pagination-btn"
+                  onClick={() => handlePageChange(currentPage + 1)}
+                  disabled={currentPage === totalPages}
+                  aria-label="Next page"
+                >
+                  Next &rsaquo;
+                </button>
+              </nav>
+            )}
+          </div>
           <AIFeedback feedback={feedback} isLoading={isLoading} />
-        </div>
-        <div className="pagination-controls">
-          {totalPages > 1 && (
-            <div className="pagination">
-              <button
-                onClick={() => handlePageChange(currentPage - 1)}
-                disabled={currentPage === 1}
-              >
-                Previous
-              </button>
-              {paginationButtons}
-              <button
-                onClick={() => handlePageChange(currentPage + 1)}
-                disabled={currentPage === totalPages}
-              >
-                Next
-              </button>
-            </div>
-          )}
         </div>
       </main>
     </div>

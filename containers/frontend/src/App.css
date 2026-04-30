@@ -3,7 +3,9 @@ html {
   box-sizing: border-box;
 }
 
-*, *::before, *::after {
+*,
+*::before,
+*::after {
   box-sizing: inherit;
 }
 
@@ -31,6 +33,7 @@ body {
   display: grid;
   grid-template-columns: 1fr;
   gap: 16px;
+  align-items: start;
 }
 
 @media (min-width: 768px) {
@@ -69,4 +72,64 @@ body {
 .rating-default {
   color: #000000;
   font-weight: bold;
+}
+
+/* ── Pagination ─────────────────────────────────────────────────────────── */
+
+.nhsuk-pagination-nav {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px solid #d8dde0;
+}
+
+.nhsuk-pagination-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 8px 14px;
+  font-family: inherit;
+  font-size: 19px;
+  line-height: 1;
+  font-weight: 400;
+  color: #005eb8;
+  background: #ffffff;
+  border: 2px solid #005eb8;
+  border-radius: 4px;
+  cursor: pointer;
+  text-decoration: none;
+  transition:
+    background-color 0.1s ease,
+    color 0.1s ease;
+}
+
+.nhsuk-pagination-btn:hover:not(:disabled) {
+  background-color: #005eb8;
+  color: #ffffff;
+}
+
+.nhsuk-pagination-btn.active {
+  background-color: #005eb8;
+  color: #ffffff;
+  font-weight: 700;
+  border-color: #005eb8;
+}
+
+.nhsuk-pagination-btn:disabled {
+  color: #6f777b;
+  border-color: #d8dde0;
+  background: #f0f4f5;
+  cursor: not-allowed;
+}
+
+/* NHS-mandated focus style — yellow outline, no default browser ring */
+.nhsuk-pagination-btn:focus-visible {
+  outline: 4px solid #ffeb3b;
+  outline-offset: 0;
+  box-shadow: 0 0 0 2px #212b32;
 }
