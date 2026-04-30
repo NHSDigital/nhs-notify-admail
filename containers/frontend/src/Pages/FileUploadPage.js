@@ -11,9 +11,17 @@ function FileUploadPage() {
   const [isLoading, setLoading] = useState(false);
   const EnvLambdaFunctionApiBaseUrl =
     window.env?.REACT_APP_API_GATEWAY || process.env.REACT_APP_API_GATEWAY;
-  const { user } = useAuth();
+  const { getValidIdToken, logout } = useAuth();
 
   const getPromptResp = async (fileContent, fileName) => {
+    let idToken;
+    try {
+      idToken = await getValidIdToken();
+    } catch {
+      await logout();
+      return;
+    }
+
     try {
       const response = await axios.post(
         `${EnvLambdaFunctionApiBaseUrl}`,
@@ -21,12 +29,17 @@ function FileUploadPage() {
         {
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${user.idToken}`,
+            Authorization: `Bearer ${idToken}`,
           },
         },
       );
       return response.data;
-    } catch {
+    } catch (error) {
+      if (error.response?.status === 401) {
+        // Token was rejected server-side – force a clean logout
+        await logout();
+        return;
+      }
       throw new Error(
         "Error calling Lambda or session expired. Please log in again.",
       );

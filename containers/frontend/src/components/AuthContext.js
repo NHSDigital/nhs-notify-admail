@@ -38,12 +38,23 @@ export function AuthProvider({ children }) {
       const refreshToken = sessionStorage.getItem("refreshToken");
 
       if (idToken && accessToken && userEmail) {
-        setUser({
-          email: userEmail,
-          idToken,
-          accessToken,
-          refreshToken,
-        });
+        // Don't restore a session whose ID token has already expired
+        let tokenExpired = false;
+        try {
+          const { exp } = JSON.parse(atob(idToken.split(".")[1]));
+          tokenExpired = Date.now() >= exp * 1000;
+        } catch {
+          // Malformed token – treat as expired so the user must re-authenticate
+          tokenExpired = true;
+        }
+
+        if (tokenExpired) {
+          ["idToken", "accessToken", "refreshToken", "userEmail"].forEach((k) =>
+            sessionStorage.removeItem(k),
+          );
+        } else {
+          setUser({ email: userEmail, idToken, accessToken, refreshToken });
+        }
       }
     } catch (initError) {
       console.error(
@@ -95,6 +106,26 @@ export function AuthProvider({ children }) {
       throw err;
     }
   }, []);
+
+  // Returns a valid ID token, proactively refreshing it when it is within
+  // 60 seconds of expiry so callers never send a stale token.
+  const getValidIdToken = useCallback(async () => {
+    const idToken = sessionStorage.getItem("idToken");
+    if (!idToken) throw new Error("No active session");
+
+    try {
+      const { exp } = JSON.parse(atob(idToken.split(".")[1]));
+      // Refresh if fewer than 60 seconds remain
+      if (Date.now() >= exp * 1000 - 60_000) {
+        return await refreshSession();
+      }
+    } catch {
+      // Cannot parse expiry – attempt a refresh rather than risk a stale token
+      return await refreshSession();
+    }
+
+    return idToken;
+  }, [refreshSession]);
 
   const completeLogin = useCallback((username, authResult) => {
     const { AccessToken, IdToken, RefreshToken } = authResult;
@@ -245,6 +276,13 @@ export function AuthProvider({ children }) {
         });
         await cognitoClient.send(command);
       }
+    } catch (err) {
+      // Best-effort server-side revocation; always clear the local session below
+      console.warn(
+        "GlobalSignOut failed (token may already be expired):",
+        err.message,
+      );
+    } finally {
       sessionStorage.removeItem("idToken");
       sessionStorage.removeItem("userEmail");
       sessionStorage.removeItem("accessToken");
@@ -252,8 +290,6 @@ export function AuthProvider({ children }) {
       setUser(null);
       setMfaPending(null);
       setError(null);
-    } catch (err) {
-      setError(err.message || "Failed to sign out");
     }
   };
 
@@ -266,6 +302,7 @@ export function AuthProvider({ children }) {
         error,
         isAuthReady,
         refreshSession,
+        getValidIdToken,
         mfaPending,
         respondToMfaChallenge,
       }}

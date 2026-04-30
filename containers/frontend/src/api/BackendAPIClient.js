@@ -16,7 +16,7 @@ const processQueue = (error, token = null) => {
 };
 
 export function useBackendAPIClient() {
-  const { refreshSession } = useAuth();
+  const { logout, refreshSession } = useAuth();
 
   const backendAPIClient = useMemo(() => {
     const backendURL =
@@ -58,11 +58,7 @@ export function useBackendAPIClient() {
           } catch (refreshError) {
             console.error("Token refresh failed:", refreshError);
             processQueue(refreshError, null);
-            sessionStorage.removeItem("accessToken");
-            sessionStorage.removeItem("idToken");
-            sessionStorage.removeItem("refreshToken");
-            sessionStorage.removeItem("userEmail");
-            window.location.href = "/login";
+            await logout();
             return Promise.reject(refreshError);
           } finally {
             isRefreshing = false;
@@ -85,7 +81,7 @@ export function useBackendAPIClient() {
     );
 
     return instance;
-  }, [refreshSession]);
+  }, [refreshSession, logout]);
 
   return backendAPIClient;
 }
