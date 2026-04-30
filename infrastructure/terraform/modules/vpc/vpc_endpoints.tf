@@ -90,3 +90,19 @@ resource "aws_vpc_endpoint" "bedrock_runtime" {
     Name = "${local.name_prefix}-bedrock-runtime"
   }
 }
+
+# Cognito IDP – allows ECS tasks in private subnets to reach the Cognito User
+# Pool API (including the JWKS endpoint used by the backend for JWT validation)
+# without requiring a NAT Gateway or internet route.
+resource "aws_vpc_endpoint" "cognito_idp" {
+  vpc_id              = aws_vpc.main.id
+  service_name        = "com.amazonaws.${var.region}.cognito-idp"
+  vpc_endpoint_type   = "Interface"
+  subnet_ids          = aws_subnet.private[*].id
+  security_group_ids  = [aws_security_group.vpc_endpoints.id]
+  private_dns_enabled = true
+
+  tags = {
+    Name = "${local.name_prefix}-cognito-idp"
+  }
+}
