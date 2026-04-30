@@ -1,0 +1,92 @@
+import React, { useState } from "react";
+import FileUpload from "../components/FileUpload";
+import AIFeedback from "../components/AIfeedback";
+import RoyalMailCalculator from "../components/Costingtool";
+import { useAuth } from "../components/AuthContext";
+import axios from "axios";
+
+function FileUploadPage() {
+  const [feedback, setFeedback] = useState({});
+  const [letterType, setLetterType] = useState("");
+  const [isLoading, setLoading] = useState(false);
+  const EnvLambdaFunctionApiBaseUrl =
+    window.env?.REACT_APP_API_GATEWAY || process.env.REACT_APP_API_GATEWAY;
+  const { getValidIdToken, logout } = useAuth();
+
+  const getPromptResp = async (fileContent, fileName) => {
+    let idToken;
+    try {
+      idToken = await getValidIdToken();
+    } catch {
+      await logout();
+      return;
+    }
+
+    try {
+      const response = await axios.post(
+        `${EnvLambdaFunctionApiBaseUrl}`,
+        { input_text: fileContent, file_name: fileName },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${idToken}`,
+          },
+        },
+      );
+      return response.data;
+    } catch (error) {
+      if (error.response?.status === 401) {
+        // Token was rejected server-side – force a clean logout
+        await logout();
+        return;
+      }
+      throw new Error(
+        "Error calling Lambda or session expired. Please log in again.",
+      );
+    }
+  };
+
+  const handleLoading = (loading) => {
+    setLoading(loading);
+  };
+
+  const sleep = (ms) =>
+    new Promise((resolve) => {
+      setTimeout(resolve, ms);
+    });
+
+  const handleFileUpload = async (file) => {
+    setLoading(true);
+    setFeedback({});
+    setLetterType(file.file_type || "docx");
+    try {
+      const promptResp = await getPromptResp(
+        file.extracted_text,
+        file.file_name,
+      );
+      await sleep(1000);
+      setFeedback(promptResp);
+    } catch (error) {
+      console.log("Error in handleFileUpload:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div>
+      <main className="container">
+        <div className="two-column-content">
+          <FileUpload
+            onFileUpload={handleFileUpload}
+            handleLoading={handleLoading}
+          />
+          <AIFeedback feedback={feedback} isLoading={isLoading} />
+        </div>
+        <RoyalMailCalculator pages={1} letterType={letterType} />
+      </main>
+    </div>
+  );
+}
+
+export default FileUploadPage;

@@ -89,7 +89,7 @@ variable "shared_infra_account_id" {
 }
 
 ###
-# Notify AI PoC variables
+# Notify Admail variables
 ###
 
 # Prompt Config

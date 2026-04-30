@@ -1,0 +1,28 @@
+{
+  "dependencies": {
+    "@aws-sdk/client-bedrock-runtime": "^3.828.0",
+    "@aws-sdk/client-s3": "^3.828.0",
+    "esbuild": "^0.25.0"
+  },
+  "devDependencies": {
+    "@tsconfig/node22": "^22.0.2",
+    "@types/aws-lambda": "^8.10.148",
+    "@types/jest": "^29.5.14",
+    "jest": "^29.7.0",
+    "jest-mock-extended": "^4.0.0",
+    "typescript": "^5.8.2"
+  },
+  "name": "nhs-notify-admail-bedrock-prompt-messager",
+  "private": true,
+  "scripts": {
+    "build:archive": "rm -rf dist && npx esbuild --bundle --minify --sourcemap --target=es2022 --platform=node --loader:.node=file --loader:.txt=text --entry-names=[name] --outdir=dist src/index.ts",
+    "build:container": "npm run build:archive && DOCKER_IMAGE=bedrock-prompt-messager make -C ../.. docker-build base_image=public.ecr.aws/lambda/nodejs:22 dir=lambdas/bedrock-prompt-messager",
+    "build:local-server": "npx esbuild --bundle --sourcemap --target=es2022 --platform=node --loader:.txt=text --entry-names=[name] --outdir=dist src/local-server.ts",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "start:local": "npm run build:local-server && node dist/local-server.js",
+    "test:unit": "jest",
+    "typecheck": "tsc --noEmit"
+  },
+  "version": "0.0.1"
+}

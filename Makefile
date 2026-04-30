@@ -7,6 +7,9 @@ include scripts/init.mk
 
 # Example CI/CD targets are: dependencies, build, publish, deploy, clean, etc.
 
+dev: # Run the local dockerised setup
+	docker compose up --build
+
 dependencies: # Install dependencies needed to build and test the project @Pipeline
 	# TODO: Implement installation of your project dependencies
 

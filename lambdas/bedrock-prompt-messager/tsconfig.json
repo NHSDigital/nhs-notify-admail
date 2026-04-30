@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "isolatedModules": true,
+    "paths": {
+      "src/*": [
+        "src/*"
+      ]
+    }
+  },
+  "extends": "@tsconfig/node22/tsconfig.json",
+  "include": [
+    "src/**/*",
+    "jest.config.ts"
+  ]
+}

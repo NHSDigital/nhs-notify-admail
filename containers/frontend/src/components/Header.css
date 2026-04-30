@@ -1,0 +1,18 @@
+header {
+  background-color: #005eb8;
+  height: 120px;
+  color: white;
+  padding: 0px;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+header h1 {
+  font-size: 24px;
+  font-weight: bold;
+  margin: 0;
+}
+
+/* Removed fake .nhsuk-header-logo to rely on design system */

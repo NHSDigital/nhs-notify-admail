@@ -1,3 +1,5 @@
+# Admail - Terraform
+
 <!-- BEGIN_TF_DOCS -->
 <!-- markdownlint-disable -->
 <!-- vale off -->
@@ -40,6 +42,7 @@
 | <a name="module_bedrock_messager"></a> [bedrock\_messager](#module\_bedrock\_messager) | https://github.com/NHSDigital/nhs-notify-shared-modules/releases/download/3.0.6/terraform-lambda.zip | n/a |
 | <a name="module_kms"></a> [kms](#module\_kms) | https://github.com/NHSDigital/nhs-notify-shared-modules/releases/download/3.0.6/terraform-kms.zip | n/a |
 | <a name="module_s3bucket_lambda_prompt_logging"></a> [s3bucket\_lambda\_prompt\_logging](#module\_s3bucket\_lambda\_prompt\_logging) | https://github.com/NHSDigital/nhs-notify-shared-modules/releases/download/3.0.6/terraform-s3bucket.zip | n/a |
+| <a name="module_vpc"></a> [vpc](#module\_vpc) | ../../modules/vpc | n/a |
 ## Outputs
 
 No outputs.

@@ -1,7 +1,9 @@
 version: 2
 
-updates:
+cooldown:
+  default-days: 7
 
+updates:
   - package-ecosystem: "docker"
     directory: "/"
     schedule:

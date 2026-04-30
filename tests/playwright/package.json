@@ -1,0 +1,17 @@
+{
+  "name": "nhs-notify-admail-integration-tests",
+  "version": "0.0.1",
+  "private": true,
+  "dependencies": {
+    "@playwright/test": "^1.58.2",
+    "@types/node": "^22.0.0"
+  },
+  "scripts": {
+    "lint": "eslint .",
+    "lint:fix": "npm run lint -- --fix",
+    "test:integration": "playwright test",
+    "test:component": "echo \"Component tests not implemented\"",
+    "test:unit": "echo \"Unit tests not required\"",
+    "typecheck": "tsc --noEmit"
+  }
+}

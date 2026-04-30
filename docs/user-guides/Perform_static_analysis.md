@@ -41,8 +41,8 @@ Contact the GitHub Admins via their mailbox to have your [SonarCloud](https://so
 You can run and test static analysis locally on a developer's workstation using the following command
 
 ```shell
-export SONAR_ORGANISATION_KEY=nhs-england-tools # Replace with your organisation key
-export SONAR_PROJECT_KEY=repository-template # Replace with your project key
+export SONAR_ORGANISATION_KEY=nhsd
+export SONAR_PROJECT_KEY=nhs-notify-admail
 export SONAR_TOKEN=[replace-with-your-sonar-token]
 ./scripts/reports/perform-static-analysis.sh
 ```
