@@ -23,7 +23,7 @@
   },
   "scripts": {
     "build:archive": "rm -rf dist && npx esbuild --bundle --minify --sourcemap --target=es2022 --platform=node --entry-names=[name] --outdir=dist src/server.ts",
-    "build:container": "npm run build:archive && DOCKER_IMAGE=backend make -C ../.. docker-build base_image=node:22-alpine dir=containers/backend",
+    "build:container": "cd ../.. && make docker-build-and-push base_image=node:22-alpine dir=containers/backend",
     "build:dev": "npx esbuild --bundle --sourcemap --target=es2022 --platform=node --entry-names=[name] --outdir=dist src/server.ts",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
