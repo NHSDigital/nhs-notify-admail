@@ -12,13 +12,6 @@ const BUCKET_NAME = process.env.S3_LLM_LOGS_BUCKET;
 const BUCKET_DIRECTORY = process.env.S3_LLM_LOGS_DIRECTORY;
 const BUCKET_ACCOUNT_ID = process.env.S3_LLM_LOGS_BUCKET_ACCOUNT_ID;
 
-// eslint-disable-next-line no-console
-console.info(`S3 Bucket Name: ${BUCKET_NAME}`);
-// eslint-disable-next-line no-console
-console.info(`S3 Bucket Directory: ${BUCKET_DIRECTORY}`);
-// eslint-disable-next-line no-console
-console.info(`S3 Bucket Account ID: ${BUCKET_ACCOUNT_ID}`);
-
 export interface FileEntry {
   name: string;
   last_modified: string;
