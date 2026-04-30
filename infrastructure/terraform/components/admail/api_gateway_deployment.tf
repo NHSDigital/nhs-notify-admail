@@ -11,7 +11,11 @@ resource "aws_api_gateway_deployment" "main" {
       aws_api_gateway_method_response.call_llm_post.id,
       aws_api_gateway_method_response.call_llm_options.id,
       aws_api_gateway_integration_response.call_llm_options.id,
-      aws_api_gateway_authorizer.cognito.id
+      aws_api_gateway_authorizer.cognito.id,
+      aws_api_gateway_gateway_response.unauthorized.id,
+      aws_api_gateway_gateway_response.access_denied.id,
+      aws_api_gateway_gateway_response.default_4xx.id,
+      aws_api_gateway_gateway_response.default_5xx.id,
     ]))
   }
 
