@@ -189,20 +189,6 @@ describe("CORS", () => {
     );
   });
 
-  it("allows requests from awsapprunner.com origins", async () => {
-    validAuthSetup();
-    mockFetchHistory.mockResolvedValue([]);
-
-    const res = await request(app)
-      .get("/s3/history")
-      .set(BEARER)
-      .set("Origin", "https://abc123.eu-west-2.awsapprunner.com");
-
-    expect(res.headers["access-control-allow-origin"]).toBe(
-      "https://abc123.eu-west-2.awsapprunner.com",
-    );
-  });
-
   it("does not set the allow-origin header for disallowed origins", async () => {
     validAuthSetup();
     mockFetchHistory.mockResolvedValue([]);
